@@ -1,0 +1,23 @@
+<%= render 'organizations/header' %>
+
+<div class="ui padded stackable grid">
+  <div class="ui two column row">
+    <div class="four wide column">
+      <%= render 'organizations/panel' %>
+    </div>
+    <div class="twelve wide column">
+      <h2 class="ui header">
+        <i class="child icon"></i>
+        <div class="content">
+          <%= t :all_organizations %>
+          <div class="sub header">
+            <%= t :all_organizations_header %>
+          </div>
+        </div>
+      </h2>
+
+      <%= render 'partner_networks/organizations_list', organizations: @organizations %>
+    </div>
+  </div>
+</div>
+

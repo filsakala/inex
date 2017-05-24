@@ -1,0 +1,107 @@
+<%= render 'edit_event_header' %>
+
+<%= render 'form_upper_panel' %>
+<div class="ui attached segment">
+  <%= form_for([@event_type, @event], html: { class: 'ui form' }) do |f| %>
+      <%= write_error(@event) %>
+
+      <%= hidden_field_tag :actual_step, 'fourth' %>
+
+
+      <fieldset>
+        <legend><h3><%= t :registration_settings %></h3></legend>
+        <div class="two fields">
+          <div class="field">
+            <%= f.label :registration_deadline, t(:application_deadline) %>
+            <%= f.text_field :registration_deadline, value: datetime_format(@event.registration_deadline), class: 'datetimepick' %>
+          </div>
+          <div class="ui toggle checkbox field">
+            <%= f.check_box :is_simple_registration %><br>
+            <%= f.label :is_simple_registration, class: "pop_up", title: t(:is_simple_registration_description) do %>
+                <%= t :is_simple_registration %>
+                <i class="large info circle icon"></i>
+            <% end %>
+          </div>
+        </div>
+        <div class="two fields">
+          <div class="field">
+          </div>
+          <div class="ui toggle checkbox field">
+            <%= f.check_box :can_create_member_registration %>
+            <%= f.label :can_create_member_registration, t(:create_member_registration) %>
+          </div>
+        </div>
+      </fieldset>
+      <div style="padding-bottom: 10px;"></div>
+      <fieldset>
+        <legend><h3><%= t :evaluation %></h3></legend>
+        <div class="two fields">
+          <div class="field">
+            <%= f.label :evaluation_url_leader, t(:feedback_url_for_leaders_trainers) %>
+            <%= f.text_field :evaluation_url_leader, placeholder: "Napr. http://facebook.com" %>
+          </div>
+          <div class="field">
+            <%= f.label :evaluation_deadline_leader, t(:feedback_opening_datetime_for_leaders_trainers) %>
+            <%= f.text_field :evaluation_deadline_leader, value: datetime_format(@event.evaluation_deadline_leader), class: 'datetimepick' %>
+          </div>
+        </div>
+        <div class="two fields">
+          <div class="field">
+            <%= f.label :evaluation_url_local_partner, t(:feedback_url_for_local_partners) %>
+            <%= f.text_field :evaluation_url_local_partner, placeholder: "Napr. http://facebook.com" %>
+          </div>
+          <div class="field">
+            <%= f.label :evaluation_deadline_local_partner, t(:feedback_opening_datetime_for_local_partners) %>
+            <%= f.text_field :evaluation_deadline_local_partner, value: datetime_format(@event.evaluation_deadline_local_partner), class: 'datetimepick' %>
+          </div>
+        </div>
+        <div class="two fields">
+          <div class="field">
+            <%= f.label :evaluation_url_volunteer, t(:feedback_url_for_volunteers) %>
+            <%= f.text_field :evaluation_url_volunteer, placeholder: "Napr. http://facebook.com"%>
+          </div>
+          <div class="field">
+            <%= f.label :evaluation_deadline_volunteer, t(:feedback_opening_datetime_for_volunteers) %>
+            <%= f.text_field :evaluation_deadline_volunteer, value: datetime_format(@event.evaluation_deadline_volunteer), class: 'datetimepick' %>
+          </div>
+        </div>
+      </fieldset>
+      <div style="padding-bottom: 10px;"></div>
+      <fieldset>
+        <legend>
+          <h3 class="ui header">
+            <%= t :selection_of_people %>
+            <div class="sub header">
+              <%= t :selection_of_people_description %>
+            </div>
+          </h3>
+        </legend>
+        <div class="field">
+          <%= label_tag :trainer_ids, t(:trainers) %>
+          <%= select_tag :trainer_ids, options_from_collection_for_select(@users, "id", "name", (params[:trainer_ids] || @event.trainers.pluck(:user_id))), multiple: true, include_blank: true, class: "ui search dropdown" %>
+        </div>
+        <div class="field">
+          <%= label_tag :leader_ids, t(:leaders) %>
+          <%= select_tag :leader_ids, options_from_collection_for_select(@users, "id", "name", (params[:leader_ids] || @event.leaders.pluck(:user_id))), multiple: true, include_blank: true, class: "ui search dropdown" %>
+        </div>
+        <div class="field">
+          <%= label_tag :local_partner_ids, t(:local_partners) %>
+          <%= select_tag :local_partner_ids, options_from_collection_for_select(@users, "id", "name", (params[:local_partner_ids] || @event.local_partners.pluck(:user_id))), multiple: true, include_blank: true, class: "ui search dropdown" %>
+        </div>
+      </fieldset>
+      <div style="padding-bottom: 10px;"></div>
+      <fieldset>
+        <legend><h3><%= t :documents_required_from_volunteers %></h3></legend>
+        <% @event.event_documents.new %>
+        <%= f.fields_for(:event_documents) do |builder| %>
+            <%= render 'event_document_fields', f: builder %>
+        <% end %>
+        <%= link_to_add_fields t(:add), f, :event_documents %>
+
+        <div class="actions">
+          <%= f.submit t(:contacts_event_next_step), class: 'ui green button' %>
+        </div>
+      </fieldset>
+  <% end %>
+</div>
+<%= render 'form_lower_panel' %>

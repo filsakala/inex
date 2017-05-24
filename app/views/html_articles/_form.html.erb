@@ -1,0 +1,36 @@
+<%= form_for(@html_article, html: { class: 'ui form' }) do |f| %>
+    <%= write_error(@html_article) %>
+
+    <%= hidden_field_tag :category, params[:category] %>
+
+    <div class="field">
+      <%= f.label :title do %>
+          Názov <i class="small red asterisk icon"></i>
+      <% end %>
+      <%= f.text_field :title %>
+    </div>
+    <div class="two fields">
+      <div class="field">
+        <h3>1. Chcem, aby to bol link</h3>
+        <p>V tomto prípade zadaj link a klikni na "Uložiť".</p>
+        <%= f.text_field :url, placeholder: "http://facebook.com" %>
+
+        <div class="actions">
+          <%= f.submit 'Uložiť', class: 'ui green button' %>
+        </div>
+      </div>
+      <div class="field">
+        <h3>2. Chcem, aby to bol klasický článok</h3>
+        <%# f.label :content, 'Obsah' %>
+        <%# f.text_area :content %>
+        <%= f.hidden_field :content %>
+        <p>V tomto prípade môžeš upraviť obsah a kliknúť na "Uložiť".</p>
+      </div>
+    </div>
+
+    <%= f.text_area :content, :rows => 40, :cols => 120, class: 'tinymce' %>
+
+    <div class="actions">
+      <%= f.submit 'Uložiť', class: 'ui green button' %>
+    </div>
+<% end %>

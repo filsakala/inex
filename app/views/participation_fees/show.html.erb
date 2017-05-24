@@ -1,0 +1,58 @@
+<h1 class="ui header">
+  <i class="money icon"></i>
+  <div class="content">
+    <%= t :participation_fee %>
+    <div class="sub header">
+      <%= t :payment_detail_description %>
+    </div>
+  </div>
+</h1>
+
+<%= link_to participation_fees_path, class: 'ui grey icon button' do %>
+    <i class="money link icon"></i> Späť na príspevky
+<% end %>
+<% if @participation_fee.event_list && @participation_fee.event_list.event_type %>
+    <%= link_to bags_event_type_path(@participation_fee.event_list.event_type, query: @participation_fee.event_list.surname), class: 'ui grey icon button' do %>
+        <i class="suitcase link icon"></i> Na tašky
+    <% end %>
+<% end %>
+<%= link_to edit_participation_fee_path(@participation_fee), class: 'ui yellow icon button' do %>
+    <i class="write link icon"></i> <%= t(:edit) %>
+<% end %>
+
+
+<div class="ui items" style="border: 2px solid black; padding: 10px;">
+  <div class="item">
+    <div class="content">
+      <a class="header">
+        <%= @participation_fee.user.name_with_mail %>
+      </a>
+      <div class="meta">
+        <strong><%= t :application_prihlaska %>:</strong>
+        <% if @participation_fee.event_list && @participation_fee.event_list.event_type %>
+            <%= link_to @participation_fee.event_list do %>
+                <%= "#{@participation_fee.event_list.event_type.title}, #{@participation_fee.event_list.created_at.strftime("%d.%m.%Y %H:%m")}" %>
+            <% end %>
+        <% else %>
+            Nezadaná
+        <% end %>
+      </div>
+      <div class="description">
+        <div class="ui list">
+          <div class="item">
+            <strong><%= t :amount %>: </strong><%= @participation_fee.amount %>
+          </div>
+          <div class="item">
+            <strong><%= t :type %>: </strong><%= @participation_fee.pay_type %>
+          </div>
+          <div class="item">
+            <strong><%= t :date %>: </strong><%= date_format @participation_fee.date %>
+          </div>
+          <div class="item">
+            <strong><%= t :notes %>: </strong><%= @participation_fee.notes %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

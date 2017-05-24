@@ -1,0 +1,145 @@
+<%= form_for(@event_list, html: { class: 'ui form' }) do |f| %>
+    <%= f.hidden_field :form_type, value: 'simple' %>
+    <fieldset>
+      <div class="fields">
+        <div class="seven wide field">
+          <%= f.label :name do %>
+              Meno <i class="small red asterisk icon"></i>
+          <% end %>
+          <%= f.hidden_field :name, value: (@event_list.name || current_user.name) %>
+          <%= f.text_field :name, value: (@event_list.name || current_user.name), disabled: true %>
+        </div>
+        <div class="seven wide field">
+          <%= f.label :surname do %>
+              Priezvisko <i class="small red asterisk icon"></i>
+          <% end %>
+          <%= f.hidden_field :surname, value: (@event_list.surname || current_user.surname) %>
+          <%= f.text_field :surname, value: (@event_list.surname || current_user.surname), disabled: true %>
+        </div>
+      </div>
+      <div class="fields">
+        <div class="eight wide field">
+          <%= f.label :personal_mail do %>
+              E-mail <i class="small red asterisk icon"></i>
+          <% end %>
+          <% if !@event_list.personal_mail.blank? %>
+              <%= f.email_field :personal_mail, value: (@event_list.personal_mail || current_user.personal_mail) %>
+          <% else %>
+              <%= f.email_field :personal_mail, value: (@event_list.personal_mail || current_user.login_mail) %>
+          <% end %>
+        </div>
+        <div class="eight wide field">
+          <%= f.label :personal_phone do %>
+              Telefónne číslo (Formát: +421 905 501 078)
+              <i class="small red asterisk icon"></i>
+          <% end %>
+          <%= f.text_field :personal_phone, value: (@event_list.personal_phone || current_user.personal_phone) %>
+        </div>
+      </div>
+      <div class="two fields">
+        <div class="eight wide field">
+          <%= f.label :remarks, class: 'pop_up', title: "Je niečo, čo by sme mali vedieť pri tvojej účasti na evente?" do %>
+              Poznámky <i class="large info circle icon"></i>
+          <% end %>
+          <%= f.text_area :remarks %>
+        </div>
+        <div class="eight wide field">
+          <%= f.label :on_health, 'Poznámky ku zdraviu, ktoré by sme mali vedieť (strava a pod.)' %>
+          <%= f.text_area :on_health %>
+        </div>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>Zoznam udalostí</legend>
+
+      <% @events_by_type.each do |event_type, events| %>
+          <h3><%= event_type.title %></h3>
+
+          <%= render 'event_list2', events: events %>
+      <% end %>
+    </fieldset>
+
+    <div class="inline field">
+      <%= f.check_box :conditions_agreement %>
+      <!-- Application agreement sentence -->
+      <% @event_list.event_types.each do |event_type| %>
+          <% if !event_type.application_info_html.blank? %>
+              <h3>Súhlas s podmienkami pre <%= event_type.title.try(:downcase) %></h3>
+              <%= event_type.application_conditions_agreement_html.html_safe %>
+          <% end %>
+      <% end %>
+    </div>
+    <% if @inex_member_events.any? && !current_user.je_clen? %>
+        <div class="ui accordion">
+          <div class="title">
+            <i class="large dropdown icon"></i>
+            Chcem sa stať členom.
+          </div>
+          <div class="content">
+            <div class="ui toggle checkbox inline field">
+              <%= f.check_box :inex_member %>
+              <label>Chcem sa stať členom. Hlavnou výhodou je napríklad zníženie
+                účastníckeho príspevku na tábory. Výška členského je 2€.
+                Súhlasím, aby moje osobné údaje boli predložené členom
+                komisie MŠ SR a pre interné účely organizácie INEX
+                Slovakia.</label>
+            </div>
+            <div class="field">
+              <%= f.label :birth_date do %>
+                  Dátum narodenia <i class="small red asterisk icon"></i>
+              <% end %>
+              <%= f.text_field :birth_date, value: date_format((@event_list.birth_date || current_user.birth_date)), class: 'datepick' %>
+            </div>
+            <fieldset>
+              <legend><h4>Adresa<i class="small red asterisk icon"></i></h4>
+              </legend>
+              <% @event_list.addresses.new if @event_list.addresses.blank? %>
+              <%= f.fields_for(:addresses) do |a| %>
+                  <fieldset>
+                    <legend>My address</legend>
+                    <div class="disabled field">
+                      <%= a.label :title do %>
+                          Typ <i class="small red asterisk icon"></i>
+                      <% end %>
+                      <%= a.select :title, ['Trvalé bydlisko'] %>
+                    </div>
+                    <div class="two fields">
+                      <div class="field">
+                        <%= a.label :address do %>
+                            Adresa a číslo
+                            <i class="small red asterisk icon"></i>
+                        <% end %>
+                        <%= a.text_field :address %>
+                      </div>
+                      <div class="field">
+                        <%= a.label :postal_code do %>
+                            PSČ <i class="small red asterisk icon"></i>
+                        <% end %>
+                        <%= a.text_field :postal_code %>
+                      </div>
+                    </div>
+                    <div class="two fields">
+                      <div class="field">
+                        <%= a.label :city do %>
+                            Mesto <i class="small red asterisk icon"></i>
+                        <% end %>
+                        <%= a.text_field :city %>
+                      </div>
+                      <div class="field">
+                        <%= a.label :country do %>
+                            Krajina <i class="small red asterisk icon"></i>
+                        <% end %>
+                        <%= a.select :country, Country.order(:name).pluck(:name), selected: 'Slovakia', class: "ui dropdown" %>
+                      </div>
+                    </div>
+                  </fieldset>
+              <% end %>
+            </fieldset>
+          </div>
+        </div>
+    <% end %>
+
+    <div class="actions">
+      <%= f.submit 'Registrovať', class: 'ui green submit button' %>
+    </div>
+<% end %>

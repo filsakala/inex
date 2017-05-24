@@ -1,0 +1,27 @@
+<% if @partners.any? || (current_user && current_user.is_inex_member?) %>
+    <h3>
+      <%= t(:thanks_for_support) %>
+      <% if current_user && current_user.is_employee? %>
+          <%= link_to new_homepage_partner_path, class: 'pop_up', title: t(:add_partner) do %>
+              <i class="large green plus circle link icon"></i>
+          <% end %>
+      <% end %>
+    </h3>
+    <div class="ui five doubling cards">
+      <% @partners.each do |partner| %>
+          <div class="ui card" style="height: 60px;">
+            <%= link_to partner.url, target: :blank do %>
+                <%= image_tag partner.image.url, class: 'ui centered image', alt: partner.text %>
+            <% end %>
+            <% if current_user && current_user.is_employee? %>
+                <%= link_to partner, method: :delete, data: { confirm: t(:are_you_sure_remove_partner) }, class: 'ui red right corner label pop_up', title: t(:remove_partner) do %>
+                    <i class="ban icon"></i>
+                <% end %>
+                <%= link_to edit_homepage_partner_path(partner), class: 'ui yellow left corner label pop_up', title: t(:edit_partner) do %>
+                    <i class="write icon"></i>
+                <% end %>
+            <% end %>
+          </div>
+      <% end %>
+    </div>
+<% end %>

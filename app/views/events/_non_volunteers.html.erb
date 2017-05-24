@@ -1,0 +1,50 @@
+<% if vols.any? %>
+    <h3><%= vols.first.class.name %>s</h3>
+    <table class="ui green celled table">
+      <thead>
+      <tr>
+        <th><%= t :name_contact %></th>
+        <th><%= t :date_of_birth %></th>
+        <th><%= t :place_of_birth %></th>
+        <th><%= t :nationality %></th>
+        <th><%= t :occupation %></th>
+        <th>Mail</th>
+        <th><%= t :phone %></th>
+        <th><%= t :actions %></th>
+      </tr>
+      </thead>
+      <tbody>
+      <% vols.each do |vol| %>
+          <% unless vol.user.blank? %>
+              <tr>
+                <td><%= vol.user.try(:name_surname) %></td>
+                <td><%= vol.user.try(:birth_date) %></td>
+                <td><%= vol.user.try(:place_of_birth) %></td>
+                <td><%= vol.user.try(:nationality) %></td>
+                <td><%= vol.user.try(:occupation) %></td>
+                <td><%= vol.user.try(:personal_mail) %></td>
+                <td><%= vol.user.try(:personal_phone) %></td>
+                <td>
+                  <%= link_to vol.user, class: 'pop_up', title: 'Detail' do %>
+                      <i class="big grey unhide icon"></i>
+                  <% end %>
+                  <%= link_to vol, method: :delete, data: { confirm: t(:are_you_sure_remove_participant) }, class: 'pop_up', title: t(:remove) do %>
+                      <i class="big red remove icon"></i>
+                  <% end %>
+                </td>
+              </tr>
+          <% end %>
+      <% end %>
+      </tbody>
+    </table>
+<% else %>
+    <div class="ui icon message">
+      <i class="frown icon"></i>
+      <div class="content">
+        <div class="header">
+          <%= t :no_participant_header %>
+        </div>
+        <p><%= t :no_participant_body %></p>
+      </div>
+    </div>
+<% end %>

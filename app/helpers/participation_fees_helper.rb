@@ -1,0 +1,2 @@
+module ParticipationFeesHelper
+end

@@ -1,0 +1,25 @@
+<%= form_for(@issue_ticket, html: { class: 'ui form' }) do |f| %>
+    <%= write_error @issue_ticket %>
+
+    <%= f.hidden_field :user_id, value: (@issue_ticket.try(:user_id) || current_user.id) %>
+
+    <div class="field">
+      <%= f.label :priority, "Priorita" %>
+      <%= f.select :priority, { "Vysoká": 1,
+                                "Stredná": 2,
+                                "Nízka": 3 } %>
+    </div>
+    <div class="field">
+      <%= f.label :description, "Popis problému" %>
+      <%= f.text_area :description %>
+    </div>
+
+    <div class="field">
+      <%= f.label :image, t(:picture) %>
+      <%= f.file_field :image %>
+    </div>
+
+    <div class="actions">
+      <%= f.submit "Odoslať", class: 'ui green button' %>
+    </div>
+<% end %>

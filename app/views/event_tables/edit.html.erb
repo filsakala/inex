@@ -1,0 +1,25 @@
+<h2 class="ui header">
+  <i class="browser icon"></i>
+  <div class="content">
+    <%= t :edit_table %>
+    <div class="sub header">
+      <%= t :edit_table_description %>
+    </div>
+  </div>
+</h2>
+
+<%= render 'form' %>
+
+<h2><%= t :columns_order %></h2>
+<div class="ui celled ordered list sortable-columns" eventTypeId="<%= @event_type.id %>">
+  <% @headers.each do |header| %>
+      <div class="item with-id" data-id="<%= header.id %>">
+        <i class="large move icon"></i>
+        <div class="content">
+          <div class="header">
+            <%= header.name %>
+          </div>
+        </div>
+      </div>
+  <% end %>
+</div>

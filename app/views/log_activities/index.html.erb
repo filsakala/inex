@@ -1,0 +1,30 @@
+<h1 class="ui header">
+  <i class="circular heartbeat icon"></i>
+  <div class="content">
+    Užívateľská aktivita
+    <div class="sub header">
+      Na tejto stránke vidno akcie vykonané zamestnancami a EDS.
+    </div>
+  </div>
+</h1>
+
+<table class="ui compact orange selectable celled striped table datatable">
+  <thead>
+  <tr>
+    <th><%= t :name_contact %></th>
+    <th>akcia</th>
+    <th>čo</th>
+    <th>Čas</th>
+  </tr>
+  </thead>
+  <tbody>
+  <% @log_activities.each do |activity| %>
+      <tr>
+        <td><%= activity.try(:user).try(:nickname_or_name) %></td>
+        <td><%= activity.action %></td>
+        <td><%= activity.what %></td>
+        <td><%= datetime_format activity.created_at %></td>
+      </tr>
+  <% end %>
+  </tbody>
+</table>

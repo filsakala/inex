@@ -1,0 +1,25 @@
+<%= form_for(@partner, html: { class: 'ui form' }) do |f| %>
+    <%= write_error(@partner) %>
+
+    <div class="field">
+      <%= f.label :image, t(:picture) %>
+      <%= f.file_field :image %>
+    </div>
+    <div class="field">
+      <%= f.label :text do %>
+          <%= t :text_for_preview %>
+          <i class="circle question mark icon pop_up" title="Napr. Iuventa"></i>
+      <% end %>
+      <%= f.text_field :text, placeholder: "Brigáda" %>
+    </div>
+    <div class="field">
+      <%= f.label :url do %>
+          <%= t :link_to_partner_web %>
+          <i class="circle question mark icon pop_up" title="<%= t :link_to_partner_web_description %>"></i>
+      <% end %>
+      <%= f.text_field :url, placeholder: "http://brigada.sk" %>
+    </div>
+    <div class="actions">
+      <%= f.submit t(:save), class: 'ui green button' %>
+    </div>
+<% end %>

@@ -1,0 +1,64 @@
+<% if !@user %>
+    <%= form_for(url_for(controller: :participation_fees, action: :new), method: :get, html: { class: 'ui form' }) do |f| %>
+        <%= write_error(@participation_fee) %>
+        <div class="field">
+          <%= label_tag "user_id" do %>
+              Platca <i class="small red asterisk icon"></i>
+          <% end %>
+          <%= select_tag "user_id", options_from_collection_for_select(@users, :id, :name_surname, @user.try(:id)), class: "ui search dropdown" %>
+        </div>
+
+        <div class="actions">
+          <%= submit_tag 'Načítať prihlášky', class: 'ui green submit button' %>
+        </div>
+    <% end %>
+<% else %>
+    <%= form_for(@participation_fee, html: { class: 'ui form' }) do |f| %>
+        <%= write_error(@participation_fee) %>
+        <div class="field">
+          <%= label_tag "participation_fee[user_id]" do %>
+              Platca <i class="small red asterisk icon"></i>
+          <% end %>
+          <%= select_tag "participation_fee[user_id]", options_from_collection_for_select(@users, :id, :name_surname, @user.id), class: "ui disabled search dropdown" %>
+        </div>
+        <% if @user_bags.any? %>
+            <div class="sixteen wide field">
+              <%= f.label :event_list_id, 'Prihláška (taška)' %>
+              <%= f.select :event_list_id, @user_bags, include_blank: true %>
+            </div>
+        <% else %>
+            <div class="ui icon message">
+              <i class="frown icon"></i>
+              <div class="content">
+                <div class="header">
+                  Pre daného platcu nebola nájdená žiadna uzavretá prihláška.
+                </div>
+                <p>Napriek tomu môžeš pridať platbu a prihlášku nastavíš
+                  neskôr.</p>
+              </div>
+            </div>
+        <% end %>
+        <div class="three fields">
+          <div class="field">
+            <%= f.label :amount, 'Suma' %>
+            <%= f.number_field :amount, :step => 'any' %>
+          </div>
+          <div class="field">
+            <%= f.label :pay_type, 'Typ platby' %>
+            <%= f.select :pay_type, ['Prevodom', 'Hotovosť'], include_blank: true %>
+          </div>
+          <div class="field">
+            <%= f.label :date, 'Dátum platby' %>
+            <%= f.text_field :date, value: date_format(@participation_fee.date), class: 'datepick' %>
+          </div>
+        </div>
+        <div class="sixteen wide field">
+          <%= f.label :notes, 'Poznámky' %>
+          <%= f.text_area :notes %>
+        </div>
+
+        <div class="actions">
+          <%= f.submit 'Uložiť', class: 'ui green submit button' %>
+        </div>
+    <% end %>
+<% end %>

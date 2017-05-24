@@ -1,0 +1,42 @@
+<% if vols.any? %>
+    <h3><%= t :role %>: <%= t "#{vols.first.class.name.downcase}s" %></h3>
+    <table class="ui green celled table">
+      <thead>
+      <tr>
+        <th class="two wide">Event</th>
+        <th class="two wide"><%= t :date %></th>
+        <th class="two wide"><%= t :actions %></th>
+      </tr>
+      </thead>
+      <tbody>
+      <% vols.each do |vol| %>
+          <% if vol.event %>
+              <tr>
+                <td><%= vol.event.translated_title %></td>
+                <td><%= vol.event.try(:from_to) %></td>
+                <td>
+                  <%= link_to show_public_event_path(vol.event), class: 'ui button' do %>
+                      <i class="grey unhide icon"></i> Detail
+                  <% end %>
+                  <% if voltype == "local_partner" %>
+                      <% if !vol.event.evaluation_url_local_partner.blank? && vol.event.evaluation_deadline_local_partner <= DateTime.now %>
+                          <%= link_to vol.event.evaluation_url_local_partner, class: 'ui button', target: :blank do %>
+                              <i class="pie chart icon"></i>
+                              <%= t :evaluation %>
+                          <% end %>
+                      <% end %>
+                  <% else %>
+                      <% if !vol.event.evaluation_url_leader.blank? && vol.event.evaluation_deadline_leader <= DateTime.now %>
+                          <%= link_to vol.event.evaluation_url_leader, class: 'ui button', target: :blank do %>
+                              <i class="pie chart icon"></i>
+                              <%= t :evaluation %>
+                          <% end %>
+                      <% end %>
+                  <% end %>
+                </td>
+              </tr>
+          <% end %>
+      <% end %>
+      </tbody>
+    </table>
+<% end %>

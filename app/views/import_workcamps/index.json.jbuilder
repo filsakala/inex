@@ -1,0 +1,1 @@
+json.array! @import_workcamps, partial: 'import_workcamps/import_workcamp', as: :import_workcamp

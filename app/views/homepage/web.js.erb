@@ -1,0 +1,8 @@
+$("#events_calendar").html("<%= escape_javascript render(partial: "calendar") %>");
+$("#events_calendar").on("click", ".event-calendar-list", function () {
+  var day = $(this).attr('date');
+  var meetings = $(this).attr('meetings');
+  $('#modal-header').text(day);
+  $('#event_calendar_list').html(meetings);
+  $('#modal').modal('show');
+});

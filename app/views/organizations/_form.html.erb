@@ -1,0 +1,42 @@
+<%= form_for(@organization, html: { class: 'ui form' }) do |f| %>
+    <%= write_error(@organization) %>
+
+    <div class="two fields">
+      <div class="field">
+        <%= f.label :name do %>
+            <%= t :name_task %> <i class="small red asterisk icon"></i>
+        <% end %>
+        <%= f.text_field :name %>
+      </div>
+      <div class="field">
+        <%= f.label :country, t(:country) %>
+        <%= f.select :country, options_from_collection_for_select(@countries, "name", "name", (@organization.country || 'Slovakia')), class: "ui dropdown" %>
+      </div>
+    </div>
+
+    <div class="field">
+      <%= label_tag t(:partner_networks) %>
+      <%= select_tag :network_ids, options_from_collection_for_select(@networks, "id", "name", (params[:network_ids] || @my_networks)), multiple: true, class: "ui dropdown" %>
+    </div>
+
+    <div class="field">
+      <%= f.label :image, 'Obrázok' %>
+      <%= f.file_field :image %>
+    </div>
+
+    <div class="field">
+      <%= f.label :description, t(:description) %>
+      <%= f.text_area :description %>
+    </div>
+
+    <fieldset id="fs">
+      <legend><h3>Kontakty</h3></legend>
+      <% @organization.contacts.new %>
+      <%= f.fields_for(:contacts) do |builder| %>
+          <%= render 'contact_fields', f: builder %>
+      <% end %>
+      <%= link_to_add_fields "#{t(:add)} #{t(:contact)}", f, :contacts %>
+    </fieldset>
+
+    <%= f.submit t(:save), class: 'ui green submit button' %>
+<% end %>

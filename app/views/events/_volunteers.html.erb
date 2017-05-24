@@ -1,0 +1,53 @@
+<% if vols.any? %>
+    <h3>
+      <%= t :volunteers %>
+      <%= link_to bags_event_type_path(@event_type), class: 'pop_up', title: t(:applications) do %>
+          <i class="big grey unhide icon"></i>
+      <% end %>
+    </h3>
+    <table class="ui green celled table">
+      <thead>
+      <tr>
+        <th class="two wide"><%= t :name_contact %></th>
+        <th class="two wide"><%= t :date_of_birth %></th>
+        <th class="two wide"><%= t :place_of_birth %></th>
+        <th class="two wide"><%= t :nationality %></th>
+        <th class="two wide"><%= t :occupation %></th>
+        <th class="two wide">Mail</th>
+        <th class="two wide"><%= t :phone %></th>
+        <th class="two wide"><%= t :actions %></th>
+      </tr>
+      </thead>
+      <tbody>
+      <% vols.each do |vol| %>
+          <tr>
+            <td><%= vol.event_list.name %> <%= vol.event_list.surname %></td>
+            <td><%= date_format vol.event_list.birth_date %></td>
+            <td><%= vol.event_list.place_of_birth %></td>
+            <td><%= vol.event_list.nationality %></td>
+            <td><%= vol.event_list.occupation %></td>
+            <td><%= vol.event_list.personal_mail %></td>
+            <td><%= vol.event_list.personal_phone %></td>
+            <td>
+              <%= link_to employee_show_event_list_path(vol.event_list), class: 'pop_up', title: 'Detail' do %>
+                  <i class="big grey unhide icon"></i>
+              <% end %>
+              <%= link_to vol, method: :delete, data: { confirm: t(:are_you_sure_remove_participant) }, class: 'pop_up', title: t(:remove) do %>
+                  <i class="big red remove icon"></i>
+              <% end %>
+            </td>
+          </tr>
+      <% end %>
+      </tbody>
+    </table>
+<% else %>
+    <div class="ui icon message">
+      <i class="frown icon"></i>
+      <div class="content">
+        <div class="header">
+          <%= t :no_participant_header %>
+        </div>
+        <p><%= t :no_participant_body %></p>
+      </div>
+    </div>
+<% end %>

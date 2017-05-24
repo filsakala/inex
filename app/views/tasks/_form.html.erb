@@ -1,0 +1,62 @@
+<%= form_for(@task, html: { class: 'ui form' }) do |f| %>
+    <%= write_error(@task) %>
+
+    <div class="two fields">
+      <div class="twelve wide field">
+        <%= f.label :title do %>
+            <%= t :name_task %> <i class="small red asterisk icon"></i>
+        <% end %>
+        <%= f.text_field :title %>
+      </div>
+      <div class="four wide field">
+        <%= f.label :deadline, "Deadline" %>
+        <%= f.text_field :deadline, value: date_format(@task.deadline), class: 'datepick' %>
+      </div>
+    </div>
+
+    <div class="fields">
+      <% if current_user && current_user.is_employee? %>
+          <div class="ui toggle checkbox field">
+            <%= f.check_box :is_repeatable %>
+            <%= f.label :is_repeatable, t(:repeatable) %>
+          </div>
+      <% end %>
+
+      <div class="ui toggle checkbox field">
+        <%= f.check_box :is_highlighted %>
+        <%= f.label :is_highlighted, t(:highlighted) %>
+      </div>
+    </div>
+
+    <% if action_name == 'new' %>
+        <div class="field">
+          <%= label_tag 'Priradiť niekomu úlohu' %>
+          <%= select_tag :user_ids, options_from_collection_for_select(@members, "id", "nickname_or_name", params[:user_ids]), multiple: true, class: "ui dropdown" %>
+        </div>
+    <% end %>
+
+    <div class="field">
+      <%= f.label :description, t(:description) %>
+      <%= f.text_area :description %>
+    </div>
+
+    <fieldset id="fs">
+      <legend><h3>Body na splnenie</h3></legend>
+      <table class="ui compact table">
+        <thead>
+        <tr>
+          <th class="eight wide"><%= t :name_task %></th>
+          <th class="five wide"><%= t :state %></th>
+          <th class="three wide"><%= t :remove %></th>
+        </tr>
+        </thead>
+      </table>
+      <% @task.task_lists.new %>
+      <%= f.fields_for(:task_lists) do |builder| %>
+          <%= render 'task_list_fields', f: builder %>
+      <% end %>
+      <%= link_to_add_fields t(:add_item), f, :task_lists %>
+    </fieldset>
+
+    <%= f.submit t(:save), class: 'ui submit orange button' %>
+<% end %>

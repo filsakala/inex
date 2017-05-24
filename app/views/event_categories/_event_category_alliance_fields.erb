@@ -1,0 +1,15 @@
+<fieldset>
+  <legend>Alliance <%= t :alternatives %></legend>
+  <div class="fields">
+    <div class="twelve wide field">
+      <%= f.label :name do %>
+          <%= t :name_task %> <i class="small red asterisk icon"></i>
+      <% end %>
+      <%= f.text_field :name %>
+    </div>
+    <div class="ui four wide toggle checkbox field">
+      <%= f.check_box :_destroy %>
+      <%= f.label :_destroy, t(:remove) %>
+    </div>
+  </div>
+</fieldset>

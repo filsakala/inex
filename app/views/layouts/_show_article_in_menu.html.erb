@@ -1,0 +1,17 @@
+<% if !article.url.blank? %>
+    <%= link_to article.url, class: "link item", target: :blank, style: "justify-content: flex-start;" do %>
+        <i class="chevron right icon"></i><%= article.title %>
+        <% if current_user.try(:is_inex_member?) %>
+            <%= link_to edit_html_article_path(article) do %>
+                <i class="ui large yellow edit link icon"></i>
+            <% end %>
+            <%= link_to article, method: :delete, data: { confirm: t(:are_you_sure_remove_article_from_menu) } do %>
+                <i class="ui large red remove link icon"></i>
+            <% end %>
+        <% end %>
+    <% end %>
+<% else %>
+    <%= link_to article, class: "link item", style: "justify-content: flex-start;" do %>
+        <i class="chevron right icon"></i><%= article.title %>
+    <% end %>
+<% end %>

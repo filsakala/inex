@@ -1,0 +1,243 @@
+<div class="ui container">
+  <h1 class="ui header">
+    <i class="large icons">
+      <i class="suitcase icon"></i>
+      <i class="grey corner unhide icon"></i>
+    </i>
+    <div class="content">
+      <%= t :check_registration_of_bag %>
+      <div class="sub header">
+        <%= t :check_registration_of_bag_description %>
+      </div>
+    </div>
+  </h1>
+  <div class="ui divider"></div>
+
+  <div class="ui two top attached steps">
+    <%= link_to edit_event_list_path(@event_list), class: "pop_up completed step", title: t(:back_to_this_step) do %>
+        <i class="write icon"></i>
+        <div class="content">
+          <div class="title"><%= t :application %></div>
+        </div>
+    <% end %>
+    <%= link_to step_second_event_list_path(@event_list), class: "pop_up active step" do %>
+        <i class="unhide icon"></i>
+        <div class="content">
+          <div class="title"><%= t :check_and_confirmation %></div>
+        </div>
+    <% end %>
+  </div>
+  <!-- Application info -->
+  <% @event_list.event_types.each do |event_type| %>
+      <% if !event_type.application_info_html.blank? %>
+          <h3><%= t :information_about_application_for %> <%= event_type.title.try(:downcase) %></h3>
+          <%= event_type.application_info_html.html_safe %>
+      <% end %>
+  <% end %>
+  <% if @full_reg_events.any? %>
+      <table class="ui celled orange compact table">
+        <thead>
+        <tr class="center aligned">
+          <th class="four wide"><%= t :entry %></th>
+          <th class="twelve wide"><%= t :filled_value %></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td>Name</td>
+          <td><%= @event_list.name %></td>
+        </tr>
+        <tr>
+          <td>Surname</td>
+          <td><%= @event_list.surname %></td>
+        </tr>
+        <tr>
+          <td>Sex</td>
+          <td><%= @event_list.sex %></td>
+        </tr>
+        <tr>
+          <td>Birth date</td>
+          <td><%= date_format @event_list.birth_date %></td>
+        </tr>
+        <tr>
+          <td>Place of birth</td>
+          <td><%= @event_list.place_of_birth %></td>
+        </tr>
+        <tr>
+          <td>Nationality</td>
+          <td><%= @event_list.nationality %></td>
+        </tr>
+        <tr>
+          <td>Occupation</td>
+          <td><%= @event_list.occupation %></td>
+        </tr>
+        <tr>
+          <td>Educational Attainment</td>
+          <td><%= @event_list.education.try(:name_en) %></td>
+        </tr>
+        <tr>
+          <td>Addresses</td>
+          <td>
+            <div class="ui icon list">
+              <% @event_list.addresses.each do |address| %>
+                  <div class="item">
+                    <i class="home icon"></i>
+                    <div class="content">
+                      <%= address.title %>:
+                      <%= address.address %>, <%= address.postal_code %>
+                      <%= address.city %>, <%= address.country %>
+                      <i class="<%= Country.find_by_name(address.country).flag_code %> flag"></i>
+                    </div>
+                  </div>
+              <% end %>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>Personal mail</td>
+          <td><%= @event_list.personal_mail %></td>
+        </tr>
+        <tr>
+          <td>Personal phone</td>
+          <td><%= @event_list.personal_phone %></td>
+        </tr>
+        <tr>
+          <td>Emergency name</td>
+          <td><%= @event_list.emergency_name %></td>
+        </tr>
+        <tr>
+          <td>Emergency mail</td>
+          <td><%= @event_list.emergency_mail %></td>
+        </tr>
+        <tr>
+          <td>Emergency phone</td>
+          <td><%= @event_list.emergency_phone %></td>
+        </tr>
+        <tr>
+          <td>Language skills</td>
+          <td>
+            <div class="ui icon list">
+              <% @event_list.language_skills.each do |ls| %>
+                  <div class="item">
+                    <i class="comment icon"></i>
+                    <div class="content">
+                      <%= ls.language.name %> (<%= ls.level %>)
+                    </div>
+                  </div>
+              <% end %>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>Volunteer experiences and general skills</td>
+          <td style="word-break: break-all;"><%= @event_list.experiences %></td>
+        </tr>
+        <tr>
+          <td>Why do you wish to take part in a volunteer project?</td>
+          <td style="word-break: break-all;"><%= @event_list.why %></td>
+        </tr>
+        <tr>
+          <td>General remarks</td>
+          <td><%= @event_list.remarks %></td>
+        </tr>
+        <tr>
+          <td>Remarks on health</td>
+          <td><%= @event_list.on_health %></td>
+        </tr>
+        <tr>
+          <td>INEX member</td>
+          <td>
+            <% if params[:inex_member] %>
+                <i class="large green check icon"></i>
+            <% else %>
+                <i class="large red remove icon"></i>
+            <% end %>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+
+      <h4>Events - Ordered lists</h4>
+      <% @events_by_type.each do |event_type, events| %>
+          <h3><%= event_type.title %></h3>
+
+          <%= render 'event_list2', events: events %>
+      <% end %>
+
+      <%= form_tag do %>
+          <%= hidden_field_tag :inex_member, params[:inex_member] %>
+          <div class="actions">
+            <%= submit_tag 'Send application', class: 'ui green submit button' %>
+          </div>
+      <% end %>
+  <% elsif @simple_reg_events.any? %>
+      <table class="ui celled orange compact table">
+        <thead>
+        <tr class="center aligned">
+          <th class="four wide"><%= t :entry %></th>
+          <th class="twelve wide"><%= t :filled_value %></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td><%= t :name_contact %></td>
+          <td><%= @event_list.name %></td>
+        </tr>
+        <tr>
+          <td><%= t :surname %></td>
+          <td><%= @event_list.surname %></td>
+        </tr>
+        <tr>
+          <td>E-mail</td>
+          <td><%= @event_list.personal_mail %></td>
+        </tr>
+        <tr>
+          <td><%= t :phone %></td>
+          <td><%= @event_list.personal_phone %></td>
+        </tr>
+        <tr>
+          <td><%= t :notes %></td>
+          <td><%= @event_list.remarks %></td>
+        </tr>
+        <tr>
+          <td><%= t :notes_on_health %></td>
+          <td><%= @event_list.on_health %></td>
+        </tr>
+        <tr>
+          <td>INEX member</td>
+          <td>
+            <% if params[:inex_member] %>
+                <i class="large green check icon"></i>
+            <% else %>
+                <i class="large red remove icon"></i>
+            <% end %>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+
+      <h4>Events - Ordered lists</h4>
+      <% @events_by_type.each do |event_type, events| %>
+          <h3><%= event_type.title %></h3>
+
+          <%= render 'event_list2', events: events %>
+      <% end %>
+
+      <%= form_tag do %>
+          <%= hidden_field_tag :inex_member, params[:inex_member] %>
+          <div class="actions">
+            <%= submit_tag 'Send application', class: 'ui green submit button' %>
+          </div>
+      <% end %>
+  <% else %>
+      <div class="ui icon message">
+        <i class="frown icon"></i>
+        <div class="content">
+          <div class="header">
+            <%= t :bag_is_empty %>
+          </div>
+          <p><%= t :bag_is_empty_description %></p>
+        </div>
+      </div>
+  <% end %>
+</div>

@@ -1,0 +1,459 @@
+<h1 class="ui header">
+  <i class="announcement icon"></i>
+  <div class="content">
+    Event <%= @event.translated_title %>
+    <% if @event.is_published %>
+        <%= link_to t(:published), toggle_is_published_event_path(@event), method: :put, class: 'ui green circular label' %>
+    <% else %>
+        <%= link_to t(:unpublished), toggle_is_published_event_path(@event), method: :put, class: 'ui red circular label' %>
+    <% end %>
+    <%= link_to show_public_event_path(@event), target: :blank, class: 'ui circular label' do %>
+        <i class="large grey unhide link icon"></i> <%= t(:show_on_webpage) %>
+    <% end %>
+    <% if @event.is_cancelled %>
+        <div class="ui red circular label">
+          <%= t :cancelled %>
+        </div>
+    <% end %>
+    <div class="sub header">
+      <%= t :event_header %>
+    </div>
+  </div>
+</h1>
+
+<%= link_to "#{t :edit} event", edit_event_type_event_path(@event_type, @event), class: 'ui yellow button' %>
+
+<% if @event.errors.any? %>
+    <%= write_warning @event %>
+<% end %>
+
+<h2><%= t :settings %></h2>
+<div class="ui top attached tabular menu">
+  <a class="item active" data-tab="first">
+    <i class="configure icon"></i> <%= t :basic_info %>
+  </a>
+  <a class="item" data-tab="second">
+    <i class="road icon"></i> <%= t :place_and_transport %>
+  </a>
+  <a class="item" data-tab="third">
+    <i class="users icon"></i> <%= t :capacity %>
+  </a>
+  <a class="item" data-tab="fourth">
+    <i class="archive icon"></i> <%= t :applications %>
+  </a>
+  <a class="item" data-tab="fifth">
+    <i class="content icon"></i> <%= t :descriptions %>
+  </a>
+</div>
+<div class="ui bottom attached tab segment active" data-tab="first" style="overflow-x: scroll;">
+  <%= link_to t(:edit_this_data), edit_event_type_event_path(@event_type, @event), class: 'ui yellow button' %>
+  <table class="ui celled striped fluid table">
+    <tbody>
+    <tr>
+      <td class="three wide">
+        <i class="hash tag icon"></i> <%= t :code %>
+      </td>
+      <td class="thirteen wide">
+        <%= @event.code %>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <i class="home icon"></i> <%= t :organization %>
+      </td>
+      <td><%= @event.organization.try(:name) %></td>
+    </tr>
+    <tr>
+      <td>
+        <i class="calendar icon"></i> <%= t :from %>
+      </td>
+      <td>
+        <% if @event.is_only_date %>
+            <%= date_format @event.from %>
+        <% else %>
+            <%= datetime_format @event.from %>
+        <% end %>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <i class="calendar icon"></i> <%= t :to %>
+      </td>
+      <td>
+        <% if @event.is_only_date %>
+            <%= date_format @event.to %>
+        <% else %>
+            <%= datetime_format @event.to %>
+        <% end %>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <i class="browser icon"></i> <%= t :notes %>
+      </td>
+      <td>
+        <%= @event.notes %>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+<div class="ui bottom attached tab segment" data-tab="second" style="overflow-x: scroll;">
+  <%= link_to t(:edit_this_data), step_second_event_type_event_path(@event_type, @event), class: 'ui yellow button' %>
+  <table class="ui celled striped table">
+    <tbody>
+    <tr>
+      <td class="three wide">
+        <i class="building icon"></i> <%= t :address %>
+      </td>
+      <td class="thirteen wide">
+        <%= @event.address %>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <i class="marker icon"></i> <%= t :city %>
+      </td>
+      <td>
+        <%= @event.city %>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <i class="flag icon"></i> <%= t :country %>
+      </td>
+      <td>
+        <%= @event.country %>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <i class="plane icon"></i> <%= t :airport %>
+      </td>
+      <td>
+        <%= @event.airport %>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <i class="bus icon"></i><i class="train icon"></i> <%= t :bus_train_station %>
+      </td>
+      <td>
+        <%= @event.bus_train %>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <i class="pin icon"></i> GPS Latitude
+      </td>
+      <td>
+        <%= @event.gps_latitude %>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <i class="pin icon"></i> GPS Longitude
+      </td>
+      <td>
+        <%= @event.gps_longitude %>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+<div class="ui bottom attached tab segment" data-tab="third" style="overflow-x: scroll;">
+  <%= link_to t(:edit_this_data), step_third_event_type_event_path(@event_type, @event), class: 'ui yellow button' %>
+  <table class="ui celled striped table">
+    <tbody>
+    <tr>
+      <td class="three wide">
+        <i class="users icon"></i> <%= t :capacity_total %>
+      </td>
+      <td class="thirteen wide">
+        <%= @event.capacity_total %>
+      </td>
+    </tr>
+    <% if !@event.ignore_sex_for_capacity %>
+        <tr>
+          <td>
+            <i class="male icon"></i> <%= t :capacity_men %>
+          </td>
+          <td>
+            <%= @event.capacity_men %>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <i class="female icon"></i> <%= t :capacity_women %>
+          </td>
+          <td>
+            <%= @event.capacity_women %>
+          </td>
+        </tr>
+    <% end %>
+    <tr>
+      <td>
+        <i class="users icon"></i> <%= t :free_places_total %>
+      </td>
+      <td>
+        <%= @event.free_total %>
+      </td>
+    </tr>
+    <% if !@event.ignore_sex_for_capacity %>
+        <tr>
+          <td>
+            <i class="male icon"></i> <%= t :free_places_men %>
+          </td>
+          <td>
+            <%= @event.free_men %>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <i class="female icon"></i> <%= t :free_places_women %>
+          </td>
+          <td>
+            <%= @event.free_women %>
+          </td>
+        </tr>
+    <% else %>
+        <tr>
+          <td>
+            <i class="child icon"></i> Ignorovať kapacitu pre pohlavie
+          </td>
+          <td>
+            Áno
+          </td>
+        </tr>
+    <% end %>
+    <tr>
+      <td>
+        <i class="birthday icon"></i> <%= t :minimal_age %>
+      </td>
+      <td>
+        <%= @event.min_age %>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <i class="birthday icon"></i> <%= t :maximal_age %>
+      </td>
+      <td>
+        <%= @event.max_age %>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+<div class="ui bottom attached tab segment" data-tab="fourth" style="overflow-x: scroll;">
+  <%= link_to t(:edit_this_data), step_fourth_event_type_event_path(@event_type, @event), class: 'ui yellow button' %>
+  <table class="ui celled striped table">
+    <tbody>
+    <tr>
+      <td class="three wide">
+        <i class="calendar icon"></i> <%= t :application_deadline %>
+      </td>
+      <td class="thirteen wide">
+        <%= datetime_format @event.registration_deadline %>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <i class="write icon"></i> <%= t :create_member_registration %>
+      </td>
+      <td>
+        <%= @event.can_create_member_registration %>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <i class="at icon"></i> <%= t :feedback_url_for_leaders_trainers %>
+      </td>
+      <td>
+        <%= @event.evaluation_url_leader %>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <i class="calendar icon"></i> <%= t :feedback_opening_date_for_leaders_trainers %>
+      </td>
+      <td>
+        <%= datetime_format @event.evaluation_deadline_leader %>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <i class="at icon"></i> <%= t :feedback_url_for_local_partners %>
+      </td>
+      <td>
+        <%= @event.evaluation_url_local_partner %>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <i class="calendar icon"></i> <%= t :feedback_opening_date_for_local_partners %>
+      </td>
+      <td>
+        <%= datetime_format @event.evaluation_deadline_local_partner %>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <i class="at icon"></i> <%= t :feedback_url_for_volunteers %>
+      </td>
+      <td>
+        <%= @event.evaluation_url_volunteer %>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <i class="calendar icon"></i> <%= t :feedback_opening_date_for_volunteers %>
+      </td>
+      <td class="right aligned collapsing">
+        <%= datetime_format @event.evaluation_deadline_volunteer %>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <i class="users icon"></i> <%= t :trainers %>
+      </td>
+      <td>
+        <% @event.trainers.each do |trainer| %>
+            <%= trainer.user.name %> <%= trainer.user.surname %>
+            (<%= trainer.user.nickname %>)<br>
+        <% end %>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <i class="users icon"></i> <%= t :leaders %>
+      </td>
+      <td>
+        <% @event.leaders.each do |leader| %>
+            <%= leader.user.name %> <%= leader.user.surname %>
+            (<%= leader.user.nickname %>)<br>
+        <% end %>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <i class="users icon"></i> <%= t :local_partners %>
+      </td>
+      <td>
+        <% @event.local_partners.each do |local_partner| %>
+            <%= local_partner.user.try(:name_surname) %><br>
+        <% end %>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <i class="file outline icon"></i> <%= t :attachable_documents %>
+      </td>
+      <td>
+        <% @event.event_documents.each do |document| %>
+            <%= document.title %>
+            (<%= t :mandatory %>: <%= document.is_mandatory %>)<br>
+        <% end %>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+<div class="ui bottom attached tab segment" data-tab="fifth" style="overflow-x: scroll;">
+  <%= link_to t(:edit_this_data), step_fifth_event_type_event_path(@event_type, @event), class: 'ui yellow button' %>
+  <% print_params = {
+      'Introduction SK': :introduction_sk,
+      'Type of work SK': :type_of_work_sk,
+      'Study theme SK': :study_theme_sk,
+      'Accomodation SK': :accomodation_sk,
+      'Camp Advert SK': :camp_advert_sk,
+      'Required spoken language': :required_spoken_language,
+      'Language description SK': :language_description_sk,
+      'Requirements SK': :requirements_sk,
+      'Location SK': :location_sk,
+      'Additional camp notes SK': :additional_camp_notes_sk,
+      'Introduction EN': :introduction_en,
+      'Type of work EN': :type_of_work_en,
+      'Study theme EN': :study_theme_en,
+      'Accomodation EN': :accomodation_en,
+      'Camp Advert EN': :camp_advert_en,
+      'Language description EN': :language_description_en,
+      'Requirements EN': :requirements_en,
+      'Location EN': :location_en,
+      'Additional camp notes EN': :additional_camp_notes_en,
+      "#{t :fees_description} SK": :fees_sk,
+      "#{t :fees_description} EN": :fees_en,
+  } %>
+  <table class="ui celled striped table">
+    <tbody>
+    <% print_params.each do |title, param| %>
+        <tr>
+          <td class="three wide">
+            <i class="comment icon"></i> <%= title %>
+          </td>
+          <td class="thirteen wide">
+            <%= @event.send(param).to_s.gsub(/\n/, '<br>').try(:html_safe) %>
+          </td>
+        </tr>
+    <% end %>
+    <tr>
+      <td>
+        <i class="money icon"></i> <%= t :fees %>
+      </td>
+      <td>
+        <% @event.extra_fees.each do |fee| %>
+            <%= fee.name %>
+            <%= fee.amount %> <%= fee.currency %>
+            <br>
+        <% end %>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+<% if current_user.try(:is_employee?) %>
+    <h2 class="ui header">
+      <i class="announcement icon"></i>
+      <div class="content">
+        <%= t :registered_people %>
+        <div class="sub header">
+          <%= t :registered_people_header %>
+        </div>
+      </div>
+    </h2>
+    <div class="ui top attached tabular menu">
+      <a class="item active" data-tab="first2"><%= t :leaders %></a>
+      <a class="item" data-tab="second2"><%= t :trainers %></a>
+      <a class="item" data-tab="third2"><%= t :local_partners %></a>
+      <a class="item" data-tab="fourth2"><%= t :volunteers %></a>
+    </div>
+
+    <div class="ui bottom attached tab segment active" data-tab="first2">
+      <%= render 'non_volunteers', vols: @leaders %>
+    </div>
+    <div class="ui bottom attached tab segment" data-tab="second2">
+      <%= render 'non_volunteers', vols: @trainers %>
+    </div>
+    <div class="ui bottom attached tab segment" data-tab="third2">
+      <%= render 'non_volunteers', vols: @local_partners %>
+    </div>
+    <div class="ui bottom attached tab segment" data-tab="fourth2">
+      <h2>
+        <i class="file pdf outline icon"></i> Prezenčka
+      </h2>
+      <%= form_tag "#{event_type_event_path(@event_type, @event)}.pdf", method: :get, class: 'ui form' do %>
+          <div class="inline fields">
+            <div class="field">
+              <%= label_tag :plus_page do %>
+                  Strany navyše
+                  <i class="info circle icon pop_up" title="Bežne sa vygeneruje prezenčka s takým počtom strán, aby sa zmestili všetci prihlásení. Ak chceš prázdne strany navyše, zadaj ich počet tu."></i>
+              <% end %>
+              <%= number_field_tag :plus_page, 0, min: 0 %>
+            </div>
+            <%= submit_tag "Vytvor prezenčku", class: 'ui green button' %>
+          </div>
+      <% end %>
+      <%= render 'volunteers', vols: @volunteers %>
+    </div>
+<% end %>

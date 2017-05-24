@@ -1,0 +1,33 @@
+<%= form_tag "/homepage/web", method: 'get', remote: true, class: 'ui form map-search' do %>
+    <div class="field">
+      <%= label_tag :q, t(:search_in_names_codes_countries) %>
+      <%= text_field_tag :q %>
+    </div>
+    <div class="three fields">
+      <div class="field">
+        <label><%= t :age %></label>
+        <%= number_field_tag :age, current_user.try(:age), min: 0, max: 150 %>
+      </div>
+      <div class="field">
+        <label><%= t :from %></label>
+        <%= text_field_tag :from, nil, class: 'datepick', placeholder: t(:from_today) %>
+      </div>
+      <div class="field">
+        <label><%= t :to %></label>
+        <%= text_field_tag :to, nil, class: 'datepick', placeholder: t(:forever) %>
+      </div>
+    </div>
+    <div class="field">
+      <%= label_tag :types, t(:types) %>
+      <%= select_tag :types, options_from_collection_for_select(EventCategory.all, "id", "name"), multiple: true, include_blank: t(:any), class: "ui dropdown" %>
+    </div>
+    <div class="field">
+      <label><%= t :gender %></label>
+      <%= select_tag :sex, options_for_select({ "#{t :any}" => "N", "#{t :man}" => "M", "#{t :woman}" => "W" }, current_user.try(:sex)) %>
+    </div>
+    <div class="field">
+      <%= button_tag type: 'submit', class: "ui green submit icon button" do %>
+          <i class="refresh icon"></i> <%= t :refresh_map %>
+      <% end %>
+    </div>
+<% end %>

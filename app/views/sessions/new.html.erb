@@ -1,0 +1,32 @@
+<div class="ui segment container" style="border: 0px; box-shadow: none;">
+  <div class="ui two column middle aligned very relaxed stackable grid container" style="position: relative">
+    <div class="ui column">
+      <h1>Prihlásenie</h1>
+      <div class="ui form">
+        <%= form_tag sessions_path do %>
+            <div class="field">
+              <%= label_tag :login_mail %>
+              <div class="ui left icon input">
+                <%= email_field_tag :login_mail, params[:login_email], placeholder: "your@mail.sk" %>
+                <i class="user icon"></i>
+              </div>
+            </div>
+            <div class="field">
+              <%= label_tag :password %>
+              <div class="ui left icon input">
+                <%= password_field_tag :password %>
+                <i class="lock icon"></i>
+              </div>
+            </div>
+            <%= submit_tag "Prihlásiť sa", class: 'ui green button'%>
+            <%= link_to "Zabudol som heslo", forgotten_password_sessions_path %>
+        <% end %>
+      </div>
+    </div>
+    <div class="ui center aligned column">
+      <%= link_to colored_labeled_icon_button({ size: 'big', color: 'grey',
+                                                icon: 'signup', text: 'Registrácia'
+                                              }).html_safe, new_user_path %>
+    </div>
+  </div>
+</div>

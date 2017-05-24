@@ -1,0 +1,74 @@
+<h1 class="ui header">
+  <i class="money icon"></i>
+  <div class="content">
+    <%= t :payments %>
+    <div class="sub header">
+      <%= t :payments_header_description %>
+    </div>
+  </div>
+</h1>
+
+<%= link_to "Pridať platbu", new_participation_fee_path, class: 'ui green button' %>
+
+<div class="ui top attached menu">
+  <div class="ui pagination menu" style="border: none;">
+    <div class="item">Počet na stránku</div>
+    <%= link_to '10', participation_fees_path(page: params[:page], per_page: 10, query: params[:query]), class: 'item' %>
+    <%= link_to '25', participation_fees_path(page: params[:page], per_page: 25, query: params[:query]), class: 'item' %>
+    <%= link_to '100', participation_fees_path(page: params[:page], per_page: 100, query: params[:query]), class: 'item' %>
+  </div>
+  <div class="right menu">
+    <div class="ui right aligned category participation_fees search item" data-page="<%= params[:page] || 1 %>" data-per_page="<%= params[:per_page] || 10 %>">
+      <div class="ui transparent icon input">
+        <input class="prompt" type="text" placeholder="<%= t :search_dots %>" id="search-field" page="<%= params[:page] %>">
+        <i class="search link icon"></i>
+      </div>
+      <div class="results"></div>
+    </div>
+  </div>
+</div>
+<table class="ui attached compact orange selectable celled striped table">
+  <thead>
+  <tr>
+    <th><%= t :name_contact %></th>
+    <th><%= t :application_prihlaska %></th>
+    <th class="one wide"><%= t :amount %></th>
+    <th class="two wide"><%= t :payment_type %></th>
+    <th class="two wide">Dátum platby</th>
+    <th><%= t :notes %></th>
+    <th class="two wide"><%= t :actions %></th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <% @participation_fees.each do |participation_fee| %>
+      <tr>
+        <td><%= participation_fee.user.name_surname %>,
+          <%= participation_fee.user.both_mails %></td>
+        <td>
+          <% if participation_fee.event_list.try(:event_type) %>
+              <%= participation_fee.event_list.event_type.title %>
+          <% end %>
+        </td>
+        <td><%= participation_fee.amount %></td>
+        <td><%= participation_fee.pay_type %></td>
+        <td><%= date_format participation_fee.date %></td>
+        <td><%= participation_fee.notes %></td>
+        <td>
+          <%= link_to participation_fee, class: 'pop_up', title: 'Detail' do %>
+              <i class="large grey unhide link icon"></i>
+          <% end %>
+          <%= link_to edit_participation_fee_path(participation_fee), class: 'pop_up', title: t(:edit) do %>
+              <i class="large yellow write link icon"></i>
+          <% end %>
+          <%= link_to participation_fee, method: :delete, data: { confirm: t(:are_you_sure_remove_payment) }, class: 'pop_up', title: t(:remove) do %>
+              <i class="large red remove link icon"></i>
+          <% end %>
+        </td>
+      </tr>
+  <% end %>
+  </tbody>
+</table>
+<div class="ui compact attached segment" style="padding: 0px;">
+  <%= will_paginate(@participation_fees, :renderer => 'PaginationHelper::LinkRenderer') %>
+</div>

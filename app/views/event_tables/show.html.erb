@@ -1,0 +1,30 @@
+<h1 class="ui header">
+  <i class="list layout icon"></i>
+  <div class="content">
+    <%= t :tables_for_type %> <%= @event_type.title %>
+    <div class="sub header">
+      <%= t :tables_for_type_description %>
+    </div>
+  </div>
+</h1>
+
+<% if @event_tables.any? %>
+    <div class="ui top attached tabular menu">
+      <% @event_tables.each do |table| %>
+          <div class="<%= "active" if table == @event_table %> item"><%= link_to (table.name.blank? ? "Tab" : table.name), [@event_type, table] %></div>
+      <% end %>
+    </div>
+    <div class="ui bottom attached active tab segment">
+      <%= render 'table_content', table: @event_table %>
+    </div>
+<% else %>
+    <div class="ui icon message">
+      <i class="frown icon"></i>
+      <div class="content">
+        <div class="header">
+          <%= t :table_does_not_exist %>
+        </div>
+        <p><%= t :table_does_not_exist_description %></p>
+      </div>
+    </div>
+<% end %>

@@ -1,0 +1,37 @@
+<div class="ui attached container">
+  <div class="ui items">
+    <div class="ui item">
+      <div class="content">
+        <div class="header">
+          <h1><%= @blog_post.title %><%= render 'un_publish_post' %>
+          <% if current_user.try(:is_inex_member?) %>
+              <%= link_to edit_blog_post_path(@blog_post), class: 'pop_up', title: t(:edit) do %>
+                  <i class="ui yellow edit icon"></i>
+              <% end %>
+          <% end %>
+          </h1>
+        </div>
+
+        <div class="meta">
+          <%= datetime_format @blog_post.created_at %>
+          <% if @blog_post.created_at != @blog_post.updated_at %>
+              (<%= t(:updated).downcase %> <%= datetime_format @blog_post.updated_at %>
+              )
+          <% end %>
+          <% unless @blog_post.blog_post_category.blank? %>
+              <span class="ui sub header">
+                <%= link_to @blog_post.blog_post_category.try(:name), blog_posts_path(category: @blog_post.blog_post_category.try(:name)), class: "ui #{@blog_post.blog_post_category.color.try(:downcase)} label" %>
+              </span>
+          <% end %>
+        </div>
+        <div class="description">
+            <%= @blog_post.perex.try(:html_safe) %>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="ui divider"></div>
+  <div><%= @blog_post.text.html_safe %></div>
+
+  <%= render 'html_articles/show_recommendations' %>
+</div>

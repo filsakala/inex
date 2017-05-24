@@ -1,0 +1,154 @@
+<%= render 'edit_event_header' %>
+
+<%= render 'form_upper_panel' %>
+<div class="ui attached segment">
+  <%= form_for([@event_type, @event], html: { class: 'ui form' }) do |f| %>
+      <%= write_error(@event) %>
+      <%= hidden_field_tag :actual_step, 'fifth' %>
+
+
+      <fieldset>
+        <legend><h3><%= t :event_states %></h3></legend>
+        <div class="fields">
+          <div class="ui toggle checkbox field">
+            <%= f.check_box :is_published %>
+            <%= f.label :is_published, t(:event_is_published) %>
+          </div>
+          <div class="ui toggle checkbox field">
+            <%= f.check_box :is_cancelled %>
+            <%= f.label :is_cancelled, t(:event_is_cancelled) %>
+          </div>
+        </div>
+      </fieldset>
+      <div style="padding-bottom: 10px;"></div>
+      <fieldset>
+        <legend><h3><%= t :workcamp_types %></h3></legend>
+        <% EventCategory.all.order(:abbr).each do |ec| %>
+            <div class="ui four wide toggle checkbox field">
+              <%= label_tag "categories[]", ec.abbr %>
+              <%= check_box_tag "categories[]", ec.id, @event.event_categories.include?(ec) %>
+            </div>
+        <% end %>
+      </fieldset>
+      <div style="padding-bottom: 10px;"></div>
+      <fieldset>
+        <legend><h3><%= t :info_on_webpage %></h3></legend>
+        <div class="ui two column grid">
+          <div class="column">
+            <div class="field">
+              <%= f.label :introduction_sk %>
+              <%= f.text_area :introduction_sk %>
+            </div>
+            <div class="field">
+              <%= f.label :type_of_work_sk %>
+              <%= f.text_area :type_of_work_sk %>
+            </div>
+            <div class="field">
+              <%= f.label :study_theme_sk %>
+              <%= f.text_area :study_theme_sk %>
+            </div>
+            <div class="field">
+              <%= f.label :accomodation_sk %>
+              <%= f.text_area :accomodation_sk %>
+            </div>
+            <div class="field">
+              <%= f.label :camp_advert_sk %>
+              <%= f.text_area :camp_advert_sk %>
+            </div>
+            <div class="field">
+              <%= f.label :required_spoken_language %>
+              <%= f.select :required_spoken_language, Language.all.collect { |l| l.name }, include_blank: true %>
+            </div>
+            <div class="field">
+              <%= f.label :language_description_sk %>
+              <%= f.text_area :language_description_sk %>
+            </div>
+            <div class="field">
+              <%= f.label :requirements_sk %>
+              <%= f.text_area :requirements_sk %>
+            </div>
+            <div class="field">
+              <%= f.label :location_sk %>
+              <%= f.text_area :location_sk %>
+            </div>
+            <div class="field">
+              <%= f.label :additional_camp_notes_sk %>
+              <%= f.text_area :additional_camp_notes_sk %>
+            </div>
+          </div>
+          <div class="column">
+            <div class="field">
+              <%= f.label :introduction_en %>
+              <%= f.text_area :introduction_en %>
+            </div>
+            <div class="field">
+              <%= f.label :type_of_work_en %>
+              <%= f.text_area :type_of_work_en %>
+            </div>
+            <div class="field">
+              <%= f.label :study_theme_en %>
+              <%= f.text_area :study_theme_en %>
+            </div>
+            <div class="field">
+              <%= f.label :accomodation_en %>
+              <%= f.text_area :accomodation_en %>
+            </div>
+            <div class="field">
+              <%= f.label :camp_advert_en %>
+              <%= f.text_area :camp_advert_en %>
+            </div>
+            <div class="disabled field">
+              <%= label_tag "Required spoken language" %>
+              <%= select_tag :l_disabled %>
+            </div>
+            <div class="field">
+              <%= f.label :language_description_en %>
+              <%= f.text_area :language_description_en %>
+            </div>
+            <div class="field">
+              <%= f.label :requirements_en %>
+              <%= f.text_area :requirements_en %>
+            </div>
+            <div class="field">
+              <%= f.label :location_en %>
+              <%= f.text_area :location_en %>
+            </div>
+            <div class="field">
+              <%= f.label :additional_camp_notes_en %>
+              <%= f.text_area :additional_camp_notes_en %>
+            </div>
+          </div>
+        </div>
+        <div class="two fields">
+          <div class="field">
+            <%= f.label :fees_sk, class: 'pop_up', title: t(:fees_description_popup) do %>
+                <%= t :fees_description %> <i class="sk flag"></i>
+                <i class="ui large info circle icon"></i>
+            <% end %>
+            <%= f.text_area :fees_sk %>
+          </div>
+          <div class="field">
+            <%= f.label :fees_en, class: 'pop_up', title: t(:fees_description_popup) do %>
+                <%= t :fees_description %> <i class="gb flag"></i>
+                <i class="ui large info circle icon"></i>
+            <% end %>
+            <%= f.text_area :fees_en %>
+          </div>
+        </div>
+        <fieldset>
+          <legend><h3>Fees (Extra, Participation, ...)</h3></legend>
+          <% @event.extra_fees.new %>
+          <%= f.fields_for(:extra_fees) do |builder| %>
+              <%= render 'extra_fee_fields', f: builder %>
+          <% end %>
+          <%= link_to_add_fields t(:add), f, :extra_fees %>
+        </fieldset>
+      </fieldset>
+
+
+      <div class="actions">
+        <%= f.submit t(:save), class: 'ui green button' %>
+      </div>
+  <% end %>
+</div>
+<%= render 'form_lower_panel' %>

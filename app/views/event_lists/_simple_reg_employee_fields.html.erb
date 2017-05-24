@@ -1,0 +1,79 @@
+<%= form_for(@event_list, html: { class: 'ui form' }) do |f| %>
+    <%= f.hidden_field :form_type, value: 'simple' %>
+    <fieldset>
+      <div class="fields">
+        <div class="seven wide field">
+          <%= f.label :name do %>
+              Meno <i class="small red asterisk icon"></i>
+          <% end %>
+          <%= f.hidden_field :name, value: (@event_list.name || current_user.name) %>
+          <%= f.text_field :name, value: (@event_list.name || current_user.name), disabled: true %>
+        </div>
+        <div class="seven wide field">
+          <%= f.label :surname do %>
+              Priezvisko <i class="small red asterisk icon"></i>
+          <% end %>
+          <%= f.hidden_field :surname, value: (@event_list.surname || current_user.surname) %>
+          <%= f.text_field :surname, value: (@event_list.surname || current_user.surname), disabled: true %>
+        </div>
+      </div>
+      <div class="fields">
+        <div class="eight wide field">
+          <%= f.label :personal_mail do %>
+              E-mail <i class="small red asterisk icon"></i>
+          <% end %>
+          <%= f.email_field :personal_mail, value: (@event_list.personal_mail || current_user.personal_mail) %>
+        </div>
+        <div class="eight wide field">
+          <%= f.label :personal_phone do %>
+              Telefónne číslo (Formát: +421 905 501 078)
+              <i class="small red asterisk icon"></i>
+          <% end %>
+          <%= f.text_field :personal_phone, value: (@event_list.personal_phone || current_user.personal_phone) %>
+        </div>
+      </div>
+      <div class="two fields">
+        <div class="eight wide field">
+          <%= f.label :remarks, 'Poznámky' %>
+          <%= f.text_area :remarks %>
+        </div>
+        <div class="eight wide field">
+          <%= f.label :on_health, 'Poznámky ku zdraviu, ktoré by sme mali vedieť (strava a pod.)' %>
+          <%= f.text_area :on_health %>
+        </div>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>Zoznam udalostí</legend>
+
+      <% @events_by_type.each do |event_type, events| %>
+          <h3><%= event_type.title %></h3>
+
+          <%= render 'event_list2', events: events %>
+      <% end %>
+    </fieldset>
+
+    <div class="inline field">
+      <%= f.check_box :conditions_agreement %>
+      <label>Súhlasím so spracovaním osobných údajov (v rozsahu meno,
+        priezvisko,
+        kontaktný telefón, e-mailová adresa, a poznámky) organizáciou INEX Slovakia
+        na účely organizácie uvedených udalostí a tiež spracovanie štatistík.
+        Tieto údaje nebudú poskytnuté tretím stranám. Tento súhlas je možné
+        kedykoľvek písomne odvolať, a to priamo u organizátora udalostí.
+        <i class="small red asterisk icon"></i>
+      </label>
+    </div>
+    <% if @inex_member_events.any? %>
+        <div class="inline field">
+          <%= f.check_box :inex_member %>
+          <label>I want to be an INEX member
+            <i class="small red asterisk icon"></i>
+          </label>
+        </div>
+    <% end %>
+
+    <div class="actions">
+      <%= f.submit 'Registrovať', class: 'ui green submit button' %>
+    </div>
+<% end %>

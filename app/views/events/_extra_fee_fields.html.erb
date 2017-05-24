@@ -1,0 +1,22 @@
+<div class="fields">
+  <div class="six wide field">
+    <%= f.label :name, t(:name_task) %>
+    <%= f.text_field :name %>
+  </div>
+  <div class="two wide field">
+    <%= f.label :amount, t(:amount) %>
+    <%= f.number_field :amount, :step => 'any' %>
+  </div>
+  <div class="two wide field">
+    <%= f.label :currency, t(:currency) %>
+    <%= f.text_field :currency %>
+  </div>
+  <div class="ui toggle checkbox field">
+    <%= f.check_box :is_paid_to_inex %>
+    <%= f.label :is_paid_to_inex, t(:is_paid_to_inex) %>
+  </div>
+  <div class="ui toggle checkbox field">
+    <%= f.check_box :_destroy %>
+    <%= f.label :_destroy, t(:remove) %>
+  </div>
+</div>

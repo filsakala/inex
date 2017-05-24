@@ -1,0 +1,14 @@
+<h1 class="ui header">
+  <i class="large icons">
+    <i class="money icon"></i>
+    <i class="green corner plus icon"></i>
+  </i>
+  <div class="content">
+    <%= t :payment_for %> <%= @user.name_with_mail %>
+    <div class="sub header">
+      <%= t :payment_for_description %>
+    </div>
+  </div>
+</h1>
+
+<%= render 'form' %>

@@ -1,0 +1,64 @@
+<div class="ui stackable basic menu buttons">
+  <% if action_name != 'organizations' && action_name != 'index' && controller_name != 'contacts' %>
+      <%= link_to "#{t(:add)} #{t(:contact)}", new_contact_path, class: 'ui basic green button' %>
+      <%= link_to t(:choose_contacts), add_contact_list_path(@contact_list), class: 'ui basic green button' %>
+      <%= link_to "#{t(:edit)} #{t(:address_book)}", edit_contact_list_path(@contact_list), class: 'ui yellow basic button' %>
+  <% end %>
+  <% if action_name == 'index' || controller_name == 'contacts' %>
+      <%= link_to "#{t(:add)} #{t(:contact)}", new_contact_path, class: 'ui green basic button' %>
+  <% end %>
+  <button class="pop_up_on_click copy_button ui grey basic button" data-clipboard-text="<%= @mails %>" title="<%= t :copied_to_clipboard %>">
+    <%= t :copy_mails %>
+  </button>
+  <% if action_name != 'organizations' && action_name != 'index' && controller_name != 'contacts' %>
+      <%= link_to "#{t(:remove)} #{t(:address_book)}", @contact_list, method: :delete, data: { confirm: t(:are_you_sure_contact_list) }, class: 'ui red basic button' %>
+  <% end %>
+</div>
+
+<table class="ui compact green selectable celled striped table datatable">
+  <thead>
+  <tr>
+    <th class="three wide"><%=  t :name %></th>
+    <th class="three wide"><%=  t :surname %></th>
+    <th class="two wide"><i class="users icon"></i> <%= t :organization %></th>
+    <th class="two wide"><i class="home icon"></i> <%= t :department %></th>
+    <th class="three wide"><i class="mail icon"></i> Mail</th>
+    <th class="three wide"><i class="phone icon"></i> <%= t :phone %></th>
+    <th class="three wide"><%= t :actions %></th>
+  </tr>
+  </thead>
+  <tbody>
+  <% @contacts.each do |contact| %>
+      <tr>
+        <td><%= contact.name %></td>
+        <td><%= contact.surname %></td>
+        <td><%= contact.organization.try(:name) if contact.organization %></td>
+        <td><%= contact.dept %></td>
+        <td><a href="mailto:<%= contact.mail %>"><%= contact.mail %></a>
+        </td>
+        <td><%= contact.phone %></td>
+        <td>
+          <%= link_to contact do %>
+              <i class="ui large unhide link icon pop_up" title="Detail"></i>
+          <% end %>
+          <%= link_to edit_contact_path(contact) do %>
+              <i class="ui large yellow edit link icon pop_up" title="<%= t :edit %>"></i>
+          <% end %>
+          <% if action_name != 'organizations' && action_name != 'index' && controller_name != 'contacts' %>
+              <%= link_to remove_contact_contact_list_path(contact, @contact_list),
+                          method: :delete,
+                          data: { confirm: t(:are_you_sure_contact_from_contact_list) } do %>
+                  <i class="ui large red remove link icon pop_up" title="<%= t :remove_from_address_book %>"></i>
+              <% end %>
+          <% end %>
+          <% if action_name == 'index' || controller_name == 'contacts' %>
+              <%= link_to contact, method: :delete,
+                          data: { confirm: t(:are_you_sure_contact) } do %>
+                  <i class="ui large red remove link icon pop_up" title="<%= t :remove_contact %>"></i>
+              <% end %>
+          <% end %>
+        </td>
+      </tr>
+  <% end %>
+  </tbody>
+</table>

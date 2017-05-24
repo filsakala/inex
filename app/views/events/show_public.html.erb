@@ -1,0 +1,62 @@
+<div class="ui container">
+  <h1 class="ui header">
+    <i class="plane icon"></i>
+    <div class="content">
+      <%= @event.translated_title %>
+      <% if @my_bag && @event.can_be_added_to_bag(current_user) %>
+          <% unless @my_bag.events.include?(@event) %>
+              <%= link_to add_event_event_event_list_path(@event, @my_bag), method: :post,
+                          data: { confirm: t(:are_you_sure_add_event_to_my_bag) },
+                          class: 'pop_up', title: t(:add_event_to_my_bag) do %>
+                  <i class="icons">
+                    <i class="suitcase bag icon"></i>
+                    <i class="green corner add icon"></i>
+                  </i>
+              <% end %>
+          <% else %>
+              <%= link_to remove_event_event_event_list_path(@event, @my_bag), method: :delete,
+                          data: { confirm: t(:are_you_sure_remove_event_from_my_bag) },
+                          class: 'pop_up', title: t(:remove_event_from_my_bag) do %>
+                  <i class="icons">
+                    <i class="suitcase bag icon"></i>
+                    <i class="red corner minus icon"></i>
+                  </i>
+              <% end %>
+          <% end %>
+      <% else %>
+          <i class="icons pop_up" title="<%= t(:event_cannot_be_added_to_my_bag) %>">
+            <i class="suitcase bag icon"></i>
+            <i class="red corner ban icon"></i>
+          </i>
+      <% end %>
+      <% if current_user && current_user.is_inex_member? %>
+          <%= link_to edit_event_type_event_path(@event.event_type, @event), class: 'pop_up', title: "#{t :edit} event" do %>
+              <i class="yellow edit link icon"></i>
+          <% end %>
+      <% end %>
+      <% if current_user && current_user.is_inex_member? %>
+          <% if @event.is_published %>
+              <%= link_to t(:published), toggle_is_published_event_path(@event), method: :put, class: 'ui green circular label' %>
+          <% else %>
+              <%= link_to t(:unpublished), toggle_is_published_event_path(@event), method: :put, class: 'ui red circular label' %>
+          <% end %>
+      <% end %>
+      <% if @event.is_cancelled %>
+          <div class="ui red circular label">
+            <%= t :cancelled %>
+          </div>
+      <% end %>
+    </div>
+  </h1>
+
+  <div class="ui two column grid">
+    <div class="computer large monitor only eleven wide column">
+      <%= render 'event_show_public_part' %>
+    </div>
+    <div class="mobile tablet only sixteen wide column">
+      <%= render 'event_show_public_part' %>
+    </div>
+  </div>
+
+
+</div>

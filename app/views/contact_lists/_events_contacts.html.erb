@@ -1,0 +1,31 @@
+<button class="pop_up_on_click copy_button ui grey basic button" data-clipboard-text="<%= prepare_mails_for_copy(users) %>" title="<%= t :copied_to_clipboard %>">
+  <%= t :copy_mails %>
+</button>
+<%= t :copy_mails_primary %>
+
+<table class="ui compact green selectable celled striped table datatable">
+  <thead>
+  <tr>
+    <th><%= t :name_contact %></th>
+    <th><i class="mail icon"></i> <%= t :login_mail %></th>
+    <th><i class="mail icon"></i> <%= t :personal_mail %></th>
+    <th><i class="phone icon"></i> <%= t :phone %></th>
+    <th><%= t :other_contacts %></th>
+  </tr>
+  </thead>
+  <tbody>
+  <% users.each do |user| %>
+      <tr>
+        <td><%= user.name_surname %></td>
+        <td>
+          <a href="mailto:<%= user.login_mail %>"><%= user.login_mail %></a>
+        </td>
+        <td>
+          <a href="mailto:<%= user.personal_mail %>"><%= user.personal_mail %></a>
+        </td>
+        <td><%= user.personal_phone %></td>
+        <td><%= user.other_contacts %></td>
+      </tr>
+  <% end %>
+  </tbody>
+</table>

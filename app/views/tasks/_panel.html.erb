@@ -1,0 +1,28 @@
+<div class="ui middle aligned selection divided list">
+  <%= link_to tasks_path, class: "#{active_class(["tasks"], ["index"])} item" do %>
+      <i class="user icon"></i>
+      <div class="content">
+        <div class="header">
+          <%= "#{t(:my)} #{t(:tasks).downcase}" %>
+        </div>
+      </div>
+  <% end %>
+  <% if current_user.try(:is_employee?) %>
+      <%= link_to index_others_tasks_path, class: "#{active_class(["tasks"], ["index_others"])} item" do %>
+          <i class="users icon"></i>
+          <div class="content">
+            <div class="header">
+              <%= "#{t(:others_assigned_tasks)}" %>
+            </div>
+          </div>
+      <% end %>
+      <%= link_to repeatable_tasks_path, class: "#{active_class(["tasks"], ["repeatable"])} item" do %>
+          <i class="refresh icon"></i>
+          <div class="content">
+            <div class="header">
+              <%= "#{t(:repeatable)} #{t(:tasks).downcase}" %>
+            </div>
+          </div>
+      <% end %>
+  <% end %>
+</div>

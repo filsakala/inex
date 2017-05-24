@@ -1,0 +1,33 @@
+<% if (@recommender && @recommender.recommendation_results.any?) || current_user.try(:is_inex_member?) %>
+    <h3 class="ui horizontal divider header">
+      Mohlo by ťa tiež zaujímať
+      <%= link_to edit_recommender_path(@recommender) do %>
+          <i class="settings link icon pop_up" title="Nastavenie doporučených článkov"></i>
+      <% end if @recommender %>
+    </h3>
+<% end %>
+<% if @recommender && @recommender.recommendation_results.any? %>
+    <div class="ui four stackable special cards">
+      <% @recommender.recommendation_results.each do |recommended| %>
+          <div class="card">
+            <div class="blurring dimmable image">
+              <div class="ui dimmer">
+                <div class="content">
+                  <%= link_to recommended.url, target: '_blank' do %>
+                      <i class="ui huge unhide link icon"></i>
+                  <% end %>
+                </div>
+              </div>
+              <% if recommended.thumbnail_url.blank? %>
+                  <%= image_tag "no-image-box.png", class: "ui image" %>
+              <% else %>
+                  <%= image_tag recommended.thumbnail_url, class: "ui image" %>
+              <% end %>
+            </div>
+            <div class="content">
+              <%= link_to recommended.title, recommended.url, target: '_blank', class: 'header' %>
+            </div>
+          </div>
+      <% end %>
+    </div>
+<% end %>

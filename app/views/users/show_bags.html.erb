@@ -1,0 +1,107 @@
+<h2 class="ui header">
+  <i class="circular checked calendar icon"></i>
+  <div class="content">
+    <%= t :my_applications %>
+    <div class="sub header"><%= t :my_bags_header %></div>
+  </div>
+</h2>
+
+<div class="ui yellow icon message">
+  <i class="warning sign icon"></i>
+  <%= t :information_about_fees_header_warning %>
+</div>
+
+<% if @my_bags.any? %>
+    <table class="ui compact celled orange table">
+      <thead>
+      <tr class="center aligned">
+        <th><%= t :type %></th>
+        <th class="three wide"><%= t :created_at %></th>
+        <th class="two wide"><%= t :event_count %></th>
+        <th class="two wide"><%= t :state %></th>
+        <th class="two wide"><%= t :payments %></th>
+        <th class="two wide"><%= t :actions %></th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <% @my_bags.each do |event_list| %>
+          <tr>
+            <td>
+              <% if event_list.is_child %>
+                  <i class="big black child icon pop_up" title="<%= event_list.name %> <%= event_list.surname %>"></i>
+                  <%# EventList je skopriovany od rodica a tym padom bude mat prave 1 typ %>
+                  <%= event_list.events.try(:first).try(:event_type).try(:title) %>
+              <% else %>
+                  <%= (!event_list.event_type.blank? && event_list.state != 'opened') ? event_list.event_type.title : nil %>
+              <% end %>
+            </td>
+            <td><%= datetime_format event_list.created_at %></td>
+            <td><%= event_list.events.count %></td>
+            <td>
+              <div class="ui yellow circular label"><%= event_list.state %></div>
+            </td>
+            <td>
+              <% event_list.participation_fees.each do |participation_fee| %>
+                  <i class="big icons pop_up" title="<%= t :amount %>: <%= participation_fee.amount %>€">
+                    <i class="black money icon"></i>
+                    <i class="grey corner unhide icon"></i>
+                  </i>
+              <% end %>
+              <% if event_list.is_paid?(@user) %>
+                  <i class="big green check icon pop_up" title="<%= t :paid %>"></i>
+              <% else %>
+                  <i class="big red warning sign icon pop_up" title="<%= t :to_pay %>: <%= event_list.to_pay(@user) %>"></i>
+              <% end %>
+              <%= link_to payment_info_event_list_path(event_list), class: 'pop_up', title: t(:information_about_fees) do %>
+                  <i class="big info circle icon"></i>
+              <% end %>
+            </td>
+            <td>
+              <% if !event_list.event_type || event_list.event_type.title != 'Prihlášky za člena' %>
+                  <%= link_to event_list, class: 'pop_up', title: 'Detail' do %>
+                      <i class="big grey unhide link icon"></i>
+                  <% end %>
+                  <% if event_list.state == 'reopened' %>
+                      <%= link_to edit_event_list_path(event_list), class: 'pop_up', title: t(:edit) do %>
+                          <i class="big yellow write link icon"></i>
+                      <% end %>
+                  <% end %>
+                  <% if !event_list.is_child %>
+                      <% if event_list.state != 'opened' && event_list.state != 'reopened' && event_list.state != 'storno' %>
+                          <%= link_to create_registration_child_event_list_path(event_list), method: :post,
+                                      data: { confirm: t(:are_you_sure_register_child) },
+                                      class: 'pop_up', title: t(:register_child) do %>
+                              <i class="big icons">
+                                <i class="black child link icon"></i>
+                                <i class="green corner suitcase icon"></i>
+                              </i>
+                          <% end %>
+                      <% end %>
+                  <% else %>
+                      <% if event_list.state == 'opened' || event_list.state == 'reopened' %>
+                          <%= link_to register_child_event_list_path(event_list), class: 'pop_up', title: t(:edit_data) do %>
+                              <i class="big yellow edit icon"></i>
+                          <% end %>
+                      <% end %>
+                      <% if event_list.state == 'opened' %>
+                          <%= link_to event_list, method: :delete, data: { confirm: t(:are_you_sure_remove_bag_child) }, class: 'pop_up', title: t(:remove_bag_child) do %>
+                              <i class="big red remove icon"></i>
+                          <% end %>
+                      <% end %>
+                  <% end %>
+              <% end %>
+            </td>
+          </tr>
+      <% end %>
+      </tbody>
+    </table>
+<% else %>
+    <div class="ui icon message">
+      <i class="frown icon"></i>
+      <div class="content">
+        <div class="header"><%= t :no_bag_header %></div>
+        <p><%= t :no_bag_body %></p>
+      </div>
+    </div>
+<% end %>

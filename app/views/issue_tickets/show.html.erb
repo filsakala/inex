@@ -1,0 +1,30 @@
+<h1 class="ui header">
+  <i class="warning icon"></i>
+  <div class="content">
+    Detail problému
+    <div class="sub header">
+      Zadal: <%= @issue_ticket.user.try(:nickname_or_name) %>,
+      <% if @issue_ticket.priority == 1 %>
+          Priorita:<span class="ui red label">Vysoká</span>
+      <% elsif @issue_ticket.priority == 2 %>
+          Priorita:<span class="ui yellow label">Stredná</span>
+      <% else %>
+          Priorita:<span class="ui green label">Nízka</span>
+      <% end %>
+    </div>
+  </div>
+
+</h1>
+
+<%= link_to 'Upraviť', edit_issue_ticket_path(@issue_ticket), class: 'ui yellow button' %>
+
+
+<h2>Popis problému:</h2>
+<p>
+  <%= @issue_ticket.description.gsub(/\n/, '<br>').try(:html_safe) %>
+</p>
+
+<% unless @issue_ticket.image.blank? %>
+    <h2>Obrázok</h2>
+    <%= image_tag @issue_ticket.image.url, class: 'ui image' %>
+<% end %>

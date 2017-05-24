@@ -1,0 +1,23 @@
+<%= render 'contact_lists/header' %>
+
+<div class="ui padded stackable grid">
+  <div class="ui two column row">
+    <div class="four wide column">
+      <%= render 'contact_lists/panel' %>
+    </div>
+    <div class="twelve wide column">
+      <h2 class="ui header">
+        <i class="book icon"></i>
+        <div class="content">
+          <%= t :all_contacts %>
+          <div class="sub header">
+            <%= @contacts.count %> <%= t :contacts_count %>
+          </div>
+        </div>
+      </h2>
+
+      <%= render 'contact_lists/detail' %>
+    </div>
+  </div>
+</div>
+

@@ -1,0 +1,21 @@
+<%= render 'header' %>
+
+<div class="ui padded stackable grid">
+  <div class="ui two column row">
+    <div class="four wide column">
+      <%= render 'panel' %>
+    </div>
+    <div class="twelve wide column">
+      <h2 class="ui header">
+        <i class="book icon"></i>
+        <div class="content">
+          <%= @contact_list.title %>
+          <div class="sub header">
+            <%= @contact_list.contacts.count %> <%= t :contacts %>
+          </div>
+        </div>
+      </h2>
+      <%= render 'detail' %>
+    </div>
+  </div>
+</div>

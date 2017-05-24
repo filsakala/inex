@@ -1,0 +1,61 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  accomodation_en: MyString
+  accomodation_sk: MyString
+  additional_camp_notes_en: MyString
+  additional_camp_notes_sk: MyString
+  address: MyString
+  airport: MyString
+  bus_train: MyString
+  camp_advert_en: MyString
+  camp_advert_sk: MyString
+  can_create_member_registration: false
+  can_send_registration_mail: false
+  capacity_men: 1
+  capacity_women: 1
+  capacity_total: 1
+  city: MyString
+  code: MyString
+  code_alliance: MyString
+  country: MyString
+  evaluation_deadline_leader: 2016-06-12 21:18:44
+  evaluation_deadline_local_partner: 2016-06-12 21:18:44
+  evaluation_deadline_volunteer: 2016-06-12 21:18:44
+  evaluation_url_leader: MyString
+  evaluation_url_local_partner: MyString
+  evaluation_url_volunteer: MyString
+  fees_en: MyString
+  fees_sk: MyString
+  free_men: 1
+  free_women: 1
+  free_total: 1
+  from: 2016-06-12 21:18:44
+  to: 2016-06-12 21:18:44
+  gps_latitude: MyString
+  gps_longitude: MyString
+  introduction_en: MyString
+  introduction_sk: MyString
+  is_cancelled: false
+  is_only_date: false
+  is_published: true
+  is_simple_Registration: false
+  language_description_en: MyString
+  language_description_sk: MyString
+  location_en: MyString
+  location_sk: MyString
+  max_age: MyString
+  min_age: MyString
+  notes: MyString
+  registration_deadline: 2018-06-12 21:18:44
+  required_spoken_language: MyString
+  requirements_en: MyString
+  requirements_sk: MyString
+  study_theme_en: MyString
+  study_theme_sk: MyString
+  title: MyString
+  type_of_work_en: MyString
+  type_of_work_sk: MyString
+
+two:
+  title: MyString

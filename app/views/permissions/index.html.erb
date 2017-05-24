@@ -1,0 +1,72 @@
+<h1 class="ui header">
+  <i class="shield icon"></i>
+  <div class="content">
+    Užívateľské práva
+    <div class="sub header">
+      Na tejto stránke vieš nastaviť prístup skupín užívateľov na stránke.
+    </div>
+  </div>
+</h1>
+
+<div class="ui message">
+  <div class="content">
+    <div class="header">
+      Hlavné pravidlá prideľovania práv:
+    </div>
+    <ol start="0">
+      <li>Ak nevieš, o čo ide, nešahaj do toho :) Môžeš vážnym spôsobom pokaziť fungovanie stránky.</li>
+      <li>Employee môže všetko (netreba definovať).</li>
+      <li>Každá rola môže všetko, čo rola pod ňou (platí: employee > eds > user
+        > nologin) a niečo navyše. Netreba teda definovať úplne všetko pre úplne
+        všetkých.
+      </li>
+      <li>Ak rola samotná a ani role pod ňou nemajú definované práva pre danú
+        akciu, prístup je automaticky zamietnutý.
+      </li>
+    </ol>
+  </div>
+</div>
+
+<div id="descrText"></div>
+
+<table class="ui compact green selectable celled striped table">
+  <thead>
+  <tr>
+    <th>Akcia</th>
+    <th class="three wide">Employee</th>
+    <th class="three wide">EDS</th>
+    <th class="three wide">Prihlásený užívateľ (user)</th>
+    <th class="three wide">Neprihlásený užívateľ (nologin)</th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <% @actions.each do |pair| %>
+      <tr controller="<%= pair[:controller] %>" action="<%= pair[:action] %>">
+        <td><%= pair[:controller] %>/<%= pair[:action] %></td>
+        <td><i class="green checkmark icon"></i></td>
+        <td>
+          <% if Permission.can?(pair[:controller], pair[:action], User.new(role: "eds")) %>
+              <i class="green checkmark link icon permissionToggler" role="eds"></i>
+          <% else %>
+              <i class="red remove link icon permissionToggler" role="eds"></i>
+          <% end %>
+        </td>
+        <td>
+          <% if Permission.can?(pair[:controller], pair[:action], User.new()) %>
+              <i class="green checkmark link icon permissionToggler" role="user"></i>
+          <% else %>
+              <i class="red remove link icon permissionToggler" role="user"></i>
+          <% end %>
+        </td>
+        <td>
+          <% if Permission.can?(pair[:controller], pair[:action], nil) %>
+              <i class="green checkmark link icon permissionToggler" role="nologin"></i>
+          <% else %>
+              <i class="red remove link icon permissionToggler" role="nologin"></i>
+          <% end %>
+        </td>
+      </tr>
+  <% end %>
+  </tbody>
+</table>

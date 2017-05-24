@@ -1,0 +1,2 @@
+module HomepagePartnersHelper
+end

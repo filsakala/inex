@@ -1,0 +1,31 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Listing Homepage Cards</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Url</th>
+      <th>Priority</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @homepage_cards.each do |homepage_card| %>
+      <tr>
+        <td><%= homepage_card.title %></td>
+        <td><%= homepage_card.url %></td>
+        <td><%= homepage_card.priority %></td>
+        <td><%= link_to 'Show', homepage_card %></td>
+        <td><%= link_to 'Edit', edit_homepage_card_path(homepage_card) %></td>
+        <td><%= link_to 'Destroy', homepage_card, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Homepage card', new_homepage_card_path %>

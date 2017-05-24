@@ -1,0 +1,60 @@
+<%= link_to t(:add_address_book), new_contact_list_path, class: 'ui fluid basic green button' %>
+<div class="ui middle aligned selection divided list">
+  <% @contact_lists.each do |contact_list| %>
+      <%= link_to contact_list, class: "#{active_class(["contact_lists"], ["show", "edit", "add"], contact_list.id)} item" do %>
+          <div class="right floated content">
+            <div class="ui green circular label pop_up" title="<%= t :contact_count %>">
+              <%= contact_list.contacts.count %>
+            </div>
+          </div>
+          <i class="green folder icon pop_up" title="<%= t :your_address_book %>"></i>
+          <div class="content">
+            <div class="header">
+              <%= contact_list.title %>
+            </div>
+          </div>
+      <% end %>
+  <% end %>
+  <% @contact_lists_others.each do |contact_list| %>
+      <%= link_to contact_list, class: "#{active_class(["contact_lists"], ["show", "edit", "add"], contact_list.id)} item" do %>
+          <div class="right floated content">
+            <div class="ui green circular label pop_up" title="<%= t :contact_count %>">
+              <%= contact_list.contacts.count %>
+            </div>
+          </div>
+          <i class="folder icon pop_up" title="<%= contact_list.employee.try(:user).try(:name) %>"></i>
+          <div class="content">
+            <div class="header">
+              <%= contact_list.title %>
+            </div>
+          </div>
+      <% end %>
+  <% end %>
+  <%= link_to organizations_contact_lists_path, class: "#{active_class([], ["organizations"])} item" do %>
+      <div class="right floated content">
+        <div class="ui green circular label pop_up" title="<%= t :contact_count %>">
+          <%= @organization_contact_count %>
+        </div>
+      </div>
+      <i class="yellow folder icon pop_up" title="<%= t :generated_address_book %>"></i>
+      <div class="content"><div class="header"><%= t :partner_organizations %></div></div>
+  <% end %>
+  <%= link_to events_contact_lists_path, class: "#{active_class([], ["events", "events_second", "events_third"])} item" do %>
+      <div class="right floated content">
+        <div class="ui green circular label pop_up" title="<%= t :contact_count %>">
+          ?
+        </div>
+      </div>
+      <i class="yellow folder icon pop_up" title="<%= t :generated_address_book %>"></i>
+      <div class="content"><div class="header"><%= t :events %></div></div>
+  <% end %>
+  <%= link_to contacts_path, class: "#{active_class(["contact_lists"], ["index"])} #{active_class(["contacts"])} item" do %>
+      <div class="right floated content">
+        <div class="ui green circular label pop_up" title="<%= t :contact_count %>">
+          <%= Contact.all.count %>
+        </div>
+      </div>
+      <i class="yellow folder icon pop_up" title="<%= t :generated_address_book %>"></i>
+      <div class="content"><div class="header"><%= t :all_contacts %></div></div>
+  <% end %>
+</div>

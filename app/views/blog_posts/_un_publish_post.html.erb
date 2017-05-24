@@ -1,0 +1,11 @@
+<% if current_user && current_user.is_inex_member? && !request.url.include?("mercury_frame=true") %>
+    <% if !@blog_post.is_published %>
+        <%= link_to toggle_is_published_blog_post_path(@blog_post), method: :put, class: 'right floated pop_up', title: t(:unpublished_publish), data: { confirm: t(:are_you_sure_publish_article) } do %>
+            <i class="red hide link icon"></i>
+        <% end %>
+    <% else %>
+        <%= link_to toggle_is_published_blog_post_path(@blog_post), method: :put, class: 'right floated pop_up', title: t(:published_unpublish), data: { confirm: t(:are_you_sure_unpublish_article) } do %>
+            <i class="grey unhide link icon"></i>
+        <% end %>
+    <% end %>
+<% end %>

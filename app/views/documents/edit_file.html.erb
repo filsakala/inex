@@ -1,0 +1,95 @@
+<h1 class="ui header">
+  <i class="circular file outline icon"></i>
+  <div class="content">
+    <%= t :edit %> Google Drive <%= t(:file).downcase %> <%= @file.name %>
+    <div class="sub header">
+      <%= t :document_edit_header %>
+    </div>
+  </div>
+</h1>
+
+<%= form_tag({ controller: :documents, action: :update_file }, method: :put, class: 'ui form') do %>
+    <%= hidden_field_tag :file_id, @file.id %>
+    <div class="field">
+      <%= label_tag :name, t(:name_task) %>
+      <%= text_field_tag :name, @file.name %>
+    </div>
+    <% if @file.mime_type == "application/vnd.google-apps.spreadsheet" %>
+        <h1 class="ui header">
+          <i class="table icon"></i>
+          <div class="content">
+            <%= t :edit_table %>
+            <div class="sub header">
+              <%= t :edit_table_header %>
+            </div>
+          </div>
+        </h1>
+
+        <div class="ui yellow message">
+          <div class="header">
+            <i class="large announcement icon"></i>
+            <%= t :edit_table_announcement_header %>
+          </div>
+          <div class="content">
+            <%= t :edit_table_announcement_body_1 %>
+            <%= link_to @file.web_view_link, class: 'ui button', target: :blank do %>
+                <i class="google link icon"></i> <%= t :view %>
+            <% end %>
+            <%= t :edit_table_announcement_body_2 %>
+          </div>
+        </div>
+
+        <% if !@csv.blank? %>
+            <div class="ui container" style="overflow-x: scroll;">
+              <table class="ui green compact celled table">
+                <tbody>
+                <tr>
+                  <td></td>
+                  <% @csv.first.each_index do |i| %>
+                      <td style="min-width: 100px;">
+                        <div class="ui fluid green label"><%= i %></div>
+                      </td>
+                  <% end %>
+                </tr>
+                <% @csv.each_with_index do |row, ri| %>
+                    <tr>
+                      <td class="ui fluid green label"><%= ri %></td>
+                      <% row.each_with_index do |cell, ci| %>
+                          <td>
+                            <div class="two fields">
+                              <div class="fourteen wide field">
+                                <%= text_field_tag "csv[#{ri}][#{ci}]", cell ? cell.force_encoding("UTF-8") : ""  %>
+                              </div>
+                              <div class="two wide field ">
+                                <%= link_to edit_stats_documents_path(file_id: @file.id, row: ri, col: ci),
+                                            data: { confirm: t(:are_you_sure_edit_stats) } do %>
+                                    <i class="large black wizard link icon"></i>
+                                <% end %>
+                              </div>
+                            </div>
+                          </td>
+                      <% end %>
+                    </tr>
+                <% end %>
+                </tbody>
+              </table>
+            </div>
+        <% end %>
+    <% elsif @file.mime_type == "application/vnd.google-apps.document" %>
+        <h1 class="ui header">
+          <i class="file icon"></i>
+          <div class="content">
+            <%= t :edit %> <%= t :document %>
+          </div>
+        </h1>
+
+        <div class="ui container" style="overflow-x: scroll;">
+          <%= @html.html_safe %>
+        </div>
+    <% else %>
+        <%= t :unknown_mime_type %>: "<%= @file.mime_type %>".
+    <% end %>
+    <div class="actions">
+      <%= submit_tag t(:save), class: "ui green button" %>
+    </div>
+<% end %>

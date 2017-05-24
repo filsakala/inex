@@ -1,0 +1,142 @@
+<h1 class="ui header">
+  <i class="large icons">
+    <i class="suitcase icon"></i>
+    <i class="grey corner unhide icon"></i>
+  </i>
+  <div class="content">
+    <%= t :applications_for_type %> <%= @event_type.title %>
+    <div class="sub header">
+      <%= t(:applications_for_type_header) %>
+    </div>
+  </div>
+</h1>
+
+<div class="ui accordion">
+  <div class="title">
+    <i class="dropdown icon"></i>
+    <%= t :info_for_states %>
+  </div>
+  <div class="content">
+    <%= image_tag "event_list_states.svg", class: 'ui image' %>
+  </div>
+</div>
+<div class="ui top attached menu">
+  <div class="ui pagination menu" style="border: none;">
+    <div class="item">Počet na stránku</div>
+    <%= link_to '10', bags_event_type_path(@event_type, page: params[:page], per_page: 10, query: params[:query]), class: 'item' %>
+    <%= link_to '25', bags_event_type_path(@event_type, page: params[:page], per_page: 25, query: params[:query]), class: 'item' %>
+    <%= link_to '100', bags_event_type_path(@event_type, page: params[:page], per_page: 100, query: params[:query]), class: 'item' %>
+  </div>
+  <div class="right menu">
+    <div class="ui right aligned category bags search item" data-id="<%= @event_type.id %>" data-page="<%= params[:page] || 1 %>" data-per_page="<%= params[:per_page] || 10 %>">
+      <div class="ui transparent icon input">
+        <input class="prompt" type="text" placeholder="<%= t :search_dots %>" id="search-field" page="<%= params[:page] %>">
+        <i class="search link icon"></i>
+      </div>
+      <div class="results"></div>
+    </div>
+  </div>
+</div>
+<table class="ui attached compact green selectable celled striped table">
+  <thead>
+  <tr class="center aligned">
+    <th class="four wide"><%= t :author %></th>
+    <th class="three wide"><%= t :created_at %></th>
+    <th class="one wide"><%= t :event_count %></th>
+    <th class="three wide"><%= t :state %></th>
+    <th class="two wide"><%= t :payments %></th>
+    <th class="three wide"><%= t :actions %></th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <% @bags.each do |event_list| %>
+      <tr>
+        <td>
+          <%= event_list.user.name %> <%= event_list.user.surname %>
+          <% if event_list.is_child %>
+              <i class="big black child icon pop_up" title="<%= t :child %> <%= event_list.name %> <%= event_list.surname %>"></i>
+          <% end %>
+          <% if event_list.user.je_clen_a_platil? %>
+              <%= image_tag "inex_logo.svg", size: '20x20', class: 'pop_up', title: "#{t :inex_member} #{Date.today.year}" %>
+          <% end %>
+        </td>
+        <td><%= datetime_format event_list.updated_at %></td>
+        <td><%= event_list.events.count %></td>
+        <td>
+          <span class="ui orange label"><%= event_list.state %></span>
+          <% if event_list.state == "submitted" || event_list.state == "pending"%>
+              <%= link_to reopen_event_list_path(event_list), method: :put, data: { confirm: "#{t :are_you_sure_change_state} reopened?" }, class: 'pop_up', title: "#{t :set} Reopened" do %>
+                  <i class="large icons">
+                    <i class="black suitcase link icon"></i>
+                    <i class="green corner refresh icon"></i>
+                  </i>
+              <% end %>
+          <% end %>
+          <% if event_list.state == "submitted" || event_list.state == "closed" || event_list.state == "storno" %>
+              <%= link_to pending_event_list_path(event_list), method: :put, data: { confirm: "#{t :are_you_sure_change_state} pending?" }, class: 'pop_up', title: "#{t :set} Pending" do %>
+                  <i class="large icons">
+                    <i class="black suitcase link icon"></i>
+                    <i class="yellow corner write icon"></i>
+                  </i>
+              <% end %>
+          <% end %>
+          <% if event_list.state == "submitted" || event_list.state == "pending" %>
+              <%= link_to close_event_list_path(event_list), method: :put, data: { confirm: "#{t :are_you_sure_change_state} closed?" }, class: 'pop_up', title: "#{t :set} Closed" do %>
+                  <i class="large icons">
+                    <i class="black suitcase link icon"></i>
+                    <i class="red corner delete icon"></i>
+                  </i>
+              <% end %>
+          <% end %>
+          <% if event_list.state != "storno" %>
+              <%= link_to storno_event_list_path(event_list), method: :put, data: { confirm: "#{t :are_you_sure_change_state} storno?" }, class: 'pop_up', title: "#{t :set} Storno" do %>
+                  <i class="large icons">
+                    <i class="black suitcase link icon"></i>
+                    <i class="red delete icon"></i>
+                  </i>
+              <% end %>
+          <% end %>
+        </td>
+        <td>
+          <% if event_list.participation_fees.any? %>
+              <% event_list.participation_fees.each do |participation_fee| %>
+                  <%= link_to participation_fee_path(participation_fee), class: 'pop_up', target: "_blank", title: "#{participation_fee.amount}€ - #{t :click_for_detail}" do %>
+                      <i class="large icons">
+                        <i class="black money icon"></i>
+                        <i class="grey corner unhide icon"></i>
+                      </i>
+                  <% end %>
+              <% end %>
+          <% end %>
+        </td>
+        <td>
+          <%= link_to employee_show_event_list_path(event_list), class: 'pop_up', title: 'Detail' do %>
+              <i class="large grey unhide link icon"></i>
+          <% end %>
+          <%= link_to employee_edit_event_list_path(event_list), class: 'pop_up', title: t(:edit) do %>
+              <i class="large yellow corner write icon"></i>
+          <% end %>
+          <%= link_to participation_fees_path, class: 'pop_up', title: t(:view_payments) do %>
+              <i class="large money link icon"></i>
+          <% end %>
+          <%= link_to state_event_list_path(event_list), class: 'pop_up', title: t(:results_of_this_application) do %>
+              <i class="large icons">
+                <i class="suitcase icon"></i>
+                <i class="red corner question mark icon"></i>
+              </i>
+          <% end %>
+          <%= link_to employee_show_event_list_path(event_list) + ".pdf", class: 'pop_up', title: 'PDF', download: "#{event_list.surname.downcase}_#{event_list.name.downcase}_#{event_list.id}" do %>
+              <i class="large file pdf outline link icon"></i>
+          <% end %>
+          <%= link_to employee_show_event_list_path(event_list) + ".pdf", class: 'pop_up', title: 'PDF' do %>
+              <i class="large file pdf outline link icon"></i>
+          <% end %>
+        </td>
+      </tr>
+  <% end %>
+  </tbody>
+</table>
+<div class="ui compact attached segment" style="padding: 0px;">
+  <%= will_paginate(@bags, :renderer => 'PaginationHelper::LinkRenderer') %>
+</div>

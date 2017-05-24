@@ -1,0 +1,92 @@
+<h1 class="ui header">
+  <i class="circular file outline icon"></i>
+  <div class="content">
+    <%= t :documents %>
+    <div class="sub header">
+      <%= t :documents_header %>
+    </div>
+  </div>
+</h1>
+<div class="ui buttons">
+  <div class="ui right dropdown item green button">
+    <i class="ui plus icon"></i>
+    <%= t :new_file %>
+    <i class="dropdown icon"></i>
+    <div class="menu">
+      <!--<%# link_to new_file_documents_path(type: "doc"), method: :put, class: "item" do %>-->
+          <!--<i class="ui large file icon"></i>-->
+          <!--<%# t :document %>-->
+      <!--<%# end %>-->
+      <%= link_to new_file_documents_path(type: "tab"), method: :put, class: "item" do %>
+          <i class="large table icon"></i>
+          <%= t :table %>
+      <% end %>
+    </div>
+  </div>
+  <%= link_to google_signout_documents_path, class: "ui red button",
+              method: :delete,
+              data: { confirm: t(:are_you_sure_logout_google) } do %>
+      <i class="ui sign out icon"></i>
+      <%= t :logout_google %>
+  <% end %>
+</div>
+
+<div class="ui yellow message closable">
+  <i class="close icon"></i>
+  <div class="header">
+    <i class="large announcement icon"></i>
+    <%= t :document_announcement_header %>
+  </div>
+  <div class="content">
+    <%= t :document_announcement_body %>
+  </div>
+</div>
+
+<% if @drive_files.any? %>
+    <div class="ui divided animated list">
+      <% @drive_files.each do |file| %>
+          <div class="item">
+            <div class="right floated content">
+              <div class="ui buttons">
+                <%= link_to file.web_view_link, class: 'ui button', target: :blank do %>
+                    <i class="google link icon"></i> <%= t :view %>
+                <% end %>
+                <%= link_to edit_file_documents_path(file_id: file.id), class: 'ui button' do %>
+                    <i class="yellow edit link icon"></i> <%= t :edit %>
+                <% end %>
+                <%= link_to duplicate_file_documents_path(file_id: file.id), method: :put,
+                            data: { confirm: t(:are_you_sure_document_duplicate) },
+                            class: 'ui button' do %>
+                    <i class="copy link icon"></i> <%= t :duplicate %>
+                <% end %>
+                <%= link_to delete_file_documents_path(file_id: file.id), method: :delete,
+                            data: { confirm: t(:are_you_sure_document_remove) },
+                            class: 'ui button' do %>
+                    <i class="red remove link icon"></i> <%= t :remove %>
+                <% end %>
+              </div>
+            </div>
+            <% if file.mime_type == "application/vnd.google-apps.spreadsheet" %>
+                <i class="table icon"></i>
+            <% elsif file.mime_type == "application/vnd.google-apps.document" %>
+                <i class="file icon"></i>
+            <% else %>
+                <i class="help circle outline icon"></i>
+            <% end %>
+            <div class="content">
+              <div class="header"><%= file.name %></div>
+            </div>
+          </div>
+      <% end %>
+    </div>
+<% else %>
+    <div class="ui icon message">
+      <i class="frown icon"></i>
+      <div class="content">
+        <div class="header">
+          <%= t :document_does_not_exist %>
+        </div>
+        <p><%= t :document_does_not_exist_sub %></p>
+      </div>
+    </div>
+<% end %>

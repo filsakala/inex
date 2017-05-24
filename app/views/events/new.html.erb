@@ -1,0 +1,74 @@
+<h1 class="ui header">
+  <i class="edit icon"></i>
+  <div class="content">
+    <%= t :add_event_of_type %> <%= @event_type.title %>
+    <div class="sub header">
+      <%= t :add_event_header %>
+    </div>
+  </div>
+</h1>
+
+<div class="ui five top attached steps">
+  <div class="active step">
+    <i class="configure icon"></i>
+    <div class="content">
+      <div class="title"><%= t :basic_info %></div>
+      <div class="description"><%= t :basic_info_description %></div>
+    </div>
+  </div>
+  <div class="disabled step">
+    <i class="road icon"></i>
+    <div class="content">
+      <div class="title"><%= t :place_and_transport %></div>
+    </div>
+  </div>
+  <div class="disabled step">
+    <i class="users icon"></i>
+    <div class="content">
+      <div class="title"><%= t :capacity %></div>
+    </div>
+  </div>
+  <div class="disabled step">
+    <i class="archive icon"></i>
+    <div class="content">
+      <div class="title"><%= t :applications %></div>
+    </div>
+  </div>
+  <div class="disabled step">
+    <i class="archive icon"></i>
+    <div class="content">
+      <div class="title"><%= t :descriptions %></div>
+    </div>
+  </div>
+</div>
+<div class="ui attached segment">
+  <%= render 'form' %>
+</div>
+<div class="ui five bottom attached ordered steps">
+  <div class="active step">
+    <div class="content">
+      <div class="title"><%= t :basic_info %></div>
+      <div class="description"><%= t :basic_info_description %></div>
+    </div>
+  </div>
+  <div class="disabled step">
+    <div class="content">
+      <div class="title"><%= t :place_and_transport %></div>
+    </div>
+  </div>
+  <div class="disabled step">
+    <div class="content">
+      <div class="title"><%= t :capacity %></div>
+    </div>
+  </div>
+  <div class="disabled step">
+    <div class="content">
+      <div class="title"><%= t :applications %></div>
+    </div>
+  </div>
+  <div class="disabled step">
+    <div class="content">
+      <div class="title"><%= t :descriptions %></div>
+    </div>
+  </div>
+</div>

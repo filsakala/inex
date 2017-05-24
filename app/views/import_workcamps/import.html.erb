@@ -1,0 +1,16 @@
+<div class="container">
+  <h1>Results</h1>
+  <%= link_to "Back to Import", import_workcamps_path, class: 'ui button' %><br>
+
+  <% if !@results.blank? %>
+      <div>
+        <% @results.each do |r| %>
+            <button class="pop_up_on_click copy_button ui grey basic button" data-clipboard-text="<%= r %>" title="<%= t :copied_to_clipboard %>">
+              Copy this result
+            </button>
+            <br>
+            <%# r %>
+        <% end %>
+      </div>
+  <% end %>
+</div>

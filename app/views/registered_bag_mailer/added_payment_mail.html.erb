@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta content='text/html; charset=UTF-8' http-equiv='Content-Type'/>
+</head>
+<body>
+<h1>Detail platby:</h1>
+<p>
+  <b>Meno:</b> <%= @user.name_surname %><br>
+  <b>Suma:</b> <%= @payment.amount %><br>
+  <b>Typ platby:</b> <%= @payment.pay_type %><br>
+  <b>Zaplatené:</b> <%= @payment.date.strftime('%d.%m.%Y') if !@payment.date.blank?%><br>
+  <b>Typ eventov:</b> <%= @event_type.try(:title) %><br>
+  <b>Poznámky:</b> <%= @payment.notes %>
+</p>
+
+<h3>Ďalšie odkazy:</h3>
+<p>
+  <b>Detail platby:</b> <%= link_to "detail", @payment_url %><br>
+  <% if @event_list_url %>
+      <b>Detail prihlášky:</b> <%= link_to "detail", @event_list_url %><br>
+  <% end %>
+  <b>Detail užívateľa:</b> <%= link_to "detail", @user_url %>
+</p>
+<p>Tvoj INEX systém</p>
+</body>
+</html>

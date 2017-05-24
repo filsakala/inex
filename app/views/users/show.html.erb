@@ -1,0 +1,127 @@
+<h2 class="ui header">
+  <i class="circular user icon"></i>
+  <div class="content">
+    <%= t(:welcome) %> <%= @user.nickname %>
+    <div class="sub header">
+      <%= t :user_header %>
+    </div>
+  </div>
+</h2>
+
+<%= link_to edit_user_path(@user), class: 'ui yellow button' do %>
+    <i class="write icon"></i> <%= t :edit_my_data %>
+<% end %>
+
+<div class="ui fluid card">
+  <div class="ui styled fluid accordion">
+    <div class="active title">
+      <i class="large dropdown icon"></i>
+      <i class="large user icon"></i>
+      <%= t :my_address_card %>
+    </div>
+    <div class="active content">
+      <div class="ui items">
+        <div class="item">
+          <div class="content">
+            <a class="header">
+              <%= @user.name %> <%= @user.surname %>
+              <%= "(#{@user.nickname})" if !@user.nickname.blank? %>
+            </a>
+            <div class="meta">
+              <%= @user.login_mail %><%= ", #{@user.personal_mail}" if !@user.personal_mail.blank? %><%= ", #{@user.personal_phone}" if !@user.personal_phone.blank? %>
+            </div>
+            <div class="description">
+              <div class="ui list">
+                <% if !@user.birth_date.blank? %>
+                    <div class="item"><strong><%= t :date_of_birth %>:</strong>
+                      <%= date_format @user.birth_date %>
+                    </div>
+                <% end %>
+                <% if !@user.place_of_birth.blank? %>
+                    <div class="item"><strong><%= t :place_of_birth %>:</strong>
+                      <%= @user.place_of_birth %>
+                    </div>
+                <% end %>
+                <% if !@user.nationality.blank? %>
+                    <div class="item"><strong><%= t :nationality %>:</strong>
+                      <%= @user.nationality %>
+                    </div>
+                <% end %>
+                <% if !@user.occupation.blank? %>
+                    <div class="item"><strong><%= t :occupation %>:</strong>
+                      <%= @user.occupation %>
+                    </div>
+                <% end %>
+                <% if !@user.education.try(:name_sk).blank? %>
+                    <div class="item"><strong><%= t :ended_education %>:</strong>
+                      <%= @user.education.try(:name_sk) %>
+                    </div>
+                <% end %>
+                <% if !@user.other_contacts.blank? %>
+                    <div class="item"><strong><%= t :other_contacts %>:</strong>
+                      <%= @user.other_contacts %>
+                    </div>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="ui styled fluid accordion">
+    <div class="active title">
+      <i class="large dropdown icon"></i>
+      <i class="large home icon"></i>
+      <%= t :addresses %>
+      <div class="ui right floated">
+        <div class="ui buttons">
+          <div class="pop_up ui green circular label" title="<%= t :number_of_addresses %>">
+            <%= @addresses.count %>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="content">
+      <div class="description">
+        <% if @addresses.any? %>
+            <% @addresses.each do |address| %>
+                <h5 class="header"><%= t :address %> <%= address.title %></h5>
+                <table class="ui unstackable celled table">
+                  <tbody>
+                  <tr>
+                    <td class="four wide"><strong><%= t :address %>:</strong></td>
+                    <td><%= address.address %></td>
+                  </tr>
+                  <tr>
+                    <td><strong><%= t :postal_code %>:</strong></td>
+                    <td><%= address.postal_code %></td>
+                  </tr>
+                  <tr>
+                    <td><strong><%= t :city %>:</strong></td>
+                    <td><%= address.city %></td>
+                  </tr>
+                  <tr>
+                    <td><strong><%= t :country %>:</strong></td>
+                    <td>
+                      <i class="<%= Country.flag_by_name(address.country) %> flag"></i><%= address.country %>
+                    </td>
+                  </tr>
+                  </tbody>
+                </table>
+            <% end %>
+        <% else %>
+            <div class="ui icon message">
+              <i class="remove icon"></i>
+              <div class="content">
+                <div class="header">
+                  <%= t :no_addresses_header %>
+                </div>
+                <p><%= t :no_addresses_body %></p>
+              </div>
+            </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

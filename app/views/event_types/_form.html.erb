@@ -1,0 +1,91 @@
+<%= form_for(@event_type, html: { class: 'ui form' }) do |f| %>
+    <%= write_error(@event_type) %>
+
+    <div class="field">
+      <%= f.label :title do %>
+          <%= t :name_task %> <i class="small red asterisk icon"></i>
+      <% end %>
+      <%= f.text_field :title %>
+    </div>
+    <div class="field">
+      <%= f.label t(:supertype) %>
+      <%= f.select :super_event_type_id, options_from_collection_for_select(@supertypes, "id", "name", @event_type.super_event_type_id), include_blank: true, class: "ui dropdown" %>
+    </div>
+
+    <div class="two fields">
+      <div class="field">
+        <%= f.label :employee_id, class: 'pop_up', title: t(:responsible_employee_speech) do %>
+            <%= t(:responsible_employee) %>
+            <i class="large info circle icon"></i>
+        <% end %>
+        <%= f.select :employee_id, options_from_collection_for_select(@employees, "id", "nickname_or_name", (params[:employee_id] || @event_type.employee_id)), include_blank: true, class: "ui dropdown" %>
+      </div>
+      <div class="ui toggle checkbox field">
+        <%= f.check_box :can_send_registration_mail %><br>
+        <%= f.label :can_send_registration_mail, t(:send_mail_to_employee) %>
+      </div>
+    </div>
+
+    <fieldset>
+      <legend><%= t :fees_for_event_type %></legend>
+      <div class="two fields">
+        <div class="field">
+          <%= f.label :fee_member_first, t(:first_with_membership) %>
+          <%= f.number_field :fee_member_first, step: 0.01 %>
+        </div>
+        <div class="field">
+          <%= f.label :fee_member_other, t(:other_with_membership) %>
+          <%= f.number_field :fee_member_other, step: 0.01 %>
+        </div>
+      </div>
+      <div class="two fields">
+        <div class="field">
+          <%= f.label :fee_non_member_first, t(:first_without_membership) %>
+          <%= f.number_field :fee_non_member_first, step: 0.01 %>
+        </div>
+        <div class="field">
+          <%= f.label :fee_non_member_other, t(:other_without_membership) %>
+          <%= f.number_field :fee_non_member_other, step: 0.01 %>
+        </div>
+      </div>
+      <div class="field">
+        <%= f.label :fee_description, class: 'pop_up', title: t(:fee_description_speech) do %>
+            <%= t(:fee_description) %> <i class="large info circle icon"></i>
+        <% end %>
+        <%= f.text_area :fee_description %>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Detaily prihlášok</legend>
+      <div class="field">
+        <%= f.label :application_info_html, class: 'pop_up', title: t(:application_info_description) do %>
+            <%= t :application_info %> <i class="large info circle icon"></i>
+        <% end %>
+        <%= f.text_area :application_info_html, class: "tinymce" %>
+      </div>
+      <div class="field">
+        <%= f.label :application_conditions_html, class: 'pop_up', title: t(:application_conditions_description) do %>
+            <%= t :application_conditions %>
+            <i class="large info circle icon"></i>
+        <% end %>
+        <%= f.text_area :application_conditions_html, class: "tinymce" %>
+      </div>
+      <div class="field">
+        <%= f.label :application_conditions_agreement_html, class: 'pop_up', title: t(:application_conditions_agreement_description) do %>
+            <%= t :application_conditions_agreement %>
+            <i class="large info circle icon"></i>
+        <% end %>
+        <% if @event_type.id %>
+            <p class="ui message">
+              Ak chceš nakopírovať do "Súhlasím
+              s <%= link_to "podmienkami\"", application_conditions_event_type_path(@event_type), target: :blank %>
+               aj link na podmienky, copy+pastni tento riadok :)
+            </p>
+        <% end %>
+        <%= f.text_area :application_conditions_agreement_html, class: "tinymce" %>
+      </div>
+    </fieldset>
+
+    <%= f.submit t(:save), class: 'ui green submit button' %>
+<% end %>

@@ -1,0 +1,17 @@
+<%= form_for(@recommender) do |f| %>
+  <% if @recommender.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@recommender.errors.count, "error") %> prohibited this recommender from being saved:</h2>
+
+      <ul>
+      <% @recommender.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

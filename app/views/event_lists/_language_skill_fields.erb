@@ -1,0 +1,18 @@
+<div class="fields">
+  <div class="eight wide field">
+    <%= f.label :language_id do %>
+        Language <i class="small red asterisk icon"></i>
+    <% end %>
+    <%= f.select :language_id, Language.all.map{|l| [l.name, l.id]}, include_blank: true %>
+  </div>
+  <div class="five wide field">
+    <%= f.label :level do %>
+        Level <i class="small red asterisk icon"></i>
+    <% end %>
+    <%= f.select :level, ["Mother tongue", "Very good", 'Good', 'Basic'] %>
+  </div>
+  <div class="ui toggle checkbox three wide inline field">
+    <%= f.check_box :_destroy %>
+    <%= f.label :_destroy %>
+  </div>
+</div>

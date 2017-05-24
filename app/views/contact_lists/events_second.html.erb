@@ -1,0 +1,34 @@
+<%= render 'header' %>
+
+<div class="ui padded stackable grid">
+  <div class="ui two column row">
+    <div class="four wide column">
+      <%= render 'panel' %>
+    </div>
+    <div class="twelve wide column">
+      <h2 class="ui header">
+        <i class="book icon"></i>
+        <div class="content">
+          Events
+          <div class="sub header">
+            <%= t :contacts_event_header %>
+          </div>
+        </div>
+      </h2>
+
+      <h4><%= t :contacts_event_chosen_years %>: <%= @years.blank? ? t(:all) : @years.sort.join(', ') %></h4>
+      <%= form_tag('events_third', { class: 'ui form' }) do |f| %>
+          <%= hidden_field_tag :years, @years %>
+
+          <div class="field">
+            <%= label_tag t(:contacts_event_choose_events) %>
+            <%= select_tag :events, options_from_collection_for_select(@events, 'id', 'title'), multiple: true, include_blank: true, class: 'ui dropdown' %>
+          </div>
+
+          <div class="actions">
+            <%= submit_tag t(:contacts_event_next_step), class: 'ui green button' %>
+          </div>
+      <% end %>
+    </div>
+  </div>
+</div>

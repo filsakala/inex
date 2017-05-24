@@ -1,0 +1,56 @@
+<%= form_for(@contact, html: { class: 'ui form' }) do |f| %>
+    <%= write_error(@contact) %>
+
+    <div class="ui three fields">
+      <div class="field">
+        <%= f.label :name do %>
+            <%= t :name_contact %> <i class="small red asterisk icon"></i>
+        <% end %>
+        <%= f.text_field :name %>
+      </div>
+      <div class="field">
+        <%= f.label :surname do %>
+            <%= t :surname %> <i class="small red asterisk icon"></i>
+        <% end %>
+        <%= f.text_field :surname %>
+      </div>
+      <div class="field">
+        <%= f.label :nickname, t(:nickname) %>
+        <%= f.text_field :nickname %>
+      </div>
+    </div>
+
+    <div class="field">
+      <%= label_tag t(:address_books) %>
+      <%= select_tag :contact_list_ids, options_from_collection_for_select(ContactList.all, "id", "title", (params[:contact_list_ids] || @my_contact_lists)), multiple: true, class: "ui dropdown" %>
+    </div>
+
+    <div class="ui two fields">
+      <div class="field">
+        <%= f.label :mail, "Mail" %>
+        <%= f.email_field :mail %>
+      </div>
+      <div class="field">
+        <%= f.label :phone, t(:phone) %>
+        <%= f.text_field :phone %>
+      </div>
+      <div class="field">
+        <%= f.label :dept, t(:department) %>
+        <%= f.text_field :dept %>
+      </div>
+    </div>
+
+    <div class="ui two fields">
+      <div class="field">
+        <%= f.label :other_contacts, t(:other_contacts) %>
+        <%= f.text_area :other_contacts %>
+      </div>
+      <div class="field">
+        <%= f.label :notes, t(:notes) %>
+        <%= f.text_area :notes %>
+      </div>
+    </div>
+    <div class="actions">
+      <%= f.submit t(:save), class: 'ui green submit button' %>
+    </div>
+<% end %>

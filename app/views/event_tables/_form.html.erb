@@ -1,0 +1,48 @@
+<%= form_for([@event_type, @event_table], html: { class: 'ui form' }) do |f| %>
+    <% write_error(@event_table) %>
+
+    <div class="field">
+      <%= f.label :name, t(:name_task) %>
+      <%= f.text_field :name %>
+    </div>
+    <div class="field">
+      <%= f.label :event_type_id, t(:event_type) %>
+      <%= f.select :event_type_id, options_for_select(EventType.all.map { |p| [p.title, p.id] }, @event_type.id) %>
+    </div>
+
+    <fieldset>
+      <legend><h3><%= t :columns %></h3></legend>
+
+      <table class="ui compact table">
+        <thead>
+        <tr>
+          <th class="eight wide"><%= t :name_task %></th>
+          <th class="eight wide"><%= t :type %></th>
+        </tr>
+        </thead>
+      </table>
+      <% @headers.each do |header| %>
+          <div class="two fields">
+            <div class="field">
+              <%= text_field_tag "#{header.id}[]", header.name %>
+            </div>
+            <div class="field">
+              <%= select_tag "#{header.id}[]", options_for_select(
+                  { 'text': 'string', "#{t(:date)}": 'date', "#{t(:yes_no)}": 'boolean',
+                    # 'Užívatelia - Meno': 'user.name', 'Užívatelia - Priezvisko': 'user.surname',
+                    # 'Užívatelia - Mail': 'user.mail', 'Užívatelia - Priezvisko Meno': 'user.surname_name',
+                    # 'Užívatelia - Meno Priezvisko': 'user.name_surname'
+                  }, header.ctype) %>
+            </div>
+          </div>
+      <% end %>
+      <%= f.fields_for(:event_table_columns) do |builder| %>
+          <%= render 'event_table_column_fields', f: builder %>
+      <% end %>
+      <%= link_to_add_fields t(:add), f, :event_table_columns %>
+    </fieldset>
+
+    <div class="actions">
+      <%= f.submit t(:save), class: 'ui green button' %>
+    </div>
+<% end %>

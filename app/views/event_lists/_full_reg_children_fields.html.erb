@@ -1,0 +1,193 @@
+<%= form_tag({ controller: :event_lists, action: :register_child }, method: :put, class: "ui form") do %>
+    <%= fields_for @event_list do |f| %>
+        <%= f.hidden_field :form_type, value: 'full' %>
+        <fieldset>
+          <legend><h4>Basic data</h4></legend>
+          <div class="fields">
+            <div class="seven wide field">
+              <%= f.label :name do %>
+                  Name <i class="small red asterisk icon"></i>
+              <% end %>
+              <%= f.text_field :name %>
+            </div>
+            <div class="seven wide field">
+              <%= f.label :surname do %>
+                  Surame <i class="small red asterisk icon"></i>
+              <% end %>
+              <%= f.text_field :surname %>
+            </div>
+            <div class="two wide field">
+              <%= f.label :sex do %>
+                  Sex <i class="small red asterisk icon"></i>
+              <% end %>
+              <%= f.select :sex, options_for_select({ "#{t(:man)}": 'M', "#{t(:woman)}": 'Ž' }, @event_list.sex) %>
+            </div>
+          </div>
+          <div class="two fields">
+            <div class="field">
+              <%= f.label :birth_date do %>
+                  Birth date <i class="small red asterisk icon"></i>
+              <% end %>
+              <%= f.text_field :birth_date, class: 'datepick' %>
+            </div>
+            <div class="field">
+              <%= f.label :place_of_birth do %>
+                  Place of birth <i class="small red asterisk icon"></i>
+              <% end %>
+              <%= f.text_field :place_of_birth %>
+            </div>
+          </div>
+          <div class="two fields">
+            <div class="field">
+              <%= f.label :nationality do %>
+                  Nationality <i class="small red asterisk icon"></i>
+              <% end %>
+              <%= f.text_field :nationality %>
+            </div>
+            <div class="field">
+              <%= f.label :occupation do %>
+                  Occupation <i class="small red asterisk icon"></i>
+              <% end %>
+              <%= f.select :occupation, options_for_select(['Student', 'Employed', 'Unemployed', 'Other']) %>
+            </div>
+          </div>
+        </fieldset>
+        <div style="padding-bottom: 10px;"></div>
+        <fieldset>
+          <legend><h4>Addresses<i class="small red asterisk icon"></i></h4>
+          </legend>
+          <% @event_list.addresses.new %>
+          <%= f.fields_for(:addresses) do |builder| %>
+              <%= render 'address_fields', f: builder %>
+          <% end %>
+          <%= link_to_add_fields "Add address", f, :addresses %>
+
+        </fieldset>
+        <div style="padding-bottom: 10px;"></div>
+        <fieldset>
+          <legend><h4>Contacts</h4></legend>
+          <div class="fields">
+            <div class="eight wide field">
+              <%= f.label :personal_mail do %>
+                  Personal mail <i class="small red asterisk icon"></i>
+              <% end %>
+              <%= f.email_field :personal_mail %>
+            </div>
+            <div class="eight wide field">
+              <%= f.label :personal_phone do %>
+                  Phone (Format: +421 905 501 078)
+                  <i class="small red asterisk icon"></i>
+              <% end %>
+              <%= f.text_field :personal_phone %>
+            </div>
+          </div>
+          <h4>
+            Emergency contact
+            <i class="large info circle icon pop_up" title="Vyplň svoj núdzový kontakt. Môžeš zadať jeho meno, rodinnú príslušnosť (napr. mama), mail a telefónne číslo."></i>
+          </h4>
+          <div class="fields">
+            <div class="six wide field">
+              <%= f.label :emergency_name do %>
+                  Name and family member type <i class="small red asterisk icon"></i>
+              <% end %>
+              <%= f.text_field :emergency_name %>
+            </div>
+            <div class="five wide field">
+              <%= f.label :emergency_mail do %>
+                  Mail <i class="small red asterisk icon"></i>
+              <% end %>
+              <%= f.email_field :emergency_mail %>
+            </div>
+            <div class="five wide field">
+              <%= f.label :emergency_phone do %>
+                  Phone (Format: +421 905 501 078)
+                  <i class="small red asterisk icon"></i>
+              <% end %>
+              <%= f.text_field :emergency_phone %>
+            </div>
+          </div>
+        </fieldset>
+        <div style="padding-bottom: 10px;"></div>
+        <fieldset>
+          <legend><h4>Languages, volunteer and general skills</h4></legend>
+          <h4>Languages</h4>
+          <% @event_list.language_skills.new %>
+          <%= f.fields_for(:language_skills) do |builder| %>
+              <%= render 'language_skill_fields', f: builder %>
+          <% end %>
+          <%= link_to_add_fields "Add language", f, :language_skills %>
+
+          <div class="two fields">
+            <div class="eight wide field">
+              <%= f.label :experiences do %>
+                  Volunteer experiences and general skills
+                  <i class="small red asterisk icon"></i>
+              <% end %>
+              <%= f.text_area :experiences %>
+            </div>
+            <div class="eight wide field">
+              <%= f.label :why do %>
+                  Why do you wish to take part in a volunteer project? (has to
+                  be at least 350 chars without spaces)
+                  <i class="small red asterisk icon"></i>
+              <% end %>
+              <%= f.text_area :why %>
+              Total Count:
+              <span id="display_count"><span class="ui red circular label">?</span></span>
+            </div>
+          </div>
+        </fieldset>
+        <div style="padding-bottom: 10px;"></div>
+        <fieldset>
+          <legend><h4>Remarks</h4></legend>
+
+          <div class="two fields">
+            <div class="eight wide field">
+              <%= f.label :remarks, 'General' %>
+              <%= f.text_area :remarks %>
+            </div>
+            <div class="eight wide field">
+              <%= f.label :on_health %>
+              <%= f.text_area :on_health %>
+            </div>
+          </div>
+        </fieldset>
+        <div style="padding-bottom: 10px;"></div>
+        <fieldset>
+          <legend>
+            <h4>Events - Ordered lists <i class="small red asterisk icon"></i>
+            </h4></legend>
+          <div class="ui yellow icon message">
+            <i class="info circle icon"></i>
+            <div class="content">
+              Drag&drop the events to sort them according to your preference.
+            </div>
+          </div>
+
+          <% @events_by_type.each do |event_type, events| %>
+              <h3><%= event_type.title %></h3>
+
+              <%= render 'event_list2', events: events %>
+          <% end %>
+        </fieldset>
+        <div class="inline field">
+          <%= f.check_box :conditions_agreement %>
+          <label>I agree with the Conditions of Participation in a Workcamp /
+            Súhlasím s podmienkami účasti na MTDP.
+            <i class="small red asterisk icon"></i>
+          </label>
+        </div>
+        <% if @inex_member_events.any? %>
+            <div class="inline field">
+              <%= f.check_box :inex_member %>
+              <label>I want to be an INEX member
+                <i class="small red asterisk icon"></i>
+              </label>
+            </div>
+        <% end %>
+
+        <div class="actions">
+          <%= f.submit 'Send application', class: 'ui green submit button' %>
+        </div>
+    <% end %>
+<% end %>

@@ -1,0 +1,62 @@
+<h2 class="ui header">
+  <i class="browser icon"></i>
+  <div class="content">
+    <%= t :table %> <%= table.name %>
+    <%= link_to edit_event_type_event_table_path(@event_type, table), class: 'pop_up', title: t(:edit) do %>
+        <i class="yellow edit link icon"></i>
+    <% end %>
+    <%= link_to add_row_event_type_event_table_path(@event_type, table), method: :post, class: 'pop_up', title: t(:add_row_table) do %>
+        <i class="green add circle link icon"></i>
+    <% end %>
+    <div class="sub header">
+      <%= t(:table_edit_announcement) %>
+    </div>
+  </div>
+</h2>
+
+<% str = '<i class="large icons"><i class="green paint brush icon"></i><i class="corner icon">g</i></i>' %>
+<% val = table.build_table %>
+<div class="ui container" style="overflow-x: scroll;">
+  <table class="ui small compact celled table">
+    <thead>
+    <tr>
+      <% val[:header].each do |header| %>
+          <th style="min-width: 100px;"><%= header.name %> (<%= header.ctype %>)</th>
+      <% end %>
+      <th class="two wide"><%= t(:actions) %></th>
+    </tr>
+    </thead>
+    <tbody>
+    <% val[:rows].each do |row| %>
+        <tr>
+          <% val[:header].each do |header| %>
+              <td class="<%= table_cell_color(row[header.name]) %>" id="tdedit-<%= row[header.name].try(:id) %>">
+                <% if row[header.name] %>
+                    <% if header.ctype == "string" %>
+                        <%= best_in_place row[header.name], :value, activator: "#tdedit-#{row[header.name].id}", placeholder: 'click to edit' %>
+                    <% elsif header.ctype == "boolean" %>
+                        <%= best_in_place row[header.name], :value, as: :checkbox, collection: ["<i class=\"large red remove icon\"></i>".html_safe, "<i class=\"large green check icon\"></i>".html_safe], activator: "#tdedit-#{row[header.name].id}" %>
+                    <% elsif header.ctype == "date" %>
+                        <%= best_in_place row[header.name], :value, :as => :date, activator: "#tdedit-#{row[header.name].id}", placeholder: 'click to edit' %>
+                    <!--<%# elsif header.ctype == "user.name" %>-->
+                        <!--<%# best_in_place row[header.name], :value, as: :select, collection: @users.collect { |u| u.name }.uniq.sort, activator: "#tdedit-#{row[header.name].id}", :inner_class => 'ui dropdown' %>-->
+                    <!--<%# elsif header.ctype == "user.surname" %>-->
+                        <!--<%# best_in_place row[header.name], :value, as: :select, collection: @users.collect { |u| u.surname }.uniq.sort, activator: "#tdedit-#{row[header.name].id}", :inner_class => 'ui dropdown' %>-->
+                    <!--<%# elsif header.ctype == "user.mail" %>-->
+                        <!--<%# best_in_place row[header.name], :value, as: :select, collection: @users.collect { |u| u.personal_mail_or_login_mail }.uniq.sort, activator: "#tdedit-#{row[header.name].id}", :inner_class => 'ui dropdown' %>-->
+                    <!--<%# elsif header.ctype == "user.surname_name" %>-->
+                        <!--<%# best_in_place row[header.name], :value, as: :select, collection: (@users.collect { |u| u.surname_name } << "").uniq.sort, activator: "#tdedit-#{row[header.name].id}", :inner_class => 'ui dropdown' %>-->
+                    <!--<%# elsif header.ctype == "user.name_surname" %>-->
+                        <!--<%# best_in_place row[header.name], :value, as: :select, collection: @users.collect { |u| u.name_surname }.uniq.sort, activator: "#tdedit-#{row[header.name].id}", :inner_class => 'ui dropdown' %>-->
+                    <% end %>
+                <% end %>
+              </td>
+          <% end %>
+          <td>
+            <%= link_to t(:remove), remove_row_event_type_event_table_path(@event_type, table, row_id: row[:row].id), method: :delete, class: 'ui red label', data: { confirm: t(:are_you_sure_remove_row) } %>
+          </td>
+        </tr>
+    <% end %>
+    </tbody>
+  </table>
+</div>

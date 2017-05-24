@@ -1,0 +1,27 @@
+<div class="ui five bottom attached ordered steps">
+  <%= link_to edit_event_type_event_path(@event_type, @event), class: "pop_up #{active_step_class('edit')} step", title: t(:jump_on_this_step) do %>
+      <div class="content">
+        <div class="title"><%= t :basic_info %></div>
+      </div>
+  <% end %>
+  <%= link_to step_second_event_type_event_path(@event_type, @event), class: "pop_up #{active_step_class('step_second')} step", title: t(:jump_on_this_step) do %>
+      <div class="content">
+        <div class="title"><%= t :place_and_transport %></div>
+      </div>
+  <% end %>
+  <%= link_to step_third_event_type_event_path(@event_type, @event), class: "pop_up #{active_step_class('step_third')} step", title: t(:jump_on_this_step) do %>
+      <div class="content">
+        <div class="title"><%= t :capacity %></div>
+      </div>
+  <% end %>
+  <%= link_to step_fourth_event_type_event_path(@event_type, @event), class: "pop_up #{active_step_class('step_fourth')} step", title: t(:jump_on_this_step) do %>
+      <div class="content">
+        <div class="title"><%= t :applications %></div>
+      </div>
+  <% end %>
+  <%= link_to step_fifth_event_type_event_path(@event_type, @event), class: "pop_up #{active_step_class('step_fifth')} step", title: t(:jump_on_this_step) do %>
+      <div class="content">
+        <div class="title"><%= t :descriptions %></div>
+      </div>
+  <% end %>
+</div>

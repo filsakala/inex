@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  etype: MyString
+  name_sk: MyString
+  name_en: MyString
+
+two:
+  etype: MyString
+  name_sk: MyString
+  name_en: MyString

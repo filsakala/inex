@@ -1,0 +1,29 @@
+<%= render 'header' %>
+
+<%= link_to t(:add_task), new_task_path, class: 'ui basic green button' %>
+
+<div class="ui padded stackable grid">
+  <div class="ui two column row">
+    <% if current_user.try(:is_employee?) %>
+        <div class="four wide column">
+          <%= render 'panel' %>
+        </div>
+    <% end %>
+    <% width = current_user.try(:is_employee?) ? "twelve" : "sixteen" %>
+    <div class="<%= width %> wide column">
+      <% if current_user.try(:is_employee?) %>
+          <h2 class="ui header">
+            <i class="user icon"></i>
+            <div class="content">
+              <%= "#{t(:my)} #{t(:tasks).downcase}" %>
+              <div class="sub header">
+                <%= t(:your_assigned_tasks) %>
+              </div>
+            </div>
+          </h2>
+      <% end %>
+
+      <%= render "index" %>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,24 @@
+<div class="ui celled ordered list sortable">
+  <% events.each do |event| %>
+      <% event_in_list = event.event_in_lists.find_by_event_list_id(@event_list.id) %>
+      <div class="item with-id" data-id="<%= event_in_list.id %>">
+        <i class="large move icon"></i>
+        <div class="content">
+          <div class="header">
+            <%= event.translated_title %>
+            <% if event.code %>
+                (kód <%= event.code %>)
+            <% end %>
+            <%= link_to show_public_event_path(event), class: 'pop_up', title: 'Detail', target: :blank do %>
+                <i class="grey unhide link icon"></i>
+            <% end %>
+          </div>
+          <%= event.from_to %>
+          <% unless event.country.blank? %>
+              <%= event.country %>
+              <i class="<%= Country.find_by_name(event.country).try(:flag_code) unless event.country.blank? %> flag"></i>
+          <% end %>
+        </div>
+      </div>
+  <% end %>
+</div>

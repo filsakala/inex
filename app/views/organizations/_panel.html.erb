@@ -1,0 +1,35 @@
+<div class="ui two buttons">
+  <%= link_to t(:new_organization), new_organization_path, class: 'ui fluid basic green button' %>
+  <%= link_to t(:new_partner_network), new_partner_network_path, class: 'ui fluid basic green button' %>
+</div>
+
+<div class="ui middle aligned selection divided list">
+  <%= link_to organizations_path, class: "#{active_class(["organizations"], ["index"])} item" do %>
+      <div class="right floated content">
+        <div class="ui green circular label pop_up" title="<%= t :organizations_count %>">
+          <%= @organizations.count %>
+        </div>
+      </div>
+      <i class="child icon"></i>
+      <div class="content">
+        <div class="header">
+          <%= t :all_organizations %>
+        </div>
+      </div>
+  <% end %>
+  <% @partner_networks.each do |pn| %>
+      <%= link_to pn, class: "#{active_class(["partner_networks"], ["show"], pn.id)} item" do %>
+          <div class="right floated content">
+            <div class="ui green circular label pop_up" title="<%= t :organizations_count %>">
+              <%= pn.organizations.count %>
+            </div>
+          </div>
+          <i class="sitemap icon"></i>
+          <div class="content">
+            <div class="header">
+              <%= pn.name %>
+            </div>
+          </div>
+      <% end %>
+  <% end %>
+</div>

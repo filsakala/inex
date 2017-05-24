@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta content='text/html; charset=UTF-8' http-equiv='Content-Type'/>
+</head>
+<body>
+<h3>Detail:</h3>
+<p>
+  <b>Autor:</b> <%= @issue_ticket.user.try(:nickname_or_name) %><br>
+  <b>Popis:</b> <%= @issue_ticket.description %><br>
+  <b>Priorita:</b>
+  <% if @issue_ticket.priority == 1 %>
+      Vysoká<br>
+  <% elsif @issue_ticket.priority == 2 %>
+      Stredná<br>
+  <% else %>
+      Nízka<br>
+  <% end %>
+  <b>Link:</b> <%= link_to "detail", @issue_ticket_url %><br>
+</p>
+
+<p>Tvoj INEX systém</p>
+</body>
+</html>

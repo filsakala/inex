@@ -1,0 +1,10 @@
+<h1 class="ui header">
+  <i class="circular user icon"></i>
+  <div class="content">
+    <%= t :my_profile %>
+    <div class="sub header"><%= t :user_header %></div>
+  </div>
+</h1>
+<%= link_to t(:back), @user, class: 'ui inverted orange button' %>
+
+<%= render 'form_edit' %>

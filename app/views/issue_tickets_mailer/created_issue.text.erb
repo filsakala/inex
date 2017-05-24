@@ -1,0 +1,15 @@
+Detail:
+----------------------------------------------------------
+Autor: <%= @issue_ticket.user.try(:nickname_or_name) %>
+Popis: <%= @issue_ticket.description %>
+Priorita:
+<% if @issue_ticket.priority == 1 %>
+    Vysoká
+<% elsif @issue_ticket.priority == 2 %>
+    Stredná
+<% else %>
+    Nízka
+<% end %>
+Link: <%= link_to "detail", @issue_ticket_url %>
+
+Tvoj INEX systém

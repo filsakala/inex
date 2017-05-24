@@ -1,0 +1,22 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  birth_date: 1990-01-01
+  emergency_name: MyString
+  emergency_mail: MyString
+  emergency_phone: MyString
+  experiences: MyString
+  is_child: false
+  name: MyString
+  nationality: MyString
+  occupation: MyString
+  on_health: MyString
+  personal_mail: MyString
+  personal_phone: MyString
+  place_of_birth: MyString
+  remarks: MyString
+  sex: MyString
+  state: MyString
+  surname: MyString
+  why: MyString
+  user: one

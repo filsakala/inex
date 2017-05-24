@@ -1,0 +1,11 @@
+<%= form_for(@knowledge_category, html: { class: 'ui form' }) do |f| %>
+    <%= write_error(@knowledge_category) %>
+
+    <div class="field">
+      <%= f.text_field :category %>
+    </div>
+
+    <div class="actions">
+      <%= f.submit 'Uložiť', class: 'ui green submit button' %>
+    </div>
+<% end %>

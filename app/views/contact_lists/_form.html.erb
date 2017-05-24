@@ -1,0 +1,17 @@
+<%= form_for(@contact_list, html: { class: 'ui form' }) do |f| %>
+    <%= write_error(@contact_list) %>
+
+    <div class="field">
+      <%= f.label :title do %>
+          <%= t :name_task %> <i class="small red asterisk icon"></i>
+      <% end %>
+      <%= f.text_field :title %>
+    </div>
+
+    <div class="field">
+      <%= f.label :employee_id, t(:owner) %>
+      <%= f.select :employee_id, options_for_select(Employee.all.collect { |e| [e.user.try(:nickname_or_name), e.id] }, @form_params[:employee_id]) %>
+    </div>
+
+    <%= f.submit t(:save), class: 'ui green button' %>
+<% end %>

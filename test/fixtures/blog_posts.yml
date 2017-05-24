@@ -1,0 +1,14 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  title: MyString
+  perex: MyString
+  text: MyString
+  is_published: true
+  blog_post_category: one
+
+two:
+  title: MyString
+  perex: MyString
+  text: MyString
+  is_published: false

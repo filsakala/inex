@@ -1,0 +1,52 @@
+<h1 class="ui header">
+  <i class="money icon"></i>
+  <div class="content">
+    <%= t :information_about_fees_header %>
+    <div class="sub header">
+      <%= t :information_about_fees_header_description %>
+    </div>
+  </div>
+</h1>
+
+<div class="ui yellow icon message">
+  <i class="warning sign icon"></i>
+  <%= t :information_about_fees_header_warning %>
+</div>
+<% if @event_list && @event_list.event_type %>
+    <h3><%= t :informational_table_of_fees %> <%= @event_list.event_type.try(:title) %></h3>
+    <table class="ui table">
+      <thead>
+      <tr>
+        <th></th>
+        <th><%= t :first_of_this_type_in_one_year %></th>
+        <th><%= t :other_of_this_type_in_one_year %></th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>
+          <b><%= t :for_members %></b>
+          <%= link_to @membership do %>
+              <i class="large info circle icon"></i>
+          <% end %>
+        </td>
+        <td><%= @event_list.event_type.fee_member_first %>€
+          <% if @event_list.event_type.try(:title) != "Prihlášky za člena" %>
+              (+2€ <%= t(:for_membership).downcase %>)
+          <% end %>
+        </td>
+        <td><%= @event_list.event_type.fee_member_other %>€</td>
+      </tr>
+      <tr>
+        <td><b><%= t :for_non_members %></b></td>
+        <td><%= @event_list.event_type.fee_non_member_first %>€</td>
+        <td><%= @event_list.event_type.fee_non_member_other %>€</td>
+      </tr>
+      </tbody>
+    </table>
+
+    <% unless @event_list.event_type.fee_description.blank? %>
+        <h3><%= t :fees_description %></h3>
+        <%= @event_list.event_type.fee_description %>
+    <% end %>
+<% end %>

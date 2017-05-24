@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  application_conditions_html: MyString
+  fee_description: text
+  fee_member_first: 0
+  fee_member_other: 0
+  fee_non_member_first: 0
+  fee_non_member_other: 0
+  title: MyString
+  super_event_type: one

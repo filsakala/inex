@@ -1,0 +1,24 @@
+<%= render 'header' %>
+
+<%= link_to t(:add_task), new_task_path, class: 'ui basic green button' %>
+
+<div class="ui padded stackable grid">
+  <div class="ui two column row">
+    <div class="four wide column">
+      <%= render 'panel' %>
+    </div>
+    <div class="twelve wide column">
+      <h2 class="ui header">
+        <i class="refresh icon"></i>
+        <div class="content">
+          <%= t(:repeatable) %> <%= t(:tasks).downcase %>
+          <div class="sub header">
+            <%= t(:tasks_repeatable_header_description) %>
+        </div>
+      </h2>
+
+      <%= render "index" %>
+    </div>
+  </div>
+</div>
+

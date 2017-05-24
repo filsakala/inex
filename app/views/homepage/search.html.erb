@@ -1,0 +1,23 @@
+<div class="padded row" id="mapa">
+  <div class="column">
+    <h1><i class="ui calendar outline icon"></i><%= t :actual_events %></h1>
+    <div id="map" style='min-height: 400px; height: 100%'></div>
+  </div>
+</div>
+<div style='min-height: 40px;'></div>
+<div class="padded row" id="mapa">
+  <div class="column">
+    <h1><i class="ui search icon"></i><%= t :search_and_filtering %></h1>
+    <%= render 'map_search' %>
+  </div>
+</div>
+<div class="padded row">
+  <div class="column">
+    <h3><%= t :list_of_found_events %> <span class="ui green circular label" id="map-search-count">0</span></h3>
+    <% if @search_events.any? %>
+        <div id="map-search-table"></div>
+    <% else %>
+
+    <% end %>
+  </div>
+</div>

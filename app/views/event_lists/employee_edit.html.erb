@@ -1,0 +1,43 @@
+<div class="ui container">
+  <h1 class="ui header">
+    <i class="large icons">
+      <i class="suitcase icon"></i>
+      <i class="yellow corner write icon"></i>
+    </i>
+    <div class="content">
+      Úprava registrácie
+      <div class="sub header">Na tejto stránke môžeš upravovať údaje registrácie.
+      </div>
+    </div>
+  </h1>
+  <div class="ui divider"></div>
+
+  <% if @event_list.errors.any? %>
+      <div class="ui icon red message">
+        <i class="remove icon"></i>
+        <div class="content">
+          <div class="header">Ups? Nastali problémy spomenuté nižšie:</div>
+          <ul class="list">
+            <% @event_list.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+  <% end %>
+  <% if @full_reg_events.any? %>
+      <%= render 'full_reg_employee_fields' %>
+  <% elsif @simple_reg_events.any? %>
+      <%= render 'simple_reg_employee_fields' %>
+  <% else %>
+      <div class="ui icon message">
+        <i class="frown icon"></i>
+        <div class="content">
+          <div class="header">
+            Taška je prázdna.
+          </div>
+          <p>Skús do nej pridať nejaký event.</p>
+        </div>
+      </div>
+  <% end %>
+</div>

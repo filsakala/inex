@@ -1,0 +1,38 @@
+<div class="simple-calendar">
+  <div class="calendar-heading">
+    <h3><i class="ui calendar icon"></i>Kalendár</h3>
+    <%= link_to url_for(params.merge(start_date: date_range.first - 1.day)), remote: true do %>
+        <i class="green left arrow icon"></i>
+    <% end %>
+    <span class="ui header"><%= t("month_names")[start_date.month] %> <%= start_date.year %></span>
+    <%= link_to url_for(params.merge(start_date: date_range.last + 1.day)), remote: true do %>
+        <i class="green right arrow icon"></i>
+    <% end %>
+  </div>
+
+  <table class="ui seven column celled green unstackable table">
+    <thead>
+    <tr class="center aligned">
+      <% date_range.slice(0, 7).each do |day| %>
+          <th><%= t('abbr_day_names')[day.wday] %></th>
+      <% end %>
+    </tr>
+    </thead>
+
+    <tbody>
+    <% date_range.each_slice(7) do |week| %>
+        <tr class="top aligned">
+          <% week.each do |day| %>
+              <%= content_tag :td, class: "#{calendar.td_classes_for(day)} selectable", style: 'height: 50px;' do %>
+                  <% if defined?(Haml) && respond_to?(:block_is_haml?) && block_is_haml?(block) %>
+                      <% capture_haml(day, sorted_events.fetch(day, []), &block) %>
+                  <% else %>
+                      <% block.call day, sorted_events.fetch(day, []) %>
+                  <% end %>
+              <% end %>
+          <% end %>
+        </tr>
+    <% end %>
+    </tbody>
+  </table>
+</div>

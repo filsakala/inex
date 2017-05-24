@@ -1,0 +1,134 @@
+<h1 class="ui header">
+  <i class="list layout icon"></i>
+  <div class="content">
+    <%= t :event_types %>
+    <div class="sub header">
+      <%= t :event_types_header %>
+    </div>
+  </div>
+</h1>
+
+<div class="ui top attached stackable menu">
+  <% if current_user.try(:is_employee?) %>
+      <%= link_to new_event_type_path, class: 'active green item' do %>
+          <i class="add circle icon"></i> <%= t :add %> <%= t :event_type %>
+      <% end %>
+  <% end %>
+  <%= link_to event_categories_path, class: 'active yellow item' do %>
+      <i class="options icon"></i> <%= t :workcamp_types %>
+  <% end %>
+  <% if current_user.try(:is_employee?) %>
+      <%= link_to participation_fees_path, class: 'active grey item' do %>
+          <i class="money icon"></i> <%= t :payments %>
+      <% end %>
+  <% end %>
+  <%= link_to import_1_events_path, class: 'active green item' do %>
+      <i class="large link icons">
+        <i class="black file icon"></i>
+        <i class="green corner plus icon"></i>
+      </i> Import CSV/XML
+  <% end %>
+  <div class="right menu">
+    <div class="ui right aligned category eventTypeIndex search item">
+      <div class="ui transparent icon input">
+        <input class="prompt" type="text" placeholder="<%= t :search_dots %>" id="search-field" >
+        <i class="search link icon"></i>
+      </div>
+      <div class="results"></div>
+    </div>
+  </div>
+</div>
+<div class="ui two cards">
+  <% @super_event_types.each do |set| %>
+      <div class="ui card">
+        <div class="content">
+          <div class="header"><%= set.name %></div>
+          <div class="ui bulleted divided list">
+            <% set.event_types.each do |event_type| %>
+                <div class="item">
+                  <div class="content header">
+                    <%= link_to event_type.title, event_type %>
+                    <div class="right floated description">
+                      <%= link_to event_type, class: "pop_up ui grey circular icon label", title: t(:event_count) do %>
+                          <i class="ui calendar icon"></i><%= event_type.events.count %>
+                      <% end %>
+                      <% if current_user.try(:is_employee?) %>
+                          <%= link_to bags_event_type_path(event_type), class: 'pop_up', title: t(:applications) do %>
+                              <i class="large black suitcase link icon"></i>
+                          <% end %>
+                      <% end %>
+                      <%= link_to edit_event_type_path(event_type), class: 'pop_up', title: t(:edit_event_type) do %>
+                          <i class="large yellow edit link icon"></i>
+                      <% end %>
+                      <%# link_to event_type, method: :delete, data: { confirm: 'Naozaj chceš vymazať tento typ udalosti?' }, class: 'pop_up', title: 'Vymazať typ udalosti' do %>
+                      <!--<i class="large red close link icon"></i>-->
+                      <%# end %>
+                    </div>
+                  </div>
+                </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+  <% end %>
+  <div class="ui card">
+    <div class="content">
+      <div class="header"><%= t :other_types_without_supertype %></div>
+      <div class="ui bulleted divided list">
+        <% @event_types_without_super_type.each do |event_type| %>
+            <div class="item">
+              <div class="content header">
+                <%= link_to event_type.title, event_type %>
+                <div class="right floated description">
+                  <%= link_to event_type, class: "pop_up ui grey circular icon label", title: t(:event_count) do %>
+                      <i class="ui calendar icon"></i><%= event_type.events.count %>
+                  <% end %>
+                  <% if current_user.try(:is_employee?) %>
+                      <%= link_to bags_event_type_path(event_type), class: 'pop_up', title: t(:applications) do %>
+                          <i class="large black suitcase link icon"></i>
+                      <% end %>
+                  <% end %>
+                  <%= link_to edit_event_type_path(event_type), class: 'pop_up', title: t(:edit_event_type) do %>
+                      <i class="large yellow edit link icon"></i>
+                  <% end %>
+                  <%# link_to event_type, method: :delete, data: { confirm: 'Naozaj chceš vymazať tento typ udalosti?' }, class: 'pop_up', title: 'Vymazať typ udalosti' do %>
+                  <!--<i class="large red close link icon"></i>-->
+                  <%# end %>
+                </div>
+              </div>
+            </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+  <div class="ui card">
+    <div class="content">
+      <div class="header"><%= t :events_without_type %></div>
+      <div class="ui bulleted divided list">
+        <% @without_type.each do |event| %>
+            <div class="item">
+              <div class="content header">
+                <%= link_to event.translated_title, event_type_event_path(@event_types.first, event) %>
+                <div class="right floated description">
+                  <%= link_to edit_event_type_event_path(@event_types.first, event), class: 'pop_up', title: t(:edit_event) do %>
+                      <i class="yellow write link icon"></i>
+                  <% end %>
+                  <%= link_to event_type_event_path(@event_types.first, event), method: :delete, data: { confirm: t(:are_you_sure_remove_event) }, class: 'pop_up', title: t(:remove_event) do %>
+                      <i class="red close link icon"></i>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $('.ui.eventTypeIndex.search').search({
+    apiSettings: {
+      url: "/events/search?q={query}"
+    }
+  })
+</script>

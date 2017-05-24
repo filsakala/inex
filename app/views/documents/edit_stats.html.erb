@@ -1,0 +1,148 @@
+<h1 class="ui header">
+  <i class="table icon"></i>
+  <div class="content">
+    <%= t(:file) %> <%= @file.name %> - <%= t :add_statistics_on %> <%= t(:row).downcase %> <%= @row %>,
+    <%= t(:column).downcase %> <%= @col %>
+    <div class="sub header">
+      <%= t :document_statistics_header %>
+    </div>
+  </div>
+</h1>
+
+<div class="ui accordion">
+  <div class="title">
+    <div class="ui right dropdown item grey button">
+      <%= t :view_table %>
+      <i class="dropdown icon"></i>
+    </div>
+  </div>
+  <div class="content">
+    <% if !@csv.blank? %>
+        <div class="ui container" style="overflow-x: scroll;">
+          <table class="ui green compact celled table">
+            <tbody>
+            <tr>
+              <td></td>
+              <% @csv.first.each_index do |i| %>
+                  <td style="min-width: 100px;">
+                    <div class="ui fluid green label"><%= i %></div>
+                  </td>
+              <% end %>
+            </tr>
+            <% @csv.each_with_index do |row, ri| %>
+                <tr>
+                  <td class="ui fluid green label"><%= ri %></td>
+                  <% row.each_with_index do |cell, ci| %>
+                      <td>
+                        <div class="ui two column grid">
+                          <div class="twelve wide column"><%= cell.force_encoding("UTF-8") if cell %></div>
+                          <div class="two wide column">
+                            <%= link_to edit_stats_documents_path(file_id: @file.id, row: ri, col: ci) do %>
+                                <i class="large black wizard link icon"></i>
+                            <% end %>
+                          </div>
+                        </div>
+                      </td>
+                  <% end %>
+                </tr>
+            <% end %>
+            </tbody>
+          </table>
+        </div>
+    <% end %>
+  </div>
+</div>
+
+<%= form_tag({ controller: :documents, action: :update_stats }, method: :put, class: 'ui form') do %>
+    <%= hidden_field_tag :file_id, @file.id %>
+    <%= hidden_field_tag :row, @row %>
+    <%= hidden_field_tag :col, @col %>
+
+    <div class="two fields">
+      <div class="field">
+        <label><%= t :statistics_type %></label>
+        <%= select_tag :stats_type, options_for_select({ "#{t(:person_stats)}": "person_stats", "#{t(:event_stats)}": "event_stats" }, (@json_stats["stats_type"] if !@json_stats.blank?)), class: "ui dropdown" %>
+      </div>
+      <div class="field">
+        <label><%= t :select_years %></label>
+        <%= select_tag :years, options_for_select(Date.today.year.downto(1993), (eval(@json_stats["years"]) if !@json_stats.blank?)), multiple: true, class: "ui dropdown" %>
+      </div>
+    </div>
+    <fieldset>
+      <legend><%= t :stats_params_for_both %></legend>
+      <div class="field">
+        <label><%= t :stats_event_types %></label>
+        <%= select_tag "event_type_ids[]", options_from_collection_for_select(EventType.all, "id", "title", (eval(@json_stats["event_type_ids"]) if !@json_stats.blank?)), multiple: true, class: "ui dropdown" %>
+      </div>
+      <div class="field">
+        <label><%= t :stats_events %></label>
+        <%= select_tag "event_ids[]", options_from_collection_for_select(Event.all, "id", "title", (eval(@json_stats["event_ids"]) if !@json_stats.blank?)), multiple: true, class: "ui search dropdown" %>
+      </div>
+      <div class="field">
+        <div class="ui toggle checkbox">
+          <input type="checkbox" name="do_uniq" tabindex="0" <%= "checked=\"checked\"" if (!@json_stats.blank? && @json_stats["do_uniq"] == "on") %> class="hidden">
+          <label><%= t :stats_uniq_only %></label>
+        </div>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend><%= t :stats_params_for_person %></legend>
+      <div class="field">
+        <label><%= t :stats_person %></label>
+        <%= select_tag "people[]", options_for_select({ "#{t(:inex_members)}": "members",
+                                                        "#{t(:volunteers)}": "volunteers",
+                                                        "#{t(:local_partners)}": "local_partners",
+                                                        "#{t(:trainers)}": "trainers",
+                                                        "#{t(:leaders)}": "leaders" }, (eval(@json_stats["people"]) if !@json_stats.blank?)), multiple: true, class: "ui dropdown" %>
+      </div>
+      <div class="field">
+        <label><%= t :education %></label>
+        <%= select_tag "education_ids[]", options_from_collection_for_select(Education.all, "id", "name_sk", (eval(@json_stats["education_ids"]) if !@json_stats.blank?)), multiple: true, class: "ui dropdown" %>
+      </div>
+      <fieldset>
+        <legend><%= t :age %></legend>
+        <div id="age-container">
+          <% if !@json_stats.blank? %>
+              <% (0..20).each do |i| %>
+                  <% if !@json_stats["age_from_#{i}"].blank? || !@json_stats["age_to_#{i}"].blank? %>
+                      <% @ages = i %>
+                      <div class="two fields">
+                        <div class="field">
+                          <label><%= t :from %></label>
+                          <%= number_field_tag "age_from_#{i}", @json_stats["age_from_#{i}"], min: 0 %>
+                        </div>
+                        <div class="field">
+                          <label><%= t :to %></label>
+                          <%= number_field_tag "age_to_#{i}", @json_stats["age_to_#{i}"], min: 0 %>
+                        </div>
+                      </div>
+                  <% end %>
+              <% end %>
+          <% else %>
+              <div class="two fields">
+                <div class="field">
+                  <label>Od</label>
+                  <%= number_field_tag "age_from_#{0}", nil, min: 0 %>
+                </div>
+                <div class="field">
+                  <label>Do</label>
+                  <%= number_field_tag "age_to_#{0}", nil, min: 0 %>
+                </div>
+              </div>
+          <% end %>
+        </div>
+        <div class="ui yellow button" id="add-age-fields" actcount="<%= @ages.blank? ? 0 : @ages %>">
+          <%= t :stats_add_age_fields %>
+        </div>
+      </fieldset>
+
+      <div class="field">
+        <label>Pohlavie</label>
+        <%= select_tag :sex, options_for_select({ "-": "-", "#{t(:man)}": "M", "#{t(:woman)}": "Ž" }, (@json_stats["sex"] if !@json_stats.blank?)), include_blank: true, class: "ui dropdown" %>
+      </div>
+    </fieldset>
+
+    <div class="actions">
+      <%= submit_tag t(:save), class: "ui green button" %>
+    </div>
+<% end %>

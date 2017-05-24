@@ -1,0 +1,2 @@
+module EventTablesHelper
+end

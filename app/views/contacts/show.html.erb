@@ -1,0 +1,70 @@
+<%= render 'contact_lists/header' %>
+
+<div class="ui padded stackable grid">
+  <div class="ui two column row">
+    <div class="four wide column">
+      <%= render 'contact_lists/panel' %>
+    </div>
+    <div class="twelve wide column">
+      <h2 class="ui header">
+        <i class="user icon"></i>
+        <div class="content"><%= name_nickname_format(@contact) %></div>
+      </h2>
+
+      <div>
+        <%= link_to t(:edit), edit_contact_path(@contact), class: 'ui yellow button' %>
+      </div>
+
+      <div class="ui list">
+        <% if @contact.organization %>
+            <div class="item">
+              <i class="users icon"></i>
+              <div class="content">
+                <%= @contact.organization.try(:name) %>
+              </div>
+            </div>
+        <% end %>
+        <% unless @contact.dept.blank? %>
+            <div class="item">
+              <i class="home icon"></i>
+              <div class="content">
+                <%= @contact.dept %>
+              </div>
+            </div>
+        <% end %>
+        <% unless @contact.mail.blank? %>
+            <div class="item">
+              <i class="mail icon"></i>
+              <div class="content">
+                <a href="mailto:<%= @contact.mail %>"><%= @contact.mail %></a>
+              </div>
+            </div>
+        <% end %>
+        <% unless @contact.phone.blank? %>
+            <div class="item">
+              <i class="phone icon"></i>
+              <div class="content">
+                <%= @contact.phone %>
+              </div>
+            </div>
+        <% end %>
+        <% unless @contact.other_contacts.blank? %>
+            <div class="item">
+              <i class="archive icon"></i>
+              <div class="content">
+                <%= @contact.other_contacts %>
+              </div>
+            </div>
+        <% end %>
+        <% unless @contact.notes.blank? %>
+            <div class="item">
+              <i class="pointing right icon"></i>
+              <div class="content">
+                <%= t :notes %>: <%= @contact.notes %>
+              </div>
+            </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

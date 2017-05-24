@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>INEX Slovakia</title>
+  <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => true %>
+  <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+  <%= csrf_meta_tags %>
+  <%= favicon_link_tag 'favicon.png' %>
+  <script>
+    <!-- Smartlook -->
+    window.smartlook||(function(d) {
+      var o=smartlook=function(){ o.api.push(arguments)},h=d.getElementsByTagName('head')[0];
+      var c=d.createElement('script');o.api=new Array();c.async=true;c.type='text/javascript';
+      c.charset='utf-8';c.src='//rec.smartlook.com/recorder.js';h.appendChild(c);
+    })(document);
+    smartlook('init', '54bfa4e82b0e8a985cb19c3138e5cd2ce13912f0');
+    <!-- Hotjar Tracking Code for www.inex.sk -->
+    (function(h,o,t,j,a,r){
+      h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+      h._hjSettings={hjid:488874,hjsv:5};
+      a=o.getElementsByTagName('head')[0];
+      r=o.createElement('script');r.async=1;
+      r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+      a.appendChild(r);
+    })(window,document,'//static.hotjar.com/c/hotjar-','.js?sv=');
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=0.5">
+</head>
+<body class="lightgrey-background">
+<%= render 'layouts/flash_notice' %>
+<div class="ui segment">
+  <div class="ui secondary menu" style="padding-left: 10px; padding-top: 2px;">
+    <%= link_to image_tag("inex_text_a_logo_en.png"), root_path, class: "ui small image grow" %>
+    <div class="right menu">
+      <% if current_user.try(:is_employee?) %>
+          <%= link_to issue_tickets_path, class: 'item' do %>
+              <i class="warning icon"></i> Issues
+          <% end %>
+      <% end %>
+      <% if current_user.try(:is_employee?) %>
+          <div class="item"><i class="spy icon"></i> Employee</div>
+      <% elsif current_user.try(:is_evs?) %>
+          <div class="item"><i class="spy icon"></i> <%= t :evs %></div>
+      <% end %>
+      <%= link_to @membership, class: 'item', target: :blank do %>
+          <% if current_user.try(:je_clen_a_platil?) %>
+              <i class="checkmark icon"></i> <%= t :membership %> <%= Date.today.year %>
+          <% else %>
+              <i class="warning sign icon"></i> <%= t :membership %>  <%= Date.today.year %>
+          <% end %>
+      <% end %>
+      <% if I18n.locale.to_s == "sk" %>
+          <%= link_to set_lang_homepage_index_path, class: 'item' do %>
+              <i class="gb flag"></i> <%# image_tag("gbflag.svg")%> English
+          <% end %>
+      <% else %>
+          <%= link_to set_lang_homepage_index_path, class: 'item' do %>
+              <i class="sk flag"></i> Slovensky
+          <% end %>
+      <% end %>
+      <% if current_user %>
+          <%= link_to session_path('me'), method: :delete, class: "item  ui animated button",
+                      data: { confirm: 'Naozaj sa chceš odhlásiť?' } do %>
+              <div class="visible content">
+                <i class="ui user icon"></i> <%= current_user.try(:nickname_or_name) %>&nbsp;&nbsp;&nbsp;&nbsp;
+              </div>
+              <div class="hidden content red-background-on-hover">
+                <i class="ui sign out icon"></i> <%= t :log_out %>
+              </div>
+          <% end %>
+      <% else %>
+          <%= link_to new_session_path, class: 'active item' do %>
+              <i class="inverted sign in icon"></i> <%= t :log_in %>
+          <% end %>
+      <% end %>
+    </div>
+  </div>
+</div>
+<div class="ui grid">
+  <div class="three wide column">
+    <div class="ui vertical fluid pointing menu">
+      <% if current_user %>
+          <% if current_user.is_inex_member? %>
+              <div class="border-bottom">
+                <%= link_to tasks_path, class: "item #{ccp(['tasks', 'task_lists'])}" do %>
+                    <% if @undone_tasks != 0 %>
+                        <div class="ui small right floated red circular label pop_up" title="<%= t :undone_tasks %>"><%= @undone_tasks %></div>
+                    <% end %>
+                    <div class="content">
+                      <div class="header">
+                        <i class="ui flag icon"></i>
+                        <%= t(:tasks) %>
+                      </div>
+                    </div>
+                <% end %>
+                <% build_menu.each do |item| %>
+                    <% if !item[:sublinks].blank? %>
+                        <div class="ui dropdown item">
+                          <div class="content">
+                            <div class="header">
+                              <i class="ui <%= item[:icon] %>"></i>
+                              <%= item[:text] %>
+                              <i class="ui caret right icon"> </i>
+                            </div>
+                          </div>
+                          <div class="menu">
+                            <% item[:sublinks].each do |sub| %>
+                                <%= link_to sub[1], class: 'item' do %>
+                                    <i class="ui <%= sub[0] %> icon"></i> <%= sub[2] %>
+                                <% end %>
+                            <% end %>
+                          </div>
+                        </div>
+                    <% else %>
+                        <%= link_to item[:link], class: "#{item[:class]}" do %>
+                            <div class="content">
+                              <div class="header">
+                                <i class="ui <%= item[:icon] %>"></i>
+                                <%= item[:text] %>
+                              </div>
+                            </div>
+                        <% end %>
+                    <% end %>
+                <% end %>
+              </div>
+          <% end %>
+          <%= link_to user_path(current_user), class: "ui #{cp(user_path(current_user))} item" do %>
+              <div class="content">
+                <div class="header">
+                  <i class="user icon"></i>
+                  <%= t(:my_profile) %>
+                </div>
+              </div>
+          <% end %>
+          <%= link_to show_events_user_path(current_user), class: "ui #{cp(show_events_user_path(current_user))} item" do %>
+              <div class="content">
+                <div class="header">
+                  <i class="calendar icon"></i>
+                  <%= t(:my_events) %>
+                </div>
+              </div>
+          <% end %>
+          <%= link_to show_bags_user_path(current_user), class: "ui #{cp(show_bags_user_path(current_user))} item" do %>
+              <div class="content">
+                <div class="header">
+                  <i class="checked calendar icon"></i>
+                  <%= t(:my_applications) %>
+                </div>
+              </div>
+          <% end %>
+      <% else %>
+          <h2 class="item"><%= t :register %></h2>
+      <% end %>
+    </div>
+  </div>
+  <div class="thirteen wide stretched column">
+    <% if current_user %>
+        <div class="ui top attached compact segment">
+          <div class="ui breadcrumb">
+            <%= build_breadcrumb.html_safe %>
+          </div>
+        </div>
+    <% end %>
+    <div class="ui attached segment">
+      <%= yield %>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<table class="ui celled green table">
+  <thead>
+  <tr class="center aligned">
+    <th>Event</th>
+    <th><%= t :date %></th>
+    <th><%= t :country %></th>
+    <th><%= t :actions %></th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <% events.each do |event| %>
+      <tr>
+        <td>
+          <%= link_to event.translated_title, show_public_event_path(event), target: :blank %>
+          <% if !event.code.blank? %>
+              (<%= t :code %> <%= text_or_icon event.code %>)
+          <% elsif !event.code_alliance.blank? %>
+              (<%= t :code %> <%= text_or_icon event.code_alliance %>)
+          <% end %>
+        </td>
+        <td><%= event.from_to %></td>
+        <td>
+          <% unless event.country.blank? %>
+              <%= event.country %>
+              <i class="<%= Country.find_by_name(event.country).try(:flag_code) unless event.country.blank? %> flag"></i>
+          <% end %>
+        </td>
+        <td>
+          <%= link_to show_public_event_path(event), class: 'pop_up', title: 'Detail', target: :blank do %>
+              <i class="big grey unhide link icon"></i>
+          <% end %>
+          <% if (@event_list.state == 'opened' || @event_list.state == 'reopened') && !@event_list.is_child %>
+              <%= link_to remove_event_event_event_list_path(event, @event_list), method: :delete,
+                          data: { confirm: t(:are_you_sure_remove_from_your_bag) },
+                          class: 'pop_up', title: t(:remove_event_from_my_bag) do %>
+                  <i class="big icons">
+                    <i class="suitcase bag icon"></i>
+                    <i class="red corner minus icon"></i>
+                  </i>
+              <% end %>
+          <% end %>
+        </td>
+      </tr>
+  <% end %>
+  </tbody>
+</table>

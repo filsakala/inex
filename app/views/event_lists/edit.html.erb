@@ -1,0 +1,53 @@
+<div class="ui container">
+  <h1 class="ui header">
+    <i class="large icons">
+      <i class="suitcase icon"></i>
+      <i class="yellow corner write icon"></i>
+    </i>
+    <div class="content">
+      <%= t :event_list_header %>
+      <div class="sub header">
+        <%= t :event_list_header_description %>
+      </div>
+    </div>
+  </h1>
+  <div class="ui divider"></div>
+
+  <div class="ui two top attached steps">
+    <%= link_to edit_event_list_path(@event_list), class: "pop_up active step", title: t(:back_to_this_step) do %>
+        <i class="write icon"></i>
+        <div class="content">
+          <div class="title"><%= t :application %></div>
+        </div>
+    <% end %>
+    <div class="step">
+        <i class="unhide icon"></i>
+        <div class="content">
+          <div class="title"><%= t :check_and_confirmation %></div>
+        </div>
+    </div>
+  </div>
+  <%= write_error(@event_list) %>
+  <!-- Application info -->
+  <% @event_list.event_types.each do |event_type| %>
+      <% if !event_type.application_info_html.blank? %>
+          <h3><%= t :information_about_application_for %> <%= event_type.title.try(:downcase) %></h3>
+          <%= event_type.application_info_html.html_safe %>
+      <% end %>
+  <% end %>
+  <% if @full_reg_events.any? %>
+      <%= render 'full_reg_fields' %>
+  <% elsif @simple_reg_events.any? %>
+      <%= render 'simple_reg_fields' %>
+  <% else %>
+      <div class="ui icon message">
+        <i class="frown icon"></i>
+        <div class="content">
+          <div class="header">
+            <%= t :bag_is_empty %>
+          </div>
+          <p><%= t :bag_is_empty_description %></p>
+        </div>
+      </div>
+  <% end %>
+</div>

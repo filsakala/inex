@@ -1,0 +1,12 @@
+<h1 class="ui header">
+  <i class="address book icon"></i>
+  <div class="content">
+    <%= t :contacts %>
+    <%= link_to new_contact_path do %>
+        <i class="green plus circle link icon pop_up" title="<%= t :add_contact %>"></i>
+    <% end %>
+    <div class="sub header">
+      <%= t :contacts_header %>
+    </div>
+  </div>
+</h1>

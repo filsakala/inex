@@ -1,0 +1,29 @@
+<%= form_for(@employee, html: { class: 'ui form' }) do |f| %>
+    <%= write_error(@employee) %>
+    <%= write_error(@employee.user) %>
+
+    <div class="field">
+      <%= f.label :department, t(:department) %>
+      <%= f.text_field :department %>
+    </div>
+    <div class="fields">
+      <div class="eight wide field">
+        <%= f.label :work_mail, t(:work_mail) %>
+        <%= f.text_field :work_mail %>
+      </div>
+      <div class="eight wide field">
+        <%= f.label :work_phone, t(:work_phone) %>
+        <%= f.text_field :work_phone %>
+      </div>
+    </div>
+    <%= fields_for @employee.user do |ff| %>
+        <div class="field">
+          <%= ff.label :role, t(:role) %>
+          <%= ff.select :role, ["employee", "eds"] %>
+        </div>
+    <% end %>
+
+    <div class="actions">
+      <%= f.submit t(:save), class: 'ui green submit button' %>
+    </div>
+<% end %>

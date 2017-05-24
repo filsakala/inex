@@ -1,0 +1,14 @@
+<div class="fields">
+  <div class="six wide field">
+    <%= f.label :title, t(:name_task) %>
+    <%= f.text_field :title %>
+  </div>
+  <div class="ui toggle checkbox two wide field">
+    <%= f.check_box :is_mandatory %>
+    <%= f.label :is_mandatory, t(:mandatory) %>
+  </div>
+  <div class="ui toggle checkbox two wide field">
+    <%= f.check_box :_destroy %>
+    <%= f.label :_destroy, t(:remove) %>
+  </div>
+</div>

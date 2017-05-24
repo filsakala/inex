@@ -1,0 +1,28 @@
+<div class="field-holder">
+  <div class="field">
+    <%= f.label :title, t(:address_type) %>
+    <%= f.select :title, {"Trvalé bydlisko":"Permanent", "Aktuálna":"Actual"} %>
+  </div>
+  <div class="fields">
+    <div class="eight wide field">
+      <%= f.label :address, t(:address) %>
+      <%= f.text_field :address %>
+    </div>
+    <div class="eight wide field">
+      <%= f.label :postal_code, t(:postal_code) %>
+      <%= f.text_field :postal_code %>
+    </div>
+    <div class="eight wide field">
+      <%= f.label :city, t(:city) %>
+      <%= f.text_field :city %>
+    </div>
+  </div>
+  <div class="field">
+    <%= f.label :country, t(:country) %>
+    <%= f.select :country, Country.order(:name).pluck(:name), selected: 'Slovakia', class: "ui dropdown" %>
+  </div>
+  <div class="ui three wide field">
+    <%= link_to_remove_fields t(:remove), f %>
+  </div>
+  <div class="ui divider"></div>
+</div>

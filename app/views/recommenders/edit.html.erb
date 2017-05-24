@@ -1,0 +1,162 @@
+<div class="ui fluid container">
+  <h1 class="ui header">
+    <i class="world icon"></i>
+    <div class="content">
+      Upraviť doporučovací systém
+      <div class="sub header">
+        Tu si môžeš vybrať články a videá, ktoré sa zobrazia pod článkom.
+      </div>
+    </div>
+  </h1>
+
+  <fieldset style="padding-bottom: 10px;">
+    <legend><h3>Vybrané články a videá</h3></legend>
+    <div class="ui six stackable special cards" id="content-holder">
+      <% @recommender.recommendation_results.each do |result| %>
+          <div class="card">
+            <div class="blurring dimmable image">
+              <div class="ui dimmer">
+                <div class="content">
+                  <%= link_to result.url do %>
+                      <i class="ui huge unhide link icon"></i>
+                  <% end %>
+                </div>
+              </div>
+              <%= image_tag result.thumbnail_url, class: "ui image" %>
+            </div>
+            <div class="content">
+              <%= link_to result.title, result.url, class: 'header' %>
+            </div>
+            <a class="ui red bottom attached button recommendation-remover"
+               rid="<%= result.id %>">
+              <i class="remove icon"></i> Odobrať
+            </a>
+          </div>
+      <% end %>
+    </div>
+  </fieldset>
+
+  <div class="ui styled fluid accordion">
+    <div class="title">
+      <i class="dropdown icon"></i>
+      Výber z videí
+    </div>
+    <div class="content">
+      <%= link_to google_signout_recommender_path(@recommender), class: "ui red button",
+                  method: :delete,
+                  data: { confirm: t(:are_you_sure_logout_google) } do %>
+          <i class="ui sign out icon"></i>
+          <%= t :logout_google %>
+      <% end %>
+      <% if @videos.any? %>
+          <div class="ui six stackable special cards">
+            <% @videos.each do |video| %>
+                <div class="card">
+                  <div class="blurring dimmable image">
+                    <div class="ui dimmer">
+                      <div class="content">
+                        <%= link_to "https://www.youtube.com/watch?v=#{video.try(:snippet).try(:resource_id).try(:video_id)}", target: '_blank' do %>
+                            <i class="ui huge unhide link icon"></i>
+                        <% end %>
+                      </div>
+                    </div>
+                    <%= image_tag video.try(:snippet).try(:thumbnails).try(:medium).try(:url), class: "ui image" %>
+                  </div>
+                  <div class="content">
+                    <%= link_to video.snippet.title, "https://www.youtube.com/watch?v=#{video.try(:snippet).try(:resource_id).try(:video_id)}", class: 'header', target: '_blank' %>
+                  </div>
+                  <a class="ui green bottom attached button add-to-recommender"
+                     rid="<%= @recommender.id %>" rtitle="<%= video.snippet.title %>"
+                     rthumbnail="<%= video.try(:snippet).try(:thumbnails).try(:medium).try(:url) %>"
+                     rurl="<%= "https://www.youtube.com/watch?v=#{video.try(:snippet).try(:resource_id).try(:video_id)}" %>">
+                    <i class="plus circle icon"></i> Pridať na doporučovanie
+                  </a>
+                </div>
+            <% end if @videos %>
+          </div>
+      <% else %>
+          <div class="ui yellow icon message">
+            <i class="warning sign icon"></i>
+            <div class="content">
+              <div class="header">
+                V prihlásenom Google účte neexistujú žiadne
+                Youtube videá.
+              </div>
+            </div>
+          </div>
+      <% end %>
+    </div>
+    <div class="title">
+      <i class="dropdown icon"></i>
+      Výber z článkov
+    </div>
+    <div class="content">
+      <div class="ui six stackable special cards">
+        <% HtmlArticle.order(created_at: :desc).each do |article| %>
+            <div class="card">
+              <div class="blurring dimmable image">
+                <div class="ui dimmer">
+                  <div class="content">
+                    <%= link_to article, target: '_blank' do %>
+                        <i class="ui huge unhide link icon"></i>
+                    <% end %>
+                  </div>
+                </div>
+                <%= image_tag "no-image-box.png", class: "ui image" %>
+              </div>
+              <div class="content">
+                <% if article.title.blank? %>
+                    <%= link_to "No title", article, class: 'header', target: '_blank' %>
+                <% else %>
+                    <%= link_to article.title, article, class: 'header', target: '_blank' %>
+                <% end %>
+              </div>
+              <a class="ui green bottom attached button add-to-recommender"
+                 rid="<%= @recommender.id %>" rtitle="<%= article.title %>"
+                 rthumbnail="no-image-box.png"
+                 rurl="<%= html_article_path(article) %>">
+                <i class="plus circle icon"></i> Pridať na doporučovanie
+              </a>
+            </div>
+        <% end %>
+      </div>
+    </div>
+    <div class="title">
+      <i class="dropdown icon"></i>
+      Výber z blogu (iba publikované)
+    </div>
+    <div class="content">
+      <div class="ui six stackable special cards">
+        <% BlogPost.where(is_published: true).order(created_at: :desc).each do |blog| %>
+            <div class="card">
+              <div class="blurring dimmable image">
+                <div class="ui dimmer">
+                  <div class="content">
+                    <%= link_to blog, target: '_blank' do %>
+                        <i class="ui huge unhide link icon"></i>
+                    <% end %>
+                  </div>
+                </div>
+                <% image_url = image_path("no-image-box.png") %>
+                <% image_url = blog.image if !blog.image.blank? %>
+                <%= image_tag image_url, class: "ui image" %>
+              </div>
+              <div class="content">
+                <% if blog.title.blank? %>
+                    <%= link_to "No title", blog, class: 'header', target: '_blank' %>
+                <% else %>
+                    <%= link_to blog.title, blog, class: 'header', target: '_blank' %>
+                <% end %>
+              </div>
+              <a class="ui green bottom attached button add-to-recommender"
+                 rid="<%= @recommender.id %>" rtitle="<%= blog.title %>"
+                 rthumbnail="<%= image_url %>"
+                 rurl="<%= blog_post_path(blog) %>">
+                <i class="plus circle icon"></i> Pridať na doporučovanie
+              </a>
+            </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

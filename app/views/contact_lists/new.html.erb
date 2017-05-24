@@ -1,0 +1,22 @@
+<%= render 'header' %>
+
+<div class="ui padded stackable grid">
+  <div class="ui two column row">
+    <div class="four wide column">
+      <%= render 'panel' %>
+    </div>
+    <div class="twelve wide column">
+      <h2 class="ui header">
+        <i class="plus circle icon"></i>
+        <div class="content">
+          <%= t :add_address_book %>
+          <div class="sub header">
+            <%= t :add_address_book_header %>
+          </div>
+        </div>
+      </h2>
+
+      <%= render 'form' %>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,56 @@
+<%= render 'import_header' %>
+<%= render 'import_upper_panel' %>
+<div class="ui attached segment">
+  <%= form_tag({ controller: :events, action: :import_3 }, method: :post, multipart: true, class: 'ui form') do %>
+      <%= hidden_field_tag :file, @file %>
+      <%= hidden_field_tag :event_column_set_id, @event_column_set.try(:id) %>
+      <div class="ui grey icon message">
+        <i class="info circle icon"></i>
+        <div class="content">
+          <div class="header">
+            Informácie k priraďovaniu stĺpcov:
+          </div>
+          <div class="ui bulleted list">
+            <div class="item">V ľavom stĺpci vidíš názov stĺpca súboru. V pravom
+              stĺpci vidíš priradenie ku stĺpcu v databáze. Ak priradenie
+              nesedí, vyber lepšie priradenie.
+            </div>
+            <div class="item">Ak chceš spojiť dva stĺpce, vyber u každého
+              rovnaký parameter. Hodnoty stĺpcov budú spojené medzerou v poradí,
+              v akom sú za sebou v súbore.
+            </div>
+            <div class="item">
+              A chceš niektorý stĺpec ignorovať, vyber možnosť "ignore"
+            </div>
+          </div>
+        </div>
+      </div>
+      <table class="ui compact green selectable celled striped table">
+        <thead>
+        <tr>
+          <th>Stĺpec v súbore</th>
+          <th>Priradený stĺpec</th>
+        </tr>
+        </thead>
+        <tbody>
+        <% @file_header.each do |file_header| %>
+            <% if !file_header.blank? %>
+                <tr>
+                  <td><%= file_header %></td>
+                  <td>
+                    <div class="field">
+                      <% if @event_column_set %>
+                          <%= select_tag file_header, options_for_select(Event.my_columns, @event_column_set.event_columns.where(their: file_header).pluck(:my).first) %>
+                      <% else %>
+                          <%= select_tag file_header, options_for_select(Event.my_columns, "ignore") %>
+                      <% end %>
+                    </div>
+                  </td>
+                </tr>
+            <% end %>
+        <% end %>
+        </tbody>
+      </table>
+      <%= submit_tag "Uložiť a pokračovať", class: 'ui green button' %>
+  <% end %>
+</div>

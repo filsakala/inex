@@ -1,0 +1,37 @@
+<h1 class="ui header">
+  <i class="book icon"></i>
+  <div class="content">
+    Know-how
+    <div class="sub header">Na týchto stránkach nájdeš návody všetkého druhu.
+      Pre prehľadnosť (a vyhľadávanie) sú zaradené do kategórií.
+    </div>
+  </div>
+</h1>
+
+<% @knowledges.each do |knowledge| %>
+    <table>
+      <thead>
+      <tr>
+        <th>Title</th>
+        <th>Text</th>
+        <th>Tags</th>
+        <th colspan="3"></th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+        <td><%= knowledge.title %></td>
+        <td><%= knowledge.text %></td>
+        <td>
+        </td>
+        <td><%= link_to 'Show', knowledge %></td>
+        <td><%= link_to 'Edit', edit_knowledge_path(knowledge) %></td>
+        <td><%= link_to 'Destroy', knowledge, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+      </tbody>
+    </table>
+    <hr>
+<% end %>
+
+

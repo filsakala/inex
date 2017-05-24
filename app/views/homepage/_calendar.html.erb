@@ -1,0 +1,28 @@
+<%= month_calendar events: @calendar_events, previous_link: events_ajax_previous_link, next_link: events_ajax_next_link do |date, meetings| %>
+    <h5>
+      <div class="content">
+        <%= date.day %>
+        <% if meetings.any? %>
+            <div class="sub header">
+              <a class="browse item event-calendar-list" href="#events_calendar"
+                 date="<%= t :events %> <%= date_format date %>"
+                 meetings="<%= meeting_html(meetings) %>">
+                <div class="ui green circular right floated icon label">
+                  <%= meetings.count %>
+                </div>
+              </a>
+            </div>
+        <% end %>
+      </div>
+    </h5>
+<% end %>
+
+<div class="ui modal" id="modal">
+  <i class="close icon"></i>
+  <div id="modal-header" class="header"></div>
+  <div class="image content">
+    <div class="description">
+      <div id="event_calendar_list"></div>
+    </div>
+  </div>
+</div>

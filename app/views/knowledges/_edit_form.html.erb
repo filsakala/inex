@@ -1,0 +1,21 @@
+<%= form_for(@knowledge, html: { class: 'ui form' }) do |f| %>
+    <%= write_error(@knowledge) %>
+
+    <%= f.hidden_field :title %>
+    <%= f.hidden_field :text %>
+    <%= f.hidden_field :keywords %>
+
+    <div class="field">
+      <%= f.label 'Výber kategórií' %>
+      <%= select_tag :category_ids, options_from_collection_for_select(@knowledge_categories, "id", "category", (params[:category_ids] || @my_categories)), multiple: true, class: "ui dropdown" %>
+    </div>
+
+    <div class="field">
+      <%= label_tag 'Kto môze vidieť a upravovať know-how' %><br>
+      <%= select_tag :employee_ids, options_from_collection_for_select(@employees, "id", "nickname", (params[:employee_ids] || @my_employees)), multiple: true, class: "ui dropdown" %>
+    </div>
+
+    <div class="actions">
+      <%= f.submit 'Uložiť', class: 'ui green submit button' %>
+    </div>
+<% end %>

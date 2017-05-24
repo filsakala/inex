@@ -1,0 +1,189 @@
+<% if @articles[:tabory_panel].any? %>
+    <div class="row">
+      <div class="column">
+        <div class="ui <%= number_as_word(@articles[:tabory_panel].count) %> special doubling green cards">
+          <% @articles[:tabory_panel].each do |tabor| %>
+              <div class="ui lightgrey-background link card">
+                <div class="ui lightgrey-background inverted dimmer">
+                  <div class="content">
+                    <div class="center">
+                      <h2 class="ui black header"><%= t :im_interested %></h2>
+                      <%= link_to t(:see_more), tabor.url, class: 'ui green inverted button' %>
+                    </div>
+                  </div>
+                </div>
+                <% unless tabor.selected_image.blank? %>
+                    <div class="center aligned">
+                      <%= image_tag tabor.selected_image.url, class: 'ui centered image' %>
+                    </div>
+                <% end %>
+                <div class="content">
+                  <h3><%= tabor.title %></h3>
+                </div>
+              </div>
+          <% end %>
+        </div>
+        <% if current_user.try(:is_employee?) %>
+            <%= link_to edit_cards_homepage_index_path, class: 'ui yellow right floated button' do %>
+                <i class="edit icon"></i>
+                <%= t :edit_cards %>
+            <% end %>
+        <% end %>
+      </div>
+    </div>
+<% else %>
+    <% if current_user.try(:is_employee?) %>
+        <%= link_to edit_cards_homepage_index_path, class: 'ui yellow right floated button' do %>
+            <i class="edit icon"></i>
+            <%= t :edit_cards %>
+        <% end %>
+    <% end %>
+<% end %>
+
+<div style='min-height: 10px;'></div>
+<div class="ui two column stackable row grid" id="mapa" style="margin-bottom: 50px;">
+  <div class="column" style="">
+    <h3><i class="ui calendar outline icon"></i><%= t :actual_events %></h3>
+    <div id="map" style='min-height: 300px; height: 100%; text-align: center; padding: 150px 0;'>
+      <h3><i class="large spinner loading icon"></i><br>Loading Map</h3>
+    </div>
+  </div>
+  <div class="column">
+    <div class="ui grid" style="padding-top: 15px;">
+      <div class="nine wide column">
+        <h3><i class="ui search icon"></i><%= t :search_and_filtering %></h3>
+      </div>
+      <div class="seven wide right aligned column">
+        <%= link_to search_homepage_index_path, class: 'ui mini grey icon button' do %>
+            <i class="external icon"></i> <%= t :page_with_event_list %>
+        <% end %>
+      </div>
+    </div>
+    <%= render 'map_search' %>
+  </div>
+</div>
+<div style='min-height: 50px;'></div>
+<div class="ui three column stackable row grid lightgrey-background">
+  <div class="column">
+    <h3><i class="ui newspaper icon"></i><%= t :ten_upcoming_events %></h3>
+    <% if @upcoming_events.any? %>
+        <div class="ui link selection list">
+          <% @upcoming_events.each do |event| %>
+              <div class="item">
+                <div class="ui avatar image">
+                  <% if !event.country.blank? %>
+                      <i class="large <%= @flags[event.country] %> middle aligned flag"></i>
+                  <% else %>
+                      <i class="black flag icon"></i>
+                  <% end %>
+                </div>
+                <%= link_to show_public_event_path(event), class: 'content' do %>
+                    <div class="header"><%= event.translated_title %>
+                      <% if !event.code.blank? %>
+                          (<%= event.code %>)
+                      <% elsif !event.code_alliance.blank? %>
+                          (<%= event.code_alliance %>)
+                      <% end %></div>
+                    <div class="description">
+
+                      <% if !event.from.blank? && !event.to.blank? %>
+                          <%= event.country %>,
+                          <% if date_day_month_format(event.from) != date_day_month_format(event.to) %>
+                              <%= date_day_month_format event.from %>
+                              - <%= date_format event.to %>
+                          <% else %>
+                              <%= date_format event.from %>
+                          <% end %>
+                      <% else %>
+                          <%= event.country %>
+                      <% end %>
+                      <div>
+                        <% event.event_categories.each do |category| %>
+                            <div class="ui green label"><%= category.abbr %></div>
+                        <% end %>
+                      </div>
+                    </div>
+                <% end %>
+              </div>
+          <% end %>
+        </div>
+    <% else %>
+        <div class="ui list">
+          <%= t :ten_upcoming_events_nothing %>
+        </div>
+    <% end %>
+  </div>
+  <div class="column">
+    <h3><i class="ui add to calendar icon"></i><%= t :last_20_added %></h3>
+    <ul id="nt-example1" class="ui link selection list">
+      <% @last_added_events.each do |event| %>
+          <li class="item">
+            <div class="ui avatar image">
+              <% if !event.country.blank? %>
+                  <i class="large <%= Country.flag_by_name(event.country) %> middle aligned flag"></i>
+              <% else %>
+                  <i class="black flag icon"></i>
+              <% end %>
+            </div>
+            <%= link_to show_public_event_path(event), class: 'content' do %>
+                <div class="header"><%= event.translated_title %>
+                  <% if !event.code.blank? %>
+                      (<%= event.code %>)
+                  <% elsif !event.code_alliance.blank? %>
+                      (<%= event.code_alliance %>)
+                  <% end %></div>
+                <div class="description">
+
+                  <% if !event.from.blank? && !event.to.blank? %>
+                      <%= event.country %>,
+                      <% if date_day_month_format(event.from) != date_day_month_format(event.to) %>
+                          <%= date_day_month_format event.from %>
+                          - <%= date_format event.to %>
+                      <% else %>
+                          <%= date_format event.from %>
+                      <% end %>
+                  <% else %>
+                      <%= event.country %>
+                  <% end %>
+                  <div>
+                    <% event.event_categories.each do |category| %>
+                        <div class="ui green label"><%= category.abbr %></div>
+                    <% end %>
+                  </div>
+                </div>
+            <% end %>
+          </li>
+      <% end %>
+    </ul>
+  </div>
+  <div class="column">
+    <div id="events_calendar">
+      <%= render 'calendar' %>
+    </div>
+  </div>
+</div>
+<div style='min-height: 40px;'></div>
+<div class="ui center aligned container centered padded grid" id="countup" counted="false">
+  <div class="ui statistics" id="scroll-listener" style="display: block; margin: auto; ">
+    <div class="statistic circle-text green-circle">
+      <div id="cntup1" class="value" end-val="<%= DateTime.now.year - 1993 %>"></div>
+      <div class="label"><%= t :bubble_years_of %>
+        <br><%= t :bubble_experience %></div>
+    </div>
+    <div class="statistic circle-text yellow-circle">
+      <div id="cntup2" class="value" end-val="<%= Event.select(:country).map(&:country).uniq.count %>"></div>
+      <div class="label"><%= t :bubble_countries_in_the %>
+        <br><%= t :bubble_world %></div>
+    </div>
+    <div class="statistic circle-text orange-circle">
+      <div id="cntup3" class="value" end-val="<%= Volunteer.count %>"></div>
+      <div class="label"><%= t :bubble_sent %><br><%= t :bubble_volunteers %>
+      </div>
+    </div>
+    <div class="statistic circle-text red-circle">
+      <div id="cntup4" class="value" end-val="<%= Event.count %>"></div>
+      <div class="label"><%= t :bubble_organized %><br><%= t :bubble_events %>
+      </div>
+    </div>
+  </div>
+</div>

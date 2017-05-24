@@ -1,0 +1,11 @@
+  <div class="field-holder fields">
+    <div class="eight wide field">
+      <%= f.text_field :title %>
+    </div>
+    <div class="five wide field">
+      <%= f.select :state, {"#{t(:undone_task)}": 'nedokončená', "#{t(:done_task)}": 'dokončená'} %>
+    </div>
+    <div class="ui three wide field">
+      <%= link_to_remove_fields t(:remove), f %>
+    </div>
+  </div>

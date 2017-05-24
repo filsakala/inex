@@ -1,0 +1,24 @@
+<h2 class="ui header">
+  <i class="circular calendar icon"></i>
+  <div class="content">
+    <%= t :visited_events %>
+    <div class="sub header"><%= t :visited_events_header %></div>
+  </div>
+</h2>
+
+<% if !@volunteers.blank? || !@leaders.blank? || !@trainers.blank? || !@local_partners.blank? %>
+    <%= render 'volunteers', vols: @volunteers %>
+    <%= render 'non_volunteers', vols: @leaders, voltype: 'leaders' %>
+    <%= render 'non_volunteers', vols: @trainers, voltype: 'trainers' %>
+    <%= render 'non_volunteers', vols: @local_partners, voltype: 'local_partner' %>
+<% else %>
+    <div class="ui icon message">
+      <i class="frown icon"></i>
+      <div class="content">
+        <div class="header">
+          <%= t :visited_events_announcement %>
+        </div>
+        <p><%= t :visited_events_announcement_body %></p>
+      </div>
+    </div>
+<% end %>

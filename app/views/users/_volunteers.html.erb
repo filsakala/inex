@@ -1,0 +1,38 @@
+<% if vols.any? %>
+    <h3><%= t :role %>: <%= t :volunteers %></h3>
+    <table class="ui green celled table">
+      <thead>
+      <tr>
+        <th class="two wide">Event</th>
+        <th class="two wide"><%= t :date %></th>
+        <th class="two wide"><%= t :actions %></th>
+      </tr>
+      </thead>
+      <tbody>
+      <% vols.each do |vol| %>
+          <tr>
+            <td>
+              <%= vol.event.try(:title) %>
+              <% if vol.event_list && vol.event_list.is_child %>
+                  <i class="big child icon pop_up" title="<%= vol.event_list.name %> <%= vol.event_list.surname %>"></i>
+              <% end %>
+            </td>
+            <td><%= vol.event.try(:from_to) %></td>
+            <td>
+              <% if vol.event %>
+                  <%= link_to show_public_event_path(vol.event), class: 'pop_up', title: 'Detail' do %>
+                      <i class="big grey unhide icon"></i>
+                  <% end %>
+              <% end %>
+              <% if !vol.event.evaluation_url_volunteer.blank? && vol.event.evaluation_deadline_volunteer <= DateTime.now %>
+                  <%= link_to vol.event.evaluation_url_volunteer, class: 'ui button', target: :blank do %>
+                      <i class="pie chart icon"></i>
+                      <%= t :evaluation %>
+                  <% end %>
+              <% end %>
+            </td>
+          </tr>
+      <% end %>
+      </tbody>
+    </table>
+<% end %>

@@ -1,0 +1,13 @@
+<div class="two fields">
+  <div class="field">
+    <%= text_field_tag "names[]" %>
+  </div>
+  <div class="field">
+    <%= select_tag "types[]", options_for_select(
+        { 'text': 'string', "#{t(:date)}": 'date', "#{t(:yes_no)}": 'boolean',
+          # 'Užívatelia - Meno': 'user.name', 'Užívatelia - Priezvisko': 'user.surname',
+          # 'Užívatelia - Mail': 'user.mail', 'Užívatelia - Priezvisko Meno': 'user.surname_name',
+          # 'Užívatelia - Meno Priezvisko': 'user.name_surname'
+        }) %>
+  </div>
+</div>

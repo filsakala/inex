@@ -1,0 +1,19 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Title:</strong>
+  <%= @homepage_card.title %>
+</p>
+
+<p>
+  <strong>Url:</strong>
+  <%= @homepage_card.url %>
+</p>
+
+<p>
+  <strong>Priority:</strong>
+  <%= @homepage_card.priority %>
+</p>
+
+<%= link_to 'Edit', edit_homepage_card_path(@homepage_card) %> |
+<%= link_to 'Back', homepage_cards_path %>

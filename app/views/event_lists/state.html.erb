@@ -1,0 +1,56 @@
+<div class="ui container">
+  <h1 class="ui header">
+    <i class="large icons">
+      <i class="suitcase icon"></i>
+      <i class="red corner question mark icon"></i>
+    </i>
+    <div class="content">
+      <%= t :state_for_bag %> <%= @event_list.name %>  <%= @event_list.surname %>
+      <div class="sub header">
+        <%= t :state_for_bag_description %>
+      </div>
+    </div>
+  </h1>
+  <%= link_to t(:back), bags_event_type_path(@event_list.event_type), class: 'ui grey button' %>
+  <div class="ui divider"></div>
+
+  <% if @events.any? %>
+      <%= form_tag({ controller: :event_lists, action: :state }, method: :put, class: 'ui form') do %>
+          <% @event_list.event_in_lists.each do |eil| %>
+              <div class="fields">
+                <div class="twelve wide field">
+                  <label><%= "#{t :state_for_event}: #{eil.event.translated_title}" %></label>
+                  <%= text_field_tag eil.id, eil.state %>
+                </div>
+                <div class="four wide field">
+                  <label><%= t(:going_here) %></label>
+                  <% vol = eil.event_list.volunteers.where(event: eil.event).take %>
+                  <% if vol %>
+                      <i class="big green checkmark icon"></i>
+                      <%= link_to t(:remove_him), vol, method: :delete, data: { confirm: "#{t :are_you_sure_to_remove_volunteer_from} #{eil.event.translated_title}?" }, class: 'ui red button' %>
+                  <% else %>
+                      <i class="big red remove icon"></i>
+                      <%= link_to t(:add_him), new_event_event_list_volunteer_path(eil.event, @event_list), data: { confirm: "#{t :are_you_sure_to_add_volunteer_on} #{eil.event.translated_title}?" }, class: 'ui green button' %>
+                  <% end %>
+                </div>
+              </div>
+          <% end %>
+
+          <%= submit_tag t(:save), class: 'ui green submit button' %>
+      <% end %>
+      <%= render 'event_list', events: @events %>
+      <% if @event_list.state == 'opened' || @event_list.state == 'reopened' %>
+          <%= link_to t(:register_bag), edit_event_list_path(@my_bag), class: 'ui right floated green submit button' %>
+      <% end %>
+  <% else %>
+      <div class="ui icon message">
+        <i class="frown icon"></i>
+        <div class="content">
+          <div class="header">
+            <%= t :bag_is_empty %>
+          </div>
+          <p><%= t :bag_is_empty_description %></p>
+        </div>
+      </div>
+  <% end %>
+</div>

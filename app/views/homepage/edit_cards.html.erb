@@ -1,0 +1,88 @@
+<div class="ui container" style="padding-bottom: 15px;">
+  <h1 class="ui header">
+    <i class="edit icon"></i>
+    <div class="content">
+      <%= t :edit_cards_header %>
+      <div class="sub header">
+        <%= t :edit_cards_header_description %>
+      </div>
+    </div>
+  </h1>
+</div>
+
+
+<%= form_tag({ controller: :homepage, action: :edit_cards }, method: :put, class: 'ui form', multipart: true) do %>
+    <div style="padding-bottom: 10px;padding-top: 10px;" id="cardText"></div>
+    <div class="row">
+      <div class="column">
+        <div class="ui <%= number_as_word(@cards.count) %> special doubling green cards">
+          <% @cards.each do |tabor| %>
+              <div class="ui lightgrey-background card" id="card<%= tabor.id %>" cardId="<%= tabor.id %>">
+                <div class="ui three buttons">
+                  <div class="ui icon button cardLeftMover" cardId="<%= tabor.id %>">
+                    <i class="left arrow icon"></i>
+                  </div>
+                  <div class="ui red icon button cardDestroyer" cardId="<%= tabor.id %>">
+                    <i class="remove icon"></i>
+                  </div>
+                  <div class="ui icon button cardRightMover" cardId="<%= tabor.id %>">
+                    <i class="right arrow icon"></i>
+                  </div>
+                </div>
+                <%= fields_for "#{tabor.id}" do |f| %>
+                    <span id="posViewer<%= tabor.id %>"><%= "Pos: #{tabor.priority}" %></span>
+                    <%= f.hidden_field :priority, value: tabor.priority %>
+                    <%= f.text_field :url, value: tabor.url, placeholder: "http://facebook.com" %>
+                    <%= f.file_field :image_1 %>
+                    <% unless tabor.image_1.blank? %>
+                        <div class="center aligned">
+                          <%= image_tag tabor.image_1.url, class: 'ui centered image' %>
+                        </div>
+                    <% end %>
+                    <%= f.file_field :image_2 %>
+                    <% unless tabor.image_2.blank? %>
+                        <div class="center aligned">
+                          <%= image_tag tabor.image_2.url, class: 'ui centered image' %>
+                        </div>
+                    <% end %>
+                    <%= f.file_field :image_3 %>
+                    <% unless tabor.image_3.blank? %>
+                        <div class="center aligned">
+                          <%= image_tag tabor.image_3.url, class: 'ui centered image' %>
+                        </div>
+                    <% end %>
+                    <%= f.file_field :image_4 %>
+                    <% unless tabor.image_4.blank? %>
+                        <div class="center aligned">
+                          <%= image_tag tabor.image_4.url, class: 'ui centered image' %>
+                        </div>
+                    <% end %>
+                    <%= f.file_field :image_5 %>
+                    <% unless tabor.image_5.blank? %>
+                        <div class="center aligned">
+                          <%= image_tag tabor.image_5.url, class: 'ui centered image' %>
+                        </div>
+                    <% end %>
+                    <%= f.text_field :title, value: tabor.title, placeholder: t(:name_task) %>
+                <% end %>
+
+                <% if tabor.is_visible %>
+                    <div class="ui green icon button pop_up toggleIsVisible" cardId="<%= tabor.id %>" title="<%= t :visible_on_webpage %>" visible="1">
+                      <i class="unhide icon"></i>
+                    </div>
+                <% else %>
+                    <div class="ui red icon button pop_up toggleIsVisible" cardId="<%= tabor.id %>" title="<%= t :hidden_on_webpage %>" visible="0">
+                      <i class="unhide icon"></i>
+                    </div>
+                <% end %>
+              </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+    <div style="padding-bottom: 10px;padding-top: 10px;"></div>
+    <%= submit_tag t(:save), class: 'ui green button' %>
+    <a class="ui tiny yellow button cardAdder">
+      <i class="plus icon"></i> <%= t :add_card %>
+    </a>
+<% end %>

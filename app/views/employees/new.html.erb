@@ -1,0 +1,13 @@
+<h1><%= t :add_inex_member %> <%= @user.login_mail %></h1>
+
+<%= form_for(@user, url: set_inex_member_user_url(@user), html: { class: 'ui form' }) do |f| %>
+    <%= write_error(@user) %>
+
+    <div class="field">
+      <%= f.label :role, t(:role) %>
+      <%= f.select :role, ["employee", "eds"] %>
+    </div>
+
+    <%= f.submit t(:save), class: 'ui positive button' %>
+<% end %>
+

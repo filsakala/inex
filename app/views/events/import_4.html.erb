@@ -1,0 +1,38 @@
+<%= render 'import_header' %>
+
+<%= render 'import_upper_panel' %>
+<div class="ui attached segment">
+  <% unless @errors.blank? %>
+      <div class="ui red icon message">
+        <i class="remove icon"></i>
+        <div class="content">
+          <div class="header">
+            <%= t :these_errors_occured %>
+          </div>
+          <% @errors.each do |error| %>
+              <p><%= error %></p>
+          <% end %>
+        </div>
+      </div>
+  <% else %>
+      <div class="ui green icon message">
+        <i class="smile icon"></i>
+        <div class="content">
+          <%= t :these_changes_were_successfully_performed %>
+        </div>
+      </div>
+      <div class="ui top attached tabular menu">
+        <a class="item active" data-tab="first"><%= t :new %>
+          (<%= @new.count %>) </a>
+        <a class="item" data-tab="second"><%= t :updated %>
+          (<%= @changed.count %>) </a>
+      </div>
+      <div class="ui bottom attached tab segment active" data-tab="first">
+        <%= render 'import_4_events', event_ary: @new %>
+      </div>
+      <div class="ui bottom attached tab segment" data-tab="second">
+        <%= render 'import_4_events', event_ary: @changed %>
+      </div>
+  <% end %>
+
+</div>

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>INEX Slovakia</title>
+  <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => true %>
+  <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+  <%= javascript_include_tag 'maps', 'data-turbolinks-track' => true %>
+  <%= javascript_include_tag 'markerclusterer', 'data-turbolinks-track' => true %>
+  <script src="https://maps.googleapis.com/maps/api/js?key=<%= Rails.configuration.google_maps_api_key %>&callback=initMap"
+          async defer></script>
+  <%= csrf_meta_tags %>
+  <%= favicon_link_tag 'favicon.png' %>
+  <script>
+    <!-- Smartlook -->
+    window.smartlook||(function(d) {
+    var o=smartlook=function(){ o.api.push(arguments)},h=d.getElementsByTagName('head')[0];
+    var c=d.createElement('script');o.api=new Array();c.async=true;c.type='text/javascript';
+    c.charset='utf-8';c.src='//rec.smartlook.com/recorder.js';h.appendChild(c);
+    })(document);
+    smartlook('init', '54bfa4e82b0e8a985cb19c3138e5cd2ce13912f0');
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=0.5">
+</head>
+<body>
+<%= render 'layouts/flash_notice' %>
+<div class="ui segments" style="margin: 0px;">
+  <div class="ui top attached secondary menu" style="background-color: #246C1F !important; color: #FFFFFF;">
+    <div class="computer large monitor only left menu">
+      <%= link_to 'https://www.facebook.com/INEX-Slovakia-189864024941/', target: :blank, title: 'Facebook', class: 'ui item pop_up' do %>
+          <i class="inverted facebook icon"></i>
+      <% end %>
+      <%= link_to 'https://twitter.com/inexslovakia', target: :blank, title: 'Twitter', class: 'ui pop_up item' do %>
+          <i class="inverted twitter icon"></i>
+      <% end %>
+      <%= link_to 'https://www.linkedin.com/company/inex-slovakia', target: :blank, title: 'LinkedIn', class: 'ui pop_up item' do %>
+          <i class="inverted linkedin icon"></i>
+      <% end %>
+      <%= link_to 'https://www.youtube.com/user/Inexslovakia', target: :blank, title: 'YouTube', class: 'ui pop_up item' do %>
+          <i class="inverted youtube icon"></i>
+      <% end %>
+      <%= link_to 'https://www.instagram.com/inex_slovakia/', target: :blank, title: 'Instagram', class: 'ui pop_up item' do %>
+          <i class="inverted instagram icon"></i>
+      <% end %>
+      <%= link_to 'https://plus.google.com/+INEXSlovakia', target: :blank, title: 'Google+', class: 'ui pop_up item' do %>
+          <i class="inverted google plus icon"></i>
+      <% end %>
+    </div>
+    <div class="right menu">
+      <%= link_to kontakty_homepage_index_path, class: 'item' do %>
+          <i class="inverted phone icon"></i>
+          <span class="white-text"><%= t :contacts %></span>
+      <% end %>
+      <%= link_to blog_posts_path, class: 'item' do %>
+          <i class="inverted find icon"></i>
+          <span class="white-text">Blog</span>
+      <% end %>
+      <% if @faq %>
+          <%= link_to html_article_path(@faq), class: 'item' do %>
+              <i class="inverted question mark icon"></i>
+              <span class="white-text">FAQ</span>
+          <% end %>
+      <% end %>
+      <% if I18n.locale.to_s == "sk" %>
+          <%= link_to set_lang_homepage_index_path, class: 'item' do %>
+              <i class="inverted gb flag"></i>
+              <%# image_tag("gbflag.svg")%>
+              <span class="white-text">English</span>
+          <% end %>
+      <% else %>
+          <%= link_to set_lang_homepage_index_path, class: 'item' do %>
+              <i class="inverted sk flag"></i>
+              <span class="white-text">Slovensky</span>
+          <% end %>
+      <% end %>
+      <% if current_user %>
+          <%= link_to current_user, class: 'active green item' do %>
+              <i class="inverted user icon"></i>
+              <span class="white-text"><%= current_user.nickname_or_name %></span>
+          <% end %>
+      <% else %>
+          <%= link_to new_session_path, class: 'active green item' do %>
+              <i class="inverted sign in icon"></i>
+              <span class="white-text"><%= t :log_in %></span>
+          <% end %>
+      <% end %>
+    </div>
+  </div>
+  <div class="ui padded segment" style="min-height: 100px; max-height: 150px;">
+    <div class="ui column grid">
+      <div class="ui five wide column">
+        <%= link_to image_tag("inex_text_a_logo_en.png"), root_path, class: "ui medium image grow" %>
+      </div>
+      <% if current_user && @events_in_bag_count > 0 %>
+          <div class="ui six wide column" style="position:relative" clickCnt="0">
+            <%= image_tag "lodka.svg", id: "moving-ship", style: 'position:absolute;', height: '75px' %>
+          </div>
+          <div class="ui one wide column"></div>
+          <div class="ui three wide column">
+            <%= link_to event_list_path(@my_bag), title: t(:your_bag_of_events), class: 'ui right floated massive inverted green icon button pop_up' do %>
+                <i class="large suitcase icon"></i> <%= @events_in_bag_count %>
+            <% end %>
+          </div>
+      <% else %>
+          <div class="ui eight wide column" style="position:relative" clickCnt="0">
+            <%= image_tag "lodka.svg", id: "moving-ship", style: 'position:absolute;', height: '75px' %>
+          </div>
+      <% end %>
+    </div>
+  </div>
+  <div class="ui secondary pointing five item compact menu">
+    <div class="ui fluid dropdown item hoverable-menu-item" id="about_us">
+      <span class="child-menu-item" style="font-size: 150%;"><%= t :about_us %>
+        <span class="large monitor computer only"><i class="dropdown icon"></i></span></span>
+      <div class="menu" style="min-width: 200px;">
+        <h3 class="header">
+          <%= t :about_us %> <%= link_to_new_article(category: "o_nas") %>
+        </h3>
+        <% @articles[:o_nas].each do |article| %>
+            <%= render 'layouts/show_article_in_menu', article: article %>
+        <% end %>
+      </div>
+    </div>
+    <div class="ui fluid dropdown item hoverable-menu-item" id="activities">
+      <span class="child-menu-item" style="font-size: 150%;"><%= t :activities %>
+        <span class="large monitor computer only"><i class="dropdown icon"></i></span></span>
+      <div class="menu" style="min-width: 200px;">
+        <h3 class="header"><%= t :activity_types %> <%= link_to_new_article(category: "aktivity") %></h3>
+        <% @articles[:aktivity].each do |article| %>
+            <%= render 'layouts/show_article_in_menu', article: article %>
+        <% end %>
+      </div>
+    </div>
+    <div class="ui fluid dropdown item hoverable-menu-item" id="get_involved">
+      <span class="child-menu-item" style="font-size: 150%;"><%= t :get_involved %>
+        <span class="large monitor computer only"><i class="dropdown icon"></i></span></span>
+      <div class="menu" style="min-width: 200px;">
+        <h3 class="header"><%= t :active %> <%= link_to_new_article(category: "pomoz") %></h3>
+        <% @articles[:pomoz].each do |article| %>
+            <%= render 'layouts/show_article_in_menu', article: article %>
+        <% end %>
+        <h3 class="header"><%= t :financially %> <%= link_to_new_article(category: "pomoz_financne") %></h3>
+        <% @articles[:pomoz_financne].each do |article| %>
+            <%= render 'layouts/show_article_in_menu', article: article %>
+        <% end %>
+      </div>
+    </div>
+    <div class="ui fluid dropdown item hoverable-menu-item" id="media">
+      <span class="child-menu-item" style="font-size: 150%;"><%= t :media %>
+        <span class="large monitor computer only"><i class="dropdown icon"></i></span></span>
+      <div class="menu" style="min-width: 200px;">
+        <h3 class="header"><%= t :media %> <%= link_to_new_article(category: "media") %></h3>
+        <% @articles[:media].each do |article| %>
+            <%= render 'layouts/show_article_in_menu', article: article %>
+        <% end %>
+      </div>
+    </div>
+    <a class="item" style="border-bottom-width: 0px;">
+      <div class="ui right aligned category homepage search">
+        <div class="ui icon input">
+          <input class="prompt" type="text" placeholder="<%= t :search_dots %>" id="search-field" size="14">
+          <i class="search icon"></i>
+        </div>
+        <div class="results"></div>
+      </div>
+    </a>
+  </div>
+  <div class="ui container">
+    <div class="ui padded grid segment" style="border: 0px; box-shadow: none;">
+      <% if action_name != 'web' %>
+          <div class="ui top attached breadcrumb" style="padding-bottom: 15px;">
+            <%= build_breadcrumb_homepage.html_safe %>
+          </div>
+      <% end %>
+      <%= yield %>
+    </div>
+  </div>
+  <div class="ui fluid centered padded two column grid green-background">
+    <div class="column">
+      <h3>
+        <i class="ui map icon"></i>
+        Mapa stránok
+      </h3>
+      <div class="ui list" style="margin-left: 20px;">
+        <a class="item rolluptolink" link="about_us" href="#about_us">
+          <i class="right chevron icon" style="color: white;"></i>
+          <h4 class="content underline-on-hover white-text">
+            <%= t :about_us %>
+          </h4>
+        </a>
+        <a class="item rolluptolink" link="activities" href="#activities">
+          <i class="right chevron icon" style="color: white;"></i>
+          <h4 class="content underline-on-hover white-text">
+            <%= t :activities %>
+          </h4>
+        </a>
+        <a class="item rolluptolink" link="get_involved" href="#get_involved">
+          <i class="right chevron icon" style="color: white;"></i>
+          <h4 class="content underline-on-hover white-text">
+            <%= t :get_involved %>
+          </h4>
+        </a>
+        <a class="item rolluptolink" link="media" href="#media">
+          <i class="right chevron icon" style="color: white;"></i>
+          <h4 class="content underline-on-hover white-text">
+            <%= t :media %>
+          </h4>
+        </a>
+        <a class="item rolluptolink" link="search-field" href="#search-field">
+          <i class="right chevron icon" style="color: white;"></i>
+          <h4 class="content underline-on-hover white-text">
+            <%= t :search %>
+          </h4>
+        </a>
+      </div>
+    </div>
+    <div class="column">
+      <h3>
+        Kontakty
+        <%= link_to kontakty_homepage_index_path do %>
+            <i class="inverted external icon"></i>
+        <% end %>
+      </h3>
+      <div class="ui list" style="margin-left: 20px;">
+        <div class="item">
+          <i class="right chevron icon" style="color: white;"></i>
+          <h4 class="content white-text">
+            Incoming <%= "(#{@kontakty[:person_incoming_name].content.html_safe}):" %>
+            <a href="mailto:<%= @kontakty[:person_incoming_mail].content.html_safe %>" data-mercury="full" id="person_incoming_mail" class="underline-on-hover white-text">
+              <%= @kontakty[:person_incoming_mail].content.html_safe %>
+            </a>
+          </h4>
+          <h4 class="content white-text">
+            <i class="right chevron icon" style="color: white;"></i>
+            Outgoing <%= "(#{@kontakty[:person_outgoing_name].content.html_safe}):" %>
+            <a href="mailto:<%= @kontakty[:person_outgoing_mail].content.html_safe %>" data-mercury="full" id="person_outgoing_mail" class="underline-on-hover white-text">
+              <%= @kontakty[:person_outgoing_mail].content.html_safe %>
+            </a>
+          </h4>
+          <h4 class="content white-text">
+            <i class="right chevron icon" style="color: white;"></i>
+            <%= t :evs %> <%= "(#{@kontakty[:person_eds_name].content.html_safe}):" %>
+            <a href="mailto:<%= @kontakty[:person_eds_mail].content.html_safe %>" data-mercury="full" id="person_eds_mail" class="underline-on-hover white-text">
+              <%= @kontakty[:person_eds_mail].content.html_safe %>
+            </a>
+          </h4>
+        </div>
+      </div>
+    </div>
+
+    <div class="mobile tablet only ui secondary menu">
+      <%= link_to 'https://www.facebook.com/INEX-Slovakia-189864024941/', target: :blank, title: 'Facebook', class: 'ui item pop_up' do %>
+          <i class="inverted facebook icon"></i>
+      <% end %>
+      <%= link_to 'https://twitter.com/inexslovakia', target: :blank, title: 'Twitter', class: 'ui pop_up item' do %>
+          <i class="inverted twitter icon"></i>
+      <% end %>
+      <%= link_to 'https://www.linkedin.com/company/inex-slovakia', target: :blank, title: 'LinkedIn', class: 'ui pop_up item' do %>
+          <i class="inverted linkedin icon"></i>
+      <% end %>
+      <%= link_to 'https://www.youtube.com/user/Inexslovakia', target: :blank, title: 'YouTube', class: 'ui pop_up item' do %>
+          <i class="inverted youtube icon"></i>
+      <% end %>
+      <%= link_to 'https://www.instagram.com/inex_slovakia/', target: :blank, title: 'Instagram', class: 'ui pop_up item' do %>
+          <i class="inverted instagram icon"></i>
+      <% end %>
+      <%= link_to 'https://plus.google.com/+INEXSlovakia', target: :blank, title: 'Google+', class: 'ui pop_up item' do %>
+          <i class="inverted google plus icon"></i>
+      <% end %>
+    </div>
+  </div>
+  <div class="ui segment darkgreen-background">
+    <div class="ui two column grid">
+      <div class="column">
+        <div data-mercury="full" id="footer">
+          <% if @articles[:footer].take %>
+              <%= @articles[:footer].take.content.html_safe %>
+          <% end %>
+        </div>
+        <% if current_user && current_user.is_employee? %>
+            <%= link_to '/editor' + request.path, id: 'edit_link',
+                        data: { save_url: mercury_update_link } do %>
+                <i class="ui large yellow edit icon pop_up" title="<%= "#{t :edit} footer" %>"></i>
+            <% end %>
+        <% end %>
+      </div>
+      <div class="column"> <%= render 'homepage/partners' %></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,16 @@
+<%= form_for(@partner_network, html: { class: 'ui form' }) do |f| %>
+    <%= write_error(@partner_network) %>
+
+    <div class="field">
+      <%= f.label :name do %>
+          <%= t :name_task %> <i class="small red asterisk icon"></i>
+      <% end %>
+      <%= f.text_field :name %>
+    </div>
+    <div class="field">
+      <%= f.label :description, t(:description) %>
+      <%= f.text_area :description %>
+    </div>
+
+    <%= f.submit t(:save), class: 'ui green submit button' %>
+<% end %>

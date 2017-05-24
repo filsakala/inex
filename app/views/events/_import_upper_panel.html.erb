@@ -1,0 +1,20 @@
+<div class="ui three top attached steps">
+  <%= link_to import_1_events_path, class: "#{cp(import_1_events_path)} step" do %>
+      <i class="upload icon"></i>
+      <div class="content">
+        <div class="title"><%= t :upload_file %></div>
+      </div>
+  <% end %>
+  <div class="<%= cp(import_2_events_path) %> step">
+    <i class="wizard icon"></i>
+    <div class="content">
+      <div class="title"><%= t :identify_columns %></div>
+    </div>
+  </div>
+  <div class="<%= cp(import_3_events_path) %> <%= cp(import_4_events_path) %> step">
+    <i class="unhide icon"></i>
+    <div class="content">
+      <div class="title"><%= t :check_result %></div>
+    </div>
+  </div>
+</div>

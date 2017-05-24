@@ -1,0 +1,399 @@
+<div class="ui row" style="padding-top: 0px; padding-bottom: 0px;">
+  <div class="column">
+      <% if current_user.try(:is_employee?) %>
+          <%= link_to '/editor' + request.path, class: 'ui yellow button',
+                      id: 'edit_link', data: { save_url: mercury_update_link } do %>
+              <i class="ui edit icon"></i> <%= t(:edit_this_page) %>
+          <% end %>
+      <% end %>
+  </div>
+</div>
+<div class="ui row">
+  <div class="column">
+    <h2 class="ui block header">
+      <i class="home circular icon"></i>
+      <div class="content">
+        <%= t :personal_visit %>
+        <div class="sub header">
+          <%= t :personal_visit_description %>
+        </div>
+      </div>
+    </h2>
+  </div>
+</div>
+<div class="ui two column row">
+  <div class="column">
+    <table class="ui table">
+      <tr>
+        <td data-mercury="full" id="adresa">
+          <%= @kontakty[:adresa].content.html_safe %>
+        </td>
+      </tr>
+    </table>
+    <p>
+      <i class="pop_up large phone icon" title="<%= t :phone %>"></i>
+      <span data-mercury="full" id="cislo">
+        <%= @kontakty[:cislo].content.html_safe %>
+      </span>
+    </p>
+    <p><strong>IČO:</strong>
+      <span data-mercury="full" id="ico">
+        <%= @kontakty[:ico].content.html_safe %>
+      </span></p>
+    <p><h4><i class="large money icon"></i><%= t :bank_account_number %></h4>
+    <span data-mercury="full" id="ucet">
+        <%= @kontakty[:ucet].content.html_safe %>
+      </span>
+    </p>
+  </div>
+  <div class="column">
+    <h4>
+      <i class="large wait loading icon"></i>
+      <%= t :opening_hours %>
+      <td>
+          <span data-mercury="full" id="otvaracie_description">
+            <%= @kontakty[:otvaracie_description].content.html_safe %>
+          </span>
+      </td>
+    </h4>
+    <table class="ui table">
+      <tr>
+        <td><%= t(:day_names)[1] %></td>
+        <td>
+          <span data-mercury="full" id="otvaracie_pon">
+            <%= @kontakty[:otvaracie_pon].content.html_safe %>
+          </span>
+        </td>
+      </tr>
+      <tr>
+        <td><%= t(:day_names)[2] %></td>
+        <td>
+          <span data-mercury="full" id="otvaracie_uto">
+            <%= @kontakty[:otvaracie_uto].content.html_safe %>
+          </span>
+        </td>
+      </tr>
+      <tr>
+        <td><%= t(:day_names)[3] %></td>
+        <td>
+          <span data-mercury="full" id="otvaracie_str">
+            <%= @kontakty[:otvaracie_str].content.html_safe %>
+          </span>
+        </td>
+      </tr>
+      <tr>
+        <td><%= t(:day_names)[4] %></td>
+        <td>
+          <span data-mercury="full" id="otvaracie_stv">
+            <%= @kontakty[:otvaracie_stv].content.html_safe %>
+          </span>
+        </td>
+      </tr>
+      <tr>
+        <td><%= t(:day_names)[5] %></td>
+        <td>
+          <span data-mercury="full" id="otvaracie_pia">
+            <%= @kontakty[:otvaracie_pia].content.html_safe %>
+          </span>
+        </td>
+      </tr>
+      <tr>
+        <td><%= t(:day_names)[6] %>, <%= t(:day_names)[0] %></td>
+        <td>
+          <span data-mercury="full" id="otvaracie_vik">
+            <%= @kontakty[:otvaracie_vik].content.html_safe %>
+          </span>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<div class="ui row">
+  <div class="column">
+    <h2 class="ui block header">
+      <i class="at circular icon"></i>
+      <div class="content">
+        <%= t :contacts %>
+        <div class="sub header">
+          Ako nás môžeš kontaktovať.
+        </div>
+      </div>
+    </h2>
+  </div>
+</div>
+
+<div class="ui three column row">
+  <div class="center aligned column">
+    <h2>Incoming</h2>
+    <div class="ui centered card">
+      <%= image_tag "inex_logo.svg", class: "ui centered tiny image" %>
+      <div class="content">
+        <a class="header" data-mercury="full" id="person_incoming_name">
+          <%= @kontakty[:person_incoming_name].content.html_safe %>
+        </a>
+        <div class="meta">
+          <span class="date" data-mercury="full" id="person_incoming_description">
+            <%= @kontakty[:person_incoming_description].content.html_safe %>
+          </span>
+        </div>
+        <div class="description">
+          <div class="ui list">
+            <div class="item">
+              <i class="mail icon"></i>
+              <div class="content">
+                <a href="mailto:<%= @kontakty[:person_incoming_mail].content.html_safe %>" data-mercury="full" id="person_incoming_mail">
+                  <%= @kontakty[:person_incoming_mail].content.html_safe %>
+                </a>
+              </div>
+            </div>
+            <div class="item">
+              <i class="phone icon"></i>
+              <div class="content" data-mercury="full" id="person_incoming_number">
+                <%= @kontakty[:person_incoming_number].content.html_safe %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h4 class="ui horizontal divider header">
+      <i class="info circle icon"></i>
+      Opýtaj sa ma:
+    </h4>
+    <div class="ui left aligned container">
+      <span data-mercury="full" id="person_incoming_description2">
+        <%= @kontakty[:person_incoming_description2].content.html_safe %>
+      </span>
+    </div>
+  </div>
+  <div class="center aligned column">
+    <h2>Outgoing</h2>
+    <div class="ui centered card">
+      <%= image_tag "inex_logo.svg", class: "ui centered tiny image" %>
+      <div class="content">
+        <a class="header" data-mercury="full" id="person_outgoing_name">
+          <%= @kontakty[:person_outgoing_name].content.html_safe %>
+        </a>
+        <div class="meta">
+          <span class="date" data-mercury="full" id="person_outgoing_description">
+            <%= @kontakty[:person_outgoing_description].content.html_safe %>
+          </span>
+        </div>
+        <div class="description">
+          <div class="ui list">
+            <div class="item">
+              <i class="mail icon"></i>
+              <div class="content">
+                <a href="mailto:<%= @kontakty[:person_outgoing_mail].content.html_safe %>" data-mercury="full" id="person_outgoing_mail">
+                  <%= @kontakty[:person_outgoing_mail].content.html_safe %>
+                </a>
+              </div>
+            </div>
+            <div class="item">
+              <i class="phone icon"></i>
+              <div class="content" data-mercury="full" id="person_outgoing_number">
+                <%= @kontakty[:person_outgoing_number].content.html_safe %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h4 class="ui horizontal divider header">
+      <i class="info circle icon"></i>
+      Opýtaj sa ma:
+    </h4>
+    <div class="ui left aligned container">
+      <span data-mercury="full" id="person_outgoing_description2">
+        <%= @kontakty[:person_outgoing_description2].content.html_safe %>
+      </span>
+    </div>
+  </div>
+  <div class="center aligned column">
+    <h2>EDS
+      <i class="question mark circle icon pop_up" title="Európska dobrovoľnícka služba"></i>
+    </h2>
+    <div class="ui centered card">
+      <%= image_tag "inex_logo.svg", class: "ui centered tiny image" %>
+      <div class="content">
+        <a class="header" data-mercury="full" id="person_eds_name">
+          <%= @kontakty[:person_eds_name].content.html_safe %>
+        </a>
+        <div class="meta">
+          <span class="date" data-mercury="full" id="person_eds_description">
+            <%= @kontakty[:person_eds_description].content.html_safe %>
+          </span>
+        </div>
+        <div class="description">
+          <div class="ui list">
+            <div class="item">
+              <i class="mail icon"></i>
+              <div class="content">
+                <a href="mailto:<%= @kontakty[:person_eds_mail].content.html_safe %>" data-mercury="full" id="person_eds_mail">
+                  <%= @kontakty[:person_eds_mail].content.html_safe %>
+                </a>
+              </div>
+            </div>
+            <div class="item">
+              <i class="phone icon"></i>
+              <div class="content" data-mercury="full" id="person_eds_number">
+                <%= @kontakty[:person_eds_number].content.html_safe %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h4 class="ui horizontal divider header">
+      <i class="info circle icon"></i>
+      Opýtaj sa ma:
+    </h4>
+    <div class="ui left aligned container">
+      <span data-mercury="full" id="person_eds_description2">
+        <%= @kontakty[:person_eds_description2].content.html_safe %>
+      </span>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="column">
+    <h2 class="ui block header">
+      <i class="marker circular icon"></i>
+      <div class="content">
+        Ako sa k nám dostaneš
+        <div class="sub header">Linky mestskej hromadnej dopravy a trasa k nám.
+        </div>
+      </div>
+    </h2>
+  </div>
+</div>
+<div class="ui two column row">
+  <div class="column">
+    <h3>
+      <i class="large bus icon"></i>
+      Kde treba vystúpiť?
+    </h3>
+    <h4>
+      Najbližšie zastávky autobusov (asi 5 minút chôdzou k nám)
+    </h4>
+    <div class="ui styled fluid accordion">
+      <div class="active title">
+        <i class="flag icon"></i>
+        <strong>Záporožská</strong> (autobusy 80, 88)
+        <div class="ui right floated label">Mapa</div>
+      </div>
+      <div class="content">
+        <div class="ui embed"
+             data-url="https://www.google.com/maps/embed?pb=!1m26!1m12!1m3!1d2663.1704111544627!2d17.09327031507227!3d48.12623695993062!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m11!3e6!4m3!3m2!1d48.125611!2d17.096587!4m5!1s0x476c893a11738fff%3A0x85a7a1537a0adc8f!2sInex+Slovakia+-+Ob%C4%8Dianske+Zdru%C5%BEenie%2C+Prokopova%2C+Bratislava-Petr%C5%BEalka%2C+Slovensko!3m2!1d48.1261264!2d17.094495!5e0!3m2!1ssk!2ssk!4v1467806043892"
+             data-placeholder="<%= image_url('bus/zaporozska.png') %>"
+             data-icon="right circle arrow">
+        </div>
+      </div>
+      <div class="active title">
+        <i class="flag icon"></i>
+        <strong>Kremnická</strong> (autobusy 80, 88)
+        <div class="ui right floated label">Mapa</div>
+      </div>
+      <div class="content">
+        <div class="ui embed"
+             data-url="https://www.google.com/maps/embed?pb=!1m26!1m12!1m3!1d2663.1114525771663!2d17.09229991507231!3d48.12737400985143!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m11!3e6!4m3!3m2!1d48.128612!2d17.093756!4m5!1s0x476c893a11738fff%3A0x85a7a1537a0adc8f!2sInex+Slovakia+-+Ob%C4%8Dianske+Zdru%C5%BEenie%2C+Prokopova%2C+Bratislava-Petr%C5%BEalka!3m2!1d48.1261264!2d17.094495!5e0!3m2!1ssk!2ssk!4v1467806125123"
+             data-placeholder="<%= image_url('bus/kremnicka.png') %>"
+             data-icon="right circle arrow">
+        </div>
+      </div>
+    </div>
+
+    <h4>
+      Ďalšie zastávky (10 až 15 minút chôdzou k nám)
+    </h4>
+    <div class="ui styled fluid accordion">
+      <div class="active title">
+        <i class="flag icon"></i>
+        <strong>Hálova</strong> (autobusy 83, 84, 88, 92, 99, 192)
+        <div class="ui right floated label">Mapa</div>
+      </div>
+      <div class="content">
+        <div class="ui embed"
+             data-url="https://www.google.com/maps/embed?pb=!1m28!1m12!1m3!1d5326.493682826655!2d17.095626675402553!3d48.124762928518905!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m13!3e2!4m5!1s0x476c8974e611f077%3A0x218beb7ecabdc9d9!2zSMOhbG92YSwgODUxIDAxIFBldHLFvmFsa2E!3m2!1d48.123909399999995!2d17.107601199999998!4m5!1s0x476c893a11738fff%3A0x85a7a1537a0adc8f!2sInex+Slovakia+-+Ob%C4%8Dianske+Zdru%C5%BEenie%2C+Prokopova%2C+Bratislava-Petr%C5%BEalka!3m2!1d48.1261264!2d17.094495!5e0!3m2!1ssk!2ssk!4v1467806280042"
+             data-placeholder="<%= image_url('bus/halova.png') %>"
+             data-icon="right circle arrow">
+        </div>
+      </div>
+      <div class="active title">
+        <i class="flag icon"></i>
+        <strong>ŽST Petržalka</strong> - zastávka pred budovou stanice
+        (autobusy 80, 99)
+        <div class="ui right floated label">Mapa</div>
+      </div>
+      <div class="content">
+        <div class="ui embed"
+             data-url="https://www.google.com/maps/embed?pb=!1m28!1m12!1m3!1d5326.547031662007!2d17.09146562540244!3d48.124248478590566!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m13!3e2!4m5!1s0x476c899d8e4caddd%3A0xfa283c3ac8b80556!2sBratislava+-+Petr%C5%BEalka!3m2!1d48.1216113!2d17.0986098!4m5!1s0x476c893a11738fff%3A0x85a7a1537a0adc8f!2sInex+Slovakia+-+Ob%C4%8Dianske+Zdru%C5%BEenie%2C+Prokopova%2C+Bratislava-Petr%C5%BEalka!3m2!1d48.1261264!2d17.094495!5e0!3m2!1ssk!2ssk!4v1467806363767"
+             data-placeholder="<%= image_url('bus/zst_petrzalka1.png') %>"
+             data-icon="right circle arrow">
+        </div>
+      </div>
+      <div class="active title">
+        <i class="flag icon"></i>
+        <strong>ŽST Petržalka</strong> - zastávka na Panónskej ceste (autobusy
+        59, 91, 93, 94, 191)
+        <div class="ui right floated label">Mapa</div>
+      </div>
+      <div class="content">
+        <div class="ui embed"
+             data-url="https://www.google.com/maps/embed?pb=!1m28!1m12!1m3!1d5326.747553054531!2d17.093353900548912!3d48.12231478704647!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m13!3e2!4m5!1s0x476c899de03e7fcb%3A0xbb7016372bcd1b54!2sBratislava+Petrzalka!3m2!1d48.120678999999996!2d17.100448!4m5!1s0x476c893a11738fff%3A0x85a7a1537a0adc8f!2sInex+Slovakia+-+Ob%C4%8Dianske+Zdru%C5%BEenie%2C+Prokopova%2C+Bratislava-Petr%C5%BEalka!3m2!1d48.1261264!2d17.094495!5e0!3m2!1ssk!2ssk!4v1467806439538"
+             data-placeholder="<%= image_url('bus/zst_petrzalka2.png') %>"
+             data-icon="right circle arrow">
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="column">
+    <h3>
+      <i class="large street view icon"></i>
+      Kde zvoniť?
+    </h3>
+    <div class="ui embed"
+         data-url="https://www.google.com/maps/embed?pb=!1m0!3m2!1ssk!2ssk!4v1473676820734!6m8!1m7!1s94v6SyG5oKEsSk0b47_pKQ!2m2!1d48.12618481517483!2d17.09435127902805!3f143!4f0!5f0.7820865974627469"
+         data-placeholder="<%= image_url('inex_house.jpg') %>"
+         data-icon="right circle arrow">
+    </div>
+  </div>
+</div>
+
+<div class="ui two column row">
+  <div class="ui column">
+    <div class="ui comments">
+      <h3 class="ui dividing header">Často kladené otázky (FAQ)</h3>
+      <div class="ui yellow icon message">
+        <i class="help circle icon"></i>
+        Pred priamym položením otázky skús nájsť svoju odpoveď v tomto zozname.
+        Ušetríš tak čas sebe aj zamestnancom INEXu.
+      </div>
+    </div>
+    <%= link_to "Prejsť na stránku FAQ", @faq %>
+  </div>
+  <div class="ui column">
+    <h3 class="ui dividing header">Ak si odpoveď nenašiel, môžeš použiť
+      kontaktný formulár:</h3>
+    <div class="ui yellow icon message">
+      <i class="warning sign icon"></i>
+      Maj na pamäti, že príprava odpovede nejaký čas trvá.
+      Ak na zodpovedanie jednej otázky musí pracovník INEXu vynaložiť 5
+      minút, potom na 100 otázok vynaloží viac ako 8 hodín. Preto tento formulár
+      použi až v prípade, že si svoju odpoveď na stránke nenašiel, prípadne nám
+      navrhni doplnenie zoznamu často kladených otázok.
+    </div>
+    <%= form_tag(send_question_homepage_index_path, method: :put, class: 'ui form') do %>
+        <div class="field">
+          <%= select_tag :email, options_for_select(['inex@inex.sk', 'out@inex.sk', 'finance@inex.sk', 'evs@inex.sk']) %>
+          <%= text_area_tag :text, nil, placeholder: "Sem patrí text tvojej správy." %>
+          <%= submit_tag "Odoslať!", class: 'ui green button' %>
+        </div>
+    <% end %>
+  </div>
+</div>

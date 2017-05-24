@@ -1,0 +1,36 @@
+<% if event_ary.size > 0 %>
+    <div class="ui container" style="overflow-x: scroll;">
+      <table class="ui green celled table">
+        <thead>
+        <tr>
+          <th>Uložiť</th>
+          <% @header.each do |header| %>
+              <th style="min-width: 200px;"><%= header %></th>
+          <% end %>
+        </tr>
+        </thead>
+        <tbody>
+        <% event_ary.each do |id, row| %>
+            <tr>
+              <td><%= check_box_tag "make_changes[]", id, default: true %></td>
+              <% @header.each do |header| %>
+                  <% if @changes[id] && @changes[id].include?(header) %>
+                      <% style = "background-color: #f0c0c0;" %>
+                  <% end %>
+                  <td style="<%= style %>"><%= row[header] %></td>
+              <% end %>
+            </tr>
+        <% end %>
+        </tbody>
+      </table>
+    </div>
+<% else %>
+    <div class="ui icon message">
+      <i class="remove icon"></i>
+      <div class="content">
+        <div class="header">
+          V súbore neboli identifikované žiadne takéto eventy.
+        </div>
+      </div>
+    </div>
+<% end %>

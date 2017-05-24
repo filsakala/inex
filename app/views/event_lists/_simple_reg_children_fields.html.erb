@@ -1,0 +1,175 @@
+<%= form_tag({ controller: :event_lists, action: :register_child }, method: :put, class: "ui form") do %>
+    <%= fields_for @event_list do |f| %>
+        <%= f.hidden_field :form_type, value: 'simple' %>
+        <fieldset>
+          <div class="fields">
+            <div class="seven wide field">
+              <%= f.label :name do %>
+                  Meno <i class="small red asterisk icon"></i>
+              <% end %>
+              <%= f.text_field :name %>
+            </div>
+            <div class="seven wide field">
+              <%= f.label :surname do %>
+                  Priezvisko <i class="small red asterisk icon"></i>
+              <% end %>
+              <%= f.hidden_field :surname %>
+              <%= f.text_field :surname %>
+            </div>
+          </div>
+          <div class="fields">
+            <div class="eight wide field">
+              <%= f.label :personal_mail do %>
+                  E-mail <i class="small red asterisk icon"></i>
+              <% end %>
+              <%= f.email_field :personal_mail %>
+            </div>
+            <div class="eight wide field">
+              <%= f.label :personal_phone do %>
+                  Telefónne číslo (Formát: +421 905 501 078)
+                  <i class="small red asterisk icon"></i>
+              <% end %>
+              <%= f.text_field :personal_phone %>
+            </div>
+          </div>
+          <div class="two fields">
+            <div class="eight wide field">
+              <%= f.label :remarks, 'Poznámky' %>
+              <%= f.text_area :remarks %>
+            </div>
+            <div class="eight wide field">
+              <%= f.label :on_health, 'Poznámky ku zdraviu, ktoré by sme mali vedieť (strava a pod.)' %>
+              <%= f.text_area :on_health %>
+            </div>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>Zoznam udalostí</legend>
+
+          <% @events_by_type.each do |event_type, events| %>
+              <h3><%= event_type.title %></h3>
+
+              <%= render 'event_list2', events: events %>
+          <% end %>
+        </fieldset>
+
+        <div class="inline field">
+          <%= f.check_box :conditions_agreement %>
+          <label>
+            Súhlasím s použitím fotografií a/alebo iných audiovizuálnych záznamov
+            vyrobených počas dobrovoľníckeho podujatia a obsahujúcich vyobrazenie,
+            zvukový alebo audiovizuálny záznam mojej osoby, pre účely propagácie
+            aktivít INEX Slovakia alebo dobrovoľníckych aktivít všeobecne, alebo pre
+            účely dokladovania takýchto aktivít pre poskytovateľov grantov, darcov,
+            podporovateľov a partnerov INEX
+            Slovakia.<i class="small red asterisk icon"></i>
+          </label>
+          <label>
+            Vyššie podpísaná dotknutá osoba svojím podpisom na tejto listine dáva v
+            zmysle zákona č. 122/2013 Z. z. o ochrane osobných údajov a o zmene a
+            doplnení niektorých zákonov v platnom znení (ďalej len "zákon")
+            dobrovoľne výslovný súhlas hore uvedenému občianskemu združeniu so
+            spracúvaním jej osobných údajov v rozsahu meno, priezvisko, adresa
+            bydliska, dátum a rok narodenia (pri zahr. účastníkoch aj ID) pre
+            účely dokladovania dotácie MŠVVaŠ SR a spracovanie štatistických údajov.
+            Zároveň vyhlasuje, že si je vedomá svojich práv vyplývajúcich zo zákona.<i class="small red asterisk icon"></i>
+          </label>
+          <label>
+            I hereby consent to the usage of photographs and/or other audiovisual
+            files recorded within the duration of the voluntary activity containing
+            the imagery, audial or audiovisual records of myself for the purpose of
+            promoting the activities of INEX Slovakia, or promotion of volunteering
+            and voluntary activities in general, or for the purpose of documentation
+            of the above-mentioned activities for providers of grants, donors,
+            supporters and partners of INEX
+            Slovakia.<i class="small red asterisk icon"></i>
+          </label>
+          <label>The undersigned person concerned, by signing the form with
+            accordance to the Act No.122/2013 Z.z. of Data Privacy Policy, amending
+            and supplementing certain acts as amended (hereafter "Act"), voluntarily
+            gives an explicit permission to the above-mentioned organization (oz.
+            INEX Slovakia) to process their personal data to the following extent:
+            name, surname, home address, date and year of birth (and ID number in
+            the case of participants from abroad); for the purposes of documentation
+            as a part of the endowment agreement between INEX Slovakia and the
+            Ministry of Education, Science, Research and Sport of the Slovak
+            Republic, and for statistical purposes. The undersigned hereby also
+            declares that they are aware of their rights under the
+            law.<i class="small red asterisk icon"></i>
+          </label>
+        </div>
+        <% if @inex_member_events.any? %>
+            <div class="ui accordion">
+              <div class="title">
+                <i class="large dropdown icon"></i>
+                Chcem sa stať členom.
+              </div>
+              <div class="content">
+                <div class="ui toggle checkbox inline field">
+                  <%= f.check_box :inex_member %>
+                  <label>Chcem sa stať členom. Hlavnou výhodou je napríklad zníženie
+                    účastníckeho príspevku na tábory. Výška členského je 2€.
+                    Súhlasím, aby moje osobné údaje boli predložené členom
+                    komisie MŠ SR a pre interné účely organizácie INEX
+                    Slovakia.</label>
+                </div>
+                <div class="field">
+                  <%= f.label :birth_date do %>
+                      Dátum narodenia <i class="small red asterisk icon"></i>
+                  <% end %>
+                  <%= f.text_field :birth_date, class: 'datepick' %>
+                </div>
+                <fieldset>
+                  <legend><h4>Adresa<i class="small red asterisk icon"></i></h4>
+                  </legend>
+                  <% @event_list.addresses.new if @event_list.addresses.blank? %>
+                  <%= f.fields_for(:addresses) do |a| %>
+                      <fieldset>
+                        <legend>My address</legend>
+                        <div class="disabled field">
+                          <%= a.label :title do %>
+                              Typ <i class="small red asterisk icon"></i>
+                          <% end %>
+                          <%= a.select :title, ['Trvalé bydlisko'] %>
+                        </div>
+                        <div class="two fields">
+                          <div class="field">
+                            <%= a.label :address do %>
+                                Adresa a číslo
+                                <i class="small red asterisk icon"></i>
+                            <% end %>
+                            <%= a.text_field :address %>
+                          </div>
+                          <div class="field">
+                            <%= a.label :postal_code do %>
+                                PSČ <i class="small red asterisk icon"></i>
+                            <% end %>
+                            <%= a.text_field :postal_code %>
+                          </div>
+                        </div>
+                        <div class="two fields">
+                          <div class="field">
+                            <%= a.label :city do %>
+                                Mesto <i class="small red asterisk icon"></i>
+                            <% end %>
+                            <%= a.text_field :city %>
+                          </div>
+                          <div class="field">
+                            <%= a.label :country do %>
+                                Krajina <i class="small red asterisk icon"></i>
+                            <% end %>
+                            <%= a.select :country, Country.order(:name).pluck(:name), selected: 'Slovakia', class: "ui dropdown" %>
+                          </div>
+                        </div>
+                      </fieldset>
+                  <% end %>
+                </fieldset>
+              </div>
+            </div>
+        <% end %>
+
+        <div class="actions">
+          <%= f.submit 'Registrovať', class: 'ui green submit button' %>
+        </div>
+    <% end %>
+<% end %>

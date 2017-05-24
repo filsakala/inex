@@ -1,0 +1,49 @@
+<h1 class="ui header">
+  <i class="options icon"></i>
+  <div class="content">
+    <%= t :workcamp_types %>
+    <div class="sub header">
+      <%= t :workcamp_types_header %>
+    </div>
+  </div>
+</h1>
+<%= link_to t(:add), new_event_category_path, class: 'ui green button' %>
+
+<table class="ui green table">
+  <thead>
+  <tr>
+    <th class="four wide"><%= t :name_task %></th>
+    <th class="four wide">SCI <%= t :alternatives %></th>
+    <th class="four wide">Alliance <%= t :alternatives %></th>
+    <th class="one wide"><%= t :abbr %></th>
+    <th class="three wide"><%= t :actions %></th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <% @event_categories.each do |event_category| %>
+      <tr>
+        <td><%= event_category.name %></td>
+        <td>
+          <% event_category.event_category_scis.each do |alt| %>
+              <%= alt.name %>
+          <% end %>
+        </td>
+        <td>
+          <% event_category.event_category_alliances.each do |alt| %>
+              <%= alt.name %>
+          <% end %>
+        </td>
+        <td><%= event_category.abbr %></td>
+        <td>
+          <%= link_to edit_event_category_path(event_category), class: 'pop_up', title: t(:edit) do %>
+              <i class="large yellow edit link icon"></i>
+          <% end %>
+          <%= link_to event_category, method: :delete, data: { confirm: t(:are_you_sure_remove_event_category) }, class: 'pop_up', title: t(:remove) do %>
+              <i class="large red remove link icon"></i>
+          <% end %>
+        </td>
+      </tr>
+  <% end %>
+  </tbody>
+</table>

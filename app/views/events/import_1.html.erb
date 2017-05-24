@@ -1,0 +1,10 @@
+<%= render 'import_header' %>
+
+<%= render 'import_upper_panel' %>
+<div class="ui attached segment">
+  <h3><%= t :you_can_upload_csv_xml_files %></h3>
+  <%= form_tag import_2_events_path, multipart: true, class: 'ui form' do %>
+      <%= file_field_tag :file %>
+      <%= submit_tag "Importuj", class: 'ui green button' %>
+  <% end %>
+</div>

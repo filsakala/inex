@@ -1,0 +1,32 @@
+<%= form_for(@blog_post, html: { class: 'ui form' }) do |f| %>
+    <%= write_error(@blog_post) %>
+
+    <div class="field">
+      <%= f.label :title do %>
+          <%= t :name_task %> <i class="small red asterisk icon"></i>
+      <% end %>
+      <%= f.text_field :title %>
+    </div>
+    <div class="field">
+      <%= label_tag :blog_post_category_id, t(:category) %>
+      <%= f.select :blog_post_category_id, BlogPostCategory.all.collect { |c| [c.name, c.id] }, include_blank: true %>
+    </div>
+    <div class="field">
+      <%= f.label :image, t(:picture) %>
+      <%= f.file_field :image %>
+    </div>
+    <div class="field">
+      <%= f.label :perex, "Perex" %>
+      <%= f.text_area :perex %>
+    </div>
+    <div class="field">
+      <%= f.label :text, "Text" %>
+      <%= f.text_area :text, :rows => 40, :cols => 120, class: "tinymce" %>
+    </div>
+    <%# tinymce %>
+
+    <%= f.hidden_field :is_published %>
+    <div class="actions">
+      <%= f.submit t(:save), class: 'ui green submit button' %>
+    </div>
+<% end %>

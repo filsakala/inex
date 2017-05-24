@@ -1,0 +1,1 @@
+json.partial! "import_workcamps/import_workcamp", import_workcamp: @import_workcamp

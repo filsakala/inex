@@ -1,0 +1,11 @@
+<% unless flash.blank? %>
+    <% flash.each do |key, value| %>
+        <div class="ui <%= flash_class(key) %> closable">
+          <i class="close icon"></i>
+          <div class="header">
+            <i class="large announcement icon"></i>
+            <%= value %>
+          </div>
+        </div>
+    <% end %>
+<% end %>

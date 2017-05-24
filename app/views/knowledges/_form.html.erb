@@ -1,0 +1,24 @@
+<%= form_for(@knowledge, html: { class: 'ui form' }) do |f| %>
+    <%= write_error(@knowledge) %>
+
+    <div class="field">
+      <%= f.label :title, 'Názov' %>
+      <%= f.text_field :title %>
+    </div>
+    <div class="field">
+      <%= f.label 'Výber kategórií' %>
+      <%= select_tag :category_ids, options_from_collection_for_select(@knowledge_categories, "id", "category", (params[:category_ids] || @my_categories)), multiple: true, class: "ui dropdown" %>
+    </div>
+    <div class="field">
+      <%= f.label :text, 'Text' %>
+      <%= f.text_area :text %>
+    </div>
+    <div class="field">
+      <%= f.label :keywords, 'Kľúčové slová (oddelené čiarkou)' %>
+      <%= f.text_area :keywords %>
+    </div>
+
+    <div class="actions">
+      <%= f.submit 'Uložiť', class: 'ui green submit button' %>
+    </div>
+<% end %>

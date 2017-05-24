@@ -1,0 +1,16 @@
+<div class="ui container">
+  <% if current_user && current_user.is_employee? && !request.url.include?("mercury_frame=true") %>
+      <div class="ui buttons">
+        <%= link_to edit_html_article_path(@html_article), class: 'ui yellow button' do %>
+            <i class="edit icon"></i> <%= t :edit_article %>
+        <% end %>
+        <%= link_to @html_article, method: :delete, data: { confirm: t(:are_you_sure_remove_article) }, class: 'ui red button' do %>
+            <i class="edit icon"></i> <%= t(:remove) %>
+        <% end %>
+      </div>
+  <% end %>
+  <div data-mercury="full" id="article" style="padding-top: 20px; padding-bottom: 10px;">
+    <%= @html_article.content.html_safe %>
+  </div>
+  <%= render 'html_articles/show_recommendations' %>
+</div>

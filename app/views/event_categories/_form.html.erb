@@ -1,0 +1,28 @@
+<%= form_for(@event_category, html: { class: 'ui form' }) do |f| %>
+    <%= write_error(@event_category) %>
+
+    <div class="field">
+      <%= f.label :name, t(:name_task) %>
+      <%= f.text_field :name %>
+    </div>
+    <div class="field">
+      <%= f.label :abbr, t(:abbr) %>
+      <%= f.text_field :abbr %>
+    </div>
+
+    <% @event_category.event_category_scis.new %>
+    <%= f.fields_for(:event_category_scis) do |builder| %>
+        <%= render 'event_category_sci_fields', f: builder %>
+    <% end %>
+    <%= link_to_add_fields "#{t :add} SCI #{t :alternatives}", f, :event_category_scis %>
+
+    <% @event_category.event_category_alliances.new %>
+    <%= f.fields_for(:event_category_alliances) do |builder| %>
+        <%= render 'event_category_alliance_fields', f: builder %>
+    <% end %>
+    <%= link_to_add_fields "#{t :add} Alliance #{t :alternatives}", f, :event_category_alliances %>
+
+    <div class="actions">
+      <%= f.submit t(:save), class: 'ui green button' %>
+    </div>
+<% end %>

@@ -1,0 +1,193 @@
+
+body {
+  color: #333;
+  font-family: verdana, arial, helvetica, sans-serif;
+  font-size: 13px;
+  line-height: 18px;
+}
+
+p, ol, ul, td {
+  font-family: verdana, arial, helvetica, sans-serif;
+  font-size: 13px;
+  line-height: 18px;
+}
+
+pre {
+  background-color: #eee;
+  padding: 10px;
+  font-size: 11px;
+}
+
+div {
+  &.field, &.actions {
+    margin-bottom: 10px;
+  }
+}
+
+#notice {
+  color: green;
+}
+
+#error_explanation {
+  width: 450px;
+  border: 2px solid red;
+  padding: 7px;
+  padding-bottom: 0;
+  margin-bottom: 20px;
+  background-color: #f0f0f0;
+
+  h2 {
+    text-align: left;
+    font-weight: bold;
+    padding: 5px 5px 5px 15px;
+    font-size: 12px;
+    margin: -7px;
+    margin-bottom: 0px;
+    background-color: #c00;
+    color: #fff;
+  }
+
+  ul li {
+    font-size: 12px;
+    list-style: square;
+  }
+}
+
+// My own styles
+.message.closable {
+  cursor: pointer;
+}
+
+.inex-green {
+  color: #4FB948;
+}
+
+.inex-yellow {
+  color: #FFF730;
+}
+
+.inex-orange {
+  color: #F58D20;
+}
+
+.inex-red {
+  color: #EF3028;
+}
+
+.inex-darkred {
+  color: #A91E22;
+}
+
+.green-background {
+  background-color: #4FB948 !important;
+  color: #FFFFFF;
+}
+
+.lightgreen-background {
+  background-color: #88C588 !important;
+}
+
+.lightgrey-background {
+  background-color: #E6E6E6 !important;
+}
+
+.darkgreen-background {
+  background-color: #246C1F !important;
+  color: #FFFFFF;
+}
+
+.menu-button {
+  background-color: #246C1F !important;
+  color: #FFFFFF;
+}
+
+.menu-button h3 {
+  padding: 10px;
+}
+
+.menu-button span {
+  padding: 10px;
+}
+
+.circle-text {
+  width: 165px;
+  height: 165px;
+  border-radius: 50%;
+  padding-top: 30px;
+  border: solid black 4px;
+}
+
+.green-circle {
+  border: solid #4FB948 4px;
+}
+
+.orange-circle {
+  border: solid #F58D20 4px;
+}
+
+.yellow-circle {
+  border: solid #FFF730 4px;
+}
+
+.red-circle {
+  border: solid #EF3028 4px;
+}
+
+.grey-text {
+  color: #767676;
+}
+
+.white-text {
+  color: #FFFFFF;
+}
+
+.white-text:hover {
+  color: #EEEEEE;
+}
+
+.underline-on-hover:hover {
+  text-decoration: underline;
+}
+
+.valign {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.border-bottom {
+  border-bottom: solid 2px #555;
+}
+
+.up-on-hover:hover {
+  margin-top: -4px;
+  margin-bottom: 4px;
+}
+
+.grow {
+  transition: all .15s ease-in-out;
+}
+
+.grow:hover {
+  transform: scale(1.05);
+}
+
+.hoverable-menu-item:hover .child-menu-item {
+  margin-bottom: -2px;
+}
+
+//.field, fieldset {
+//  background-color: #E6E6E6 !important;
+//}
+
+.red-background-on-hover {
+  color: #ef3028 !important;
+}
+
+.flipped {
+  -moz-transform: scaleX(-1);
+  -o-transform: scaleX(-1);
+  -webkit-transform: scaleX(-1);
+  transform: scaleX(-1);
+  filter: FlipH;
+  -ms-filter: "FlipH";
+}

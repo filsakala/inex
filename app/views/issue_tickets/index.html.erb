@@ -1,0 +1,85 @@
+<h1 class="ui header">
+  <i class="warning icon"></i>
+  <div class="content">
+    Zadané problémy
+    <div class="sub header">
+      Tu môžeš zadať problémy so stránkou.
+    </div>
+  </div>
+</h1>
+<%= link_to "Pridať problém", new_issue_ticket_path, class: 'ui green button' %>
+<% if @issue_tickets.any? %>
+    <div class="ui relaxed divided list">
+      <% @issue_tickets.each do |issue_ticket| %>
+          <div class="item">
+            <% if issue_ticket.priority == 1 %>
+                <i class="large red warning circle icon"></i>
+            <% elsif issue_ticket.priority == 2 %>
+                <i class="large yellow warning circle icon"></i>
+            <% else %>
+                <i class="large green warning circle icon"></i>
+            <% end %>
+            <div class="content">
+              <%= link_to issue_ticket, class: 'header' do %>
+                  <%= issue_ticket.user.try(:nickname_or_name) %>
+                  , <%= datetime_format issue_ticket.created_at %>
+                  <% unless issue_ticket.image.blank? %>
+                  <i class="file image outline icon"></i>
+                  <% end %>
+              <% end %>
+              <div class="description">
+                <%= issue_ticket.description %>
+              </div>
+              <div class="extra content">
+                <%= link_to 'Detail', issue_ticket, class: 'ui label' %>
+                <%= link_to 'Upraviť', edit_issue_ticket_path(issue_ticket), class: 'ui yellow label' %>
+                <%= link_to 'Nastaviť ako opravené', set_done_issue_ticket_path(issue_ticket), method: :put, class: 'ui yellow label' %>
+                <%= link_to 'Vymazať', issue_ticket, method: :delete, data: { confirm: 'Naozaj chceš vymazať tento problém?' }, class: 'ui red label' %>
+              </div>
+            </div>
+          </div>
+      <% end %>
+    </div>
+<% else %>
+    <div class="ui icon message">
+      <i class="smile icon"></i>
+      <div class="content">
+        <div class="header">
+          Nebol pridaný žiadny problém so stránkou.
+        </div>
+        <p>Asi je všetko v poriadku :)</p>
+      </div>
+    </div>
+<% end %>
+
+<% if @issue_tickets_done.any? %>
+    <h2>Opravené problémy</h2>
+    <div class="ui relaxed divided list">
+      <% @issue_tickets_done.each do |issue_ticket| %>
+          <div class="item">
+            <% if issue_ticket.priority == 1 %>
+                <i class="large red warning circle icon"></i>
+            <% elsif issue_ticket.priority == 2 %>
+                <i class="large yellow warning circle icon"></i>
+            <% else %>
+                <i class="large green warning circle icon"></i>
+            <% end %>
+            <div class="content">
+              <%= link_to issue_ticket, class: 'header' do %>
+                  <%= issue_ticket.user.try(:nickname_or_name) %>
+                  , <%= datetime_format issue_ticket.created_at %>
+              <% end %>
+              <div class="description">
+                <%= issue_ticket.description %>
+              </div>
+              <div class="extra content">
+                <%= link_to 'Detail', issue_ticket, class: 'ui label' %>
+                <%= link_to 'Upraviť', edit_issue_ticket_path(issue_ticket), class: 'ui yellow label' %>
+                <%= link_to 'Nastaviť ako neopravené', set_done_issue_ticket_path(issue_ticket), method: :put, class: 'ui yellow label' %>
+                <%= link_to 'Vymazať', issue_ticket, method: :delete, data: { confirm: 'Naozaj chceš vymazať tento problém?' }, class: 'ui red label' %>
+              </div>
+            </div>
+          </div>
+      <% end %>
+    </div>
+<% end %>
