@@ -1,4 +1,4 @@
-class EmployeesController < EmployeeController
+class EmployeesController < InexMemberController
   before_action :set_employee, only: [:edit, :update]
 
   def new

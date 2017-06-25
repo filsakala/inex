@@ -1,13 +1,5 @@
 module EventsHelper
 
-  def text_or_icon(text)
-    if text.blank?
-      '<i class="large red warning sign icon"></i>'.html_safe
-    else
-      text
-    end
-  end
-
   def active_step_class(step)
     'active' if action_name == step
   end
@@ -32,9 +24,9 @@ module EventsHelper
     result << { name: 'advert', title: t(:camp_advert), icon: 'newspaper', content: event.send("camp_advert_#{lang}").try(:html_safe) } unless event.send("camp_advert_#{lang}").blank?
     result << { name: 'language', title: t(:language_description), icon: 'talk outline', content: event.send("language_description_#{lang}").try(:html_safe) } unless event.send("language_description_#{lang}").blank?
     result << { name: 'requirements', title: t(:requirements), icon: 'tag', content: event.send("requirements_#{lang}").try(:html_safe) } unless event.send("requirements_#{lang}").blank?
-    result << { name: 'location', title: t(:location), icon: 'street view', content: "<p><i class=\"home icon\"></i><b>#{t :address}:</b> #{text_or_icon event.address}, #{text_or_icon event.city}, #{text_or_icon event.country}</p>
+    result << { name: 'location', title: t(:location), icon: 'street view', content: "<p><i class=\"home icon\"></i><b>#{t :address}:</b> #{event.address}, #{event.city}, #{event.country}</p>
 <p>#{print_travelling_with_icons(event)}</p>
-<p><i class=\"marker icon\"></i><b>GPS:</b> #{text_or_icon event.gps_latitude}, #{text_or_icon event.gps_longitude}</p>
+<p><i class=\"marker icon\"></i><b>GPS:</b> #{event.gps_latitude}, #{event.gps_longitude}</p>
 <p>#{event.send("location_#{lang}")}</p>".html_safe } unless event.send("location_#{lang}").blank?
     result << { name: 'notes', title: t(:additional_camp_notes), icon: 'write', content: event.send("additional_camp_notes_#{lang}").try(:html_safe) } unless event.send("additional_camp_notes_#{lang}").blank?
     result
@@ -76,5 +68,54 @@ module EventsHelper
       end
     end
     return ""
+  end
+
+  def event_title_link(event, view_context)
+    view_context.link_to(event.translated_title, event_type_event_path(event.event_type, event), target: :blank).html_safe
+  end
+
+  def states_html(event, view_context)
+    html = ""
+    if event.is_published
+      html << view_context.link_to(t(:published), toggle_is_published_event_path(event), method: :put, class: 'ui green circular label', style: 'min-height: 0px;')
+    else
+      html << view_context.link_to(t(:unpublished), toggle_is_published_event_path(event), method: :put, class: 'ui red circular label', style: 'min-height: 0px;')
+    end
+    if event.is_cancelled
+      html << content_tag(:div, t(:cancelled), class: "ui red circular label", style: "min-height: 0px;")
+    end
+    html.html_safe
+  end
+
+  def action_links(event, view_context)
+    html = ""
+    html = "<div class=\"ui teal dropdown item label\">
+                <i class=\"setting icon\"></i> #{t :actions}
+                <i class=\"dropdown icon\"></i>
+                <div class=\"menu\">"
+    html += view_context.link_to(event_type_event_path(event.event_type, event), class: 'item', target: :blank) do
+      "<i class=\"grey unhide link icon\"></i> Detail".html_safe
+    end
+    html += view_context.link_to(event_type_event_path(event.event_type, event), method: :delete, data: { confirm: t(:are_you_sure_remove_event) }, class: 'item') do
+      "<i class=\"red remove link icon\"></i> #{t(:remove_event)}".html_safe
+    end
+    html << "<div class=\"divider\"></div>"
+    html += view_context.link_to(edit_event_type_event_path(event.event_type, event), class: 'item', target: :blank) do
+      "<i class=\"yellow edit link icon\"></i> #{t :step} 1".html_safe
+    end
+    html += view_context.link_to(step_second_event_type_event_path(event.event_type, event), class: 'item', target: :blank) do
+      "<i class=\"yellow edit link icon\"></i> #{t :step} 2".html_safe
+    end
+    html += view_context.link_to(step_third_event_type_event_path(event.event_type, event), class: 'item', target: :blank) do
+      "<i class=\"yellow edit link icon\"></i> #{t :step} 3".html_safe
+    end
+    html += view_context.link_to(step_fourth_event_type_event_path(event.event_type, event), class: 'item', target: :blank) do
+      "<i class=\"yellow edit link icon\"></i> #{t :step} 4".html_safe
+    end
+    html += view_context.link_to(step_fifth_event_type_event_path(event.event_type, event), class: 'item', target: :blank) do
+      "<i class=\"yellow edit link icon\"></i> #{t :step} 5".html_safe
+    end
+    html << "</div>"
+    html.html_safe
   end
 end

@@ -1,14 +1,15 @@
 module ContactListsHelper
 
-  def prepare_mails_for_copy(users)
-    result = []
-    users.each do |user|
-      unless user.personal_mail.blank?
-        result << user.personal_mail
-      else
-        result << user.login_mail
-      end
+  def personal_mail_or_login_mail(user)
+    unless user.personal_mail.blank?
+      user.personal_mail
+    else
+      user.login_mail
     end
+  end
+
+  def prepare_mails_for_copy(users)
+    result = users.collect { |user| personal_mail_or_login_mail(user) }
     if result.blank?
       t(:empty)
     else

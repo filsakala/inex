@@ -1,4 +1,4 @@
-class ContactListsController < EmployeeController
+class ContactListsController < InexMemberController
   before_action :set_contact_list, only: [:add, :add_put, :remove, :show, :edit, :update, :destroy]
   before_action :set_panel_variables, only: [:add, :index, :organizations, :events,
                                              :events_second, :events_third, :show, :new, :edit]
@@ -6,7 +6,7 @@ class ContactListsController < EmployeeController
 
   # GET - add contact to contactlist
   def add
-    @contacts = Contact.all
+    @contacts = Contact.includes(:contact_lists)
   end
 
   # PUT - add contact to contactlist
@@ -30,15 +30,16 @@ class ContactListsController < EmployeeController
   # GET /contact_lists.json
   def index
     @contacts = Contact.all
-    @mails = @contacts.where('`mail` > \'\'').pluck(:mail).uniq.join(', ') # get non-blank mail contacts
-    @mails = t(:empty) if @mails.blank?
+    @mails    = @contacts.where('`mail` > \'\'').pluck(:mail).uniq.join(', ') # get non-blank mail contacts
+    @mails    = t(:empty) if @mails.blank?
   end
 
   # GET
   def organizations
-    @contacts = Contact.joins(:organization)
-    @mails = @contacts.where('`mail` > \'\'').pluck(:mail).uniq.join(', ') # get non-blank mail contacts
-    @mails = t(:empty) if @mails.blank?
+    @contacts     = Contact.joins(:organization)
+    @mails        = @contacts.where('`mail` > \'\'').pluck(:mail).uniq.join(', ') # get non-blank mail contacts
+    @mails        = t(:empty) if @mails.blank?
+    @contact_list = ContactList.new(id: 0)
   end
 
   # GET
@@ -47,10 +48,10 @@ class ContactListsController < EmployeeController
 
   # GET/POST
   def events_second
-    @years ||= params[:year] || Date.today.year.downto(1993).to_a
-    @events = []
+    @years     ||= params[:year] || Date.today.year.downto(1993).to_a
+    @events    = []
     from_field = Event.arel_table[:from]
-    to_field = Event.arel_table[:to]
+    to_field   = Event.arel_table[:to]
     @years.each do |year|
       @events += Event.where(from_field.gteq(Date.parse("01-01-#{year}")).and(from_field.lteq(Date.parse("31-12-#{year}")))).order("`from` desc")
       @events += Event.where(to_field.gteq(Date.parse("01-01-#{year}")).and(to_field.lteq(Date.parse("31-12-#{year}")))).order("`from` desc")
@@ -58,12 +59,12 @@ class ContactListsController < EmployeeController
     @events = @events.uniq
     @events = @events.collect {
       |e|
-      e.id = e.id
+      e.id    = e.id
       e.title = "#{e.title} (#{e.from_to})"
       e
     }
 
-    if !params[:commit].blank?
+    if params[:commit] == "Na krok 3"
       redirect_to events_third_contact_lists_path(params[:events])
     end
   end
@@ -76,23 +77,23 @@ class ContactListsController < EmployeeController
     else
       @events = Event.all
     end
-    @volunteers = User.find(@events.joins(:volunteers).joins(:event_lists).pluck('event_lists.user_id'))
-    @leaders = User.find(@events.joins(:leaders).pluck('leaders.user_id'))
-    @trainers = User.find(@events.joins(:trainers).pluck('trainers.user_id'))
+    @volunteers     = User.find(@events.joins(:volunteers).joins(:event_lists).pluck('event_lists.user_id'))
+    @leaders        = User.find(@events.joins(:leaders).pluck('leaders.user_id'))
+    @trainers       = User.find(@events.joins(:trainers).pluck('trainers.user_id'))
     @local_partners = User.find(@events.joins(:local_partners).pluck('local_partners.user_id'))
-    @all = (@volunteers + @leaders + @local_partners + @trainers).uniq
+    @all            = (@volunteers + @leaders + @local_partners + @trainers).uniq
     # add participants to events
     @events.each do |event|
       class << event # add temporary parameter
         attr_accessor :participants
       end
-      ids = event.volunteers.joins(:event_list).pluck('event_lists.user_id') + event.leaders.pluck('leaders.user_id') + event.trainers.pluck('trainers.user_id') + event.local_partners.pluck('local_partners.user_id')
+      ids                = event.volunteers.joins(:event_list).pluck('event_lists.user_id') + event.leaders.pluck('leaders.user_id') + event.trainers.pluck('trainers.user_id') + event.local_partners.pluck('local_partners.user_id')
       event.participants = User.find(ids)
     end
     @description = {
-      years: (@years.blank? ? "všetky" : @years.split.sort.join(', ')),
+      years:        (@years.blank? ? "všetky" : @years.split.sort.join(', ')),
       event_titles: @events.pluck(:title).join(', '),
-      all_count: @all.count
+      all_count:    @all.count
     }
   end
 
@@ -100,14 +101,14 @@ class ContactListsController < EmployeeController
   # GET /contact_lists/1.json
   def show
     @contacts = @contact_list.contacts
-    @mails = @contacts.where('`mail` > \'\'').pluck(:mail).uniq.join(', ') # get non-blank mail contacts
-    @mails = t(:empty) if @mails.blank?
+    @mails    = @contacts.where('`mail` > \'\'').pluck(:mail).uniq.join(', ') # get non-blank mail contacts
+    @mails    = t(:empty) if @mails.blank?
   end
 
   # GET /contact_lists/new
   def new
     @contact_list = ContactList.new
-    @form_params = { employee_id: (params[:contact_list] ? params[:contact_list][:employee_id] : @contact_list.employee_id) }
+    @form_params  = { employee_id: (params[:contact_list] ? params[:contact_list][:employee_id] : @contact_list.employee_id) }
   end
 
   # GET /contact_lists/1/edit
@@ -162,8 +163,8 @@ class ContactListsController < EmployeeController
   end
 
   def set_panel_variables
-    @contact_lists = current_user.employee.contact_lists
-    @contact_lists_others = ContactList.all - current_user.employee.contact_lists
+    @contact_lists              = current_user.employee.contact_lists
+    @contact_lists_others       = ContactList.includes(employee: [:user]) - current_user.employee.contact_lists
     @organization_contact_count = Contact.joins(:organization).count
   end
 

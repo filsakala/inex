@@ -1,20 +1,5 @@
 module TasksHelper
 
-  def color_by_deadline(date)
-    return "grey" if !date
-    return "red" if Date.today >= date
-    return "orange" if 7.days.from_now >= date
-    return "green"
-  end
-
-  def task_list_to_s(task)
-    s = ''
-    task.task_lists.each do |tl|
-      s += "#{tl.title} (#{tl.state})\n"
-    end
-    s
-  end
-
   # Add to calendar helper
   def add_event_to_google_calendar(task)
     url = "https://calendar.google.com/calendar/render?action=TEMPLATE&trp=false"
@@ -26,4 +11,26 @@ module TasksHelper
     url
   end
 
+  def star_if_highlighted(highlighted)
+    content_tag :i, nil, class: "yellow star icon pop_up", title: "Dôležité" if highlighted
+  end
+
+  def done_count(task)
+    task.try(:done_task_list_count)
+  end
+
+  def all_count(task)
+    task.try(:task_list_count)
+  end
+
+  def done_all_count(task)
+    "#{done_count(task)}/#{all_count(task)}"
+  end
+
+  def deadline_with_icon(task)
+    [
+      content_tag(:i, nil, class: 'clock icon'),
+      task.deadline.strftime("%d.%m.")
+    ].join.html_safe if task.deadline
+  end
 end

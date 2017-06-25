@@ -1,37 +1,48 @@
 class EventsController < ApplicationController
-  before_action :set_event, only: [:show, :show_public, :toggle_is_published, :step_second, :step_third, :step_fourth, :step_fifth, :edit, :update, :destroy]
-  before_action :set_event_type, only: [:new, :create, :step_second, :step_third, :step_fourth, :step_fifth, :show, :edit, :update, :destroy]
+  before_action :set_event, only: [:show, :show_public, :toggle_is_published, :step_second, :step_third, :step_fourth, :step_fifth, :edit, :update, :destroy, :personalized_detail]
+  before_action :set_event_type, only: [:new, :step_second, :step_third, :step_fourth, :step_fifth, :show, :edit, :update, :destroy]
   before_action :can_do_member_actions, except: [:show_public]
   layout 'page_part', :only => [:show_public]
+  include Searchable
+  include EventsHelper
 
-  # Event search in event_types/index
+  def personalized_detail
+    @volunteers = @event.volunteers.includes(:event_list).where(event_lists: { user_id: session[:user_id] })
+    @leaders = @event.leaders.where(user_id: session[:user_id])
+    @local_partners = @event.local_partners.where(user_id: session[:user_id])
+    @trainers = @event.trainers.where(user_id: session[:user_id])
+    @event_type = @event.event_type
+  end
+
+  # EventType/show
   def search
-    events = do_search(params[:q])
-    res = events.collect { |u|
-      { "title": "#{u.title}", "url": event_type_event_path(u.event_type_id, u),
-        "description": u.from_to }
-    }
+    results = do_search(Event.includes(:event_type), columns: [:title, :from, :to, :country, :code, :code_alliance], order_by: { from: :desc })
+    results = results.collect { |e| [event_title_link(e, view_context), e.from_to, states_html(e, view_context), action_links(e, view_context)] }
     render json: {
-      "results": res,
-      "action": {
-        "url": '#',
-        "text": "#{res.size} výsledkov"
+      "draw":            params[:draw],
+      "recordsTotal":    Event.count,
+      "recordsFiltered": Event.count,
+      "data":            results
+    }
+  end
+
+  # EventType/_panel
+  def search_events
+    results = Event.includes(:event_type).where_or_regexp(columns: [:title, :from, :to, :country, :code, :code_alliance], string: params[:q]).order(:from)
+    results = results.collect { |e|
+      {
+        "title":       "#{e.translated_title}",
+        "url":         event_type_event_path(e.event_type, e),
+        "description": e.event_type.try(:title)
       }
     }
-  end
-
-  def do_search(query)
-    t = Event.arel_table
-    if !query.blank?
-      q = query.split(' ').join('|')
-      Event.where("`title` REGEXP ? OR `from` REGEXP ? OR `to` REGEXP ? OR `country` REGEXP ? OR `code` REGEXP ? OR `code_alliance` REGEXP ? ", q, q, q, q, q, q)
-    else
-      Event.all
-    end
-  end
-
-  # GET
-  def import_1
+    render json: {
+      "results": results,
+      "action":  {
+        "url":  "#",
+        "text": "#{results.size} výsledkov"
+      }
+    }
   end
 
   # Identifikacia stlpcov a vyplnenie zmien
@@ -41,8 +52,8 @@ class EventsController < ApplicationController
         begin
           file = File.join("public", "system", "files", "#{DateTime.now}_#{params[:file].original_filename}")
           FileUtils.cp params[:file].tempfile.path, file
-          event_importer = EventImporter.new(file)
-          @file = event_importer.csvify
+          event_importer                  = EventImporter.new(file)
+          @file                           = event_importer.csvify
           @event_column_set, @file_header = event_importer.get_database_columns_for_file_columns(@file)
         rescue Exception => e
           redirect_to :back, error: e.message
@@ -57,8 +68,8 @@ class EventsController < ApplicationController
   def import_3
     @file = params[:file]
     if params[:commit] && params[:file]
-      event_importer = EventImporter.new(params[:file])
-      @event_column_set, my_theirs, @header = event_importer.update_event_column_set(params, @file)
+      event_importer                                          = EventImporter.new(params[:file])
+      @event_column_set, my_theirs, @header                   = event_importer.update_event_column_set(params, @file)
       @new, @changed, @unchanged, @errors, @ignored, @changes = event_importer.get_event_changes(@file, @event_column_set, my_theirs).values_at(:new, :changed, :unchanged, :errors, :ignored, :changes)
     end
   end
@@ -68,21 +79,18 @@ class EventsController < ApplicationController
     @file = params[:file]
     if params[:commit] && params[:file]
       if !params[:event_column_set_id].blank?
-        event_importer = EventImporter.new(params[:file])
+        event_importer    = EventImporter.new(params[:file])
         @event_column_set = EventColumnSet.find(params[:event_column_set_id])
-        @header = event_importer.get_header(@file)
-        my_theirs = {} # Hash {my => [their1, their2, ...]}
+        @header           = event_importer.get_header(@file)
+        my_theirs         = {} # Hash {my => [their1, their2, ...]}
         @header.each do |header|
-          @event_column_set.event_columns.where(their: header).each do |ec|
-            my_theirs[ec.my] ||= []
-            my_theirs[ec.my] << ec.their
-          end
+          @event_column_set.event_columns.where(their: header).each { |e| (my_theirs[e.my] ||= [])<< e.their }
         end
       else
         redirect_to import_1_events_path, error: "Nastala chyba pri vyhodnocovaní zmien eventov."
       end
       @new, @changed, @errors = event_importer.make_event_changes(@file, @event_column_set, params[:make_changes], my_theirs).values_at(:new, :changed, :errors)
-      @header = event_importer.event_columns
+      @header                 = event_importer.event_columns
     end
   end
 
@@ -93,64 +101,65 @@ class EventsController < ApplicationController
   end
 
   # GET /events
-  # GET /events.json
   def index
     @events = Event.all
   end
 
   # GET /events/1
-  # GET /events/1.json
   def show
-    prawnto :prawn => { :page_size => 'A4', :page_layout => :landscape }
-    @leaders = @event.leaders
-    @trainers = @event.trainers
+    prawnto :prawn => { :page_size => 'A4', :page_layout => :landscape } # Prezenčka
+    @leaders        = @event.leaders
+    @trainers       = @event.trainers
     @local_partners = @event.local_partners
-    @volunteers = @event.volunteers
-    unless @event.country.blank?
-      if !Country.where(name: @event.country).any?
-        @event.errors.add(:country, "Krajina #{@event.country} nie je v zozname krajín. Nemôže sa tak zobraziť na mape.")
-      end
+    @volunteers     = @event.volunteers
+    if !@event.country.blank? && !Country.where(name: @event.country).any?
+      @event.errors.add(:country, "Krajina #{@event.country} nie je v zozname krajín. Nemôže sa tak zobraziť na mape.")
     end
   end
 
-  # GET /events/1
-  # GET /events/1.json
+  # GET /events/1/show_public
   def show_public
-    @faq = HtmlArticle.where(category: "faq").take
-    if !@event.is_published && !current_user.try(:is_inex_member?)
+    if !@event.is_published && !current_user.try(:is_inex_office?)
       redirect_to root_path, error: 'Vybraný tábor nie je publikovaný.'
     end
   end
 
   # GET /events/new
   def new
-    @event = Event.new
+    @event         = Event.new
     @organizations = Organization.all
   end
 
   # GET/PATCH
-  def step_second
-  end
-
-  # GET/PATCH
-  def step_third
-  end
-
-  # GET/PATCH
   def step_fourth
-    @users = User.all.collect {
+    @users          = User.all.collect {
       |u|
-      u.id = u.id
+      u.id   = u.id
       u.name = u.name_with_mail
       u
     }
-    @trainers = Trainer.joins(:user).select(:id, :user_id, :nickname)
+    @trainers       = Trainer.joins(:user).select(:id, :user_id, :nickname)
     @local_partners = LocalPartner.joins(:user).select(:id, :user_id, :nickname)
-    @leaders = Leader.joins(:user).select(:id, :user_id, :nickname)
+    @leaders        = Leader.joins(:user).select(:id, :user_id, :nickname)
   end
 
-  # GET/PATCH
-  def step_fifth
+  # GET /events/1/edit
+  def edit
+    @organizations = Organization.all
+  end
+
+  # POST /events
+  def create
+    @event = Event.new(event_params)
+
+    respond_to do |format|
+      if @event.save
+        format.html { redirect_to step_second_event_type_event_path(@event.event_type, @event), success: "Event  #{define_notice('m', __method__)}" }
+      else
+        @organizations = Organization.all
+        format.html { render :new }
+      end
+    end
   end
 
   # Helper method
@@ -169,31 +178,7 @@ class EventsController < ApplicationController
     end
   end
 
-  # GET /events/1/edit
-  def edit
-    @organizations = Organization.all
-  end
-
-  # POST /events
-  # POST /events.json
-  def create
-    @event = Event.new(event_params)
-    @event.event_type = @event_type
-
-    respond_to do |format|
-      if @event.save
-        format.html { redirect_to step_second_event_type_event_path(params[:event_type_id], @event), success: "Event  #{define_notice('m', __method__)}" }
-        format.json { render :show, status: :created, location: @event }
-      else
-        @organizations = Organization.all
-        format.html { render :new }
-        format.json { render json: @event.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
   # PATCH/PUT /events/1
-  # PATCH/PUT /events/1.json
   def update
     if params[:actual_step] == 'second'
       if @event.gps_needs_to_be_refreshed?(params[:event][:gps_latitude], params[:event][:gps_longitude])
@@ -214,7 +199,7 @@ class EventsController < ApplicationController
         end
         coords = Geocoder.coordinates("#{address} #{city} #{country}")
         if coords
-          params[:event][:gps_latitude] = coords[0]
+          params[:event][:gps_latitude]  = coords[0]
           params[:event][:gps_longitude] = coords[1]
         else
           flash[:warning] = "GPS sa nedokázali vypočítať"
@@ -226,46 +211,38 @@ class EventsController < ApplicationController
       @event.trainers.destroy_all
       @event.local_partners.destroy_all
       @event.leaders.destroy_all
-      unless params[:trainer_ids].blank?
-        params[:trainer_ids].each do |id|
-          @event.trainers.create(user_id: id)
-        end
-      end
-      unless params[:local_partner_ids].blank?
-        params[:local_partner_ids].each do |id|
-          @event.local_partners.create(user_id: id)
-        end
-      end
-      unless params[:leader_ids].blank?
-        params[:leader_ids].each do |id|
-          @event.leaders.create(user_id: id)
-        end
-      end
+
+      params[:trainer_ids].each do |id|
+        @event.trainers.create(user_id: id)
+      end unless params[:trainer_ids].blank?
+
+      params[:local_partner_ids].each do |id|
+        @event.local_partners.create(user_id: id)
+      end unless params[:local_partner_ids].blank?
+
+      params[:leader_ids].each do |id|
+        @event.leaders.create(user_id: id)
+      end unless params[:leader_ids].blank?
     end
 
     if params[:actual_step] == 'fifth'
       @event.event_with_categories.destroy_all
-      if !params[:categories].blank?
-        params[:categories].each do |c_id|
-          @event.event_with_categories.create(event_category_id: c_id.to_i)
-        end
-      end
+      params[:categories].each do |c_id|
+        @event.event_with_categories.create(event_category_id: c_id.to_i)
+      end if !params[:categories].blank?
     end
     respond_to do |format|
       if @event.update(event_params)
         format.html { redirect_to next_step_path(params[:actual_step], @event_type, @event), success: "Event  #{define_notice('m', __method__)}" }
-        format.json { render :show, status: :ok, location: @event }
       else
         @organizations = Organization.all
-        method = params[:actual_step] == "first" ? :edit : "step_#{params[:actual_step]}"
+        method         = params[:actual_step] == "first" ? :edit : "step_#{params[:actual_step]}"
         format.html { render method }
-        format.json { render json: @event.errors, status: :unprocessable_entity }
       end
     end
   end
 
   # DELETE /events/1
-  # DELETE /events/1.json
   def destroy
     @event.destroy
     respond_to do |format|
@@ -288,7 +265,7 @@ class EventsController < ApplicationController
   end
 
   def can_do_member_actions
-    if !(current_user && current_user.is_inex_member?)
+    if !(current_user && current_user.is_inex_office?)
       redirect_to root_path
     end
   end
@@ -315,7 +292,7 @@ class EventsController < ApplicationController
                                   :study_theme_en, :accomodation_en, :camp_advert_en,
                                   :language_description_en, :requirements_en, :location_en,
                                   :additional_camp_notes_en, :is_cancelled,
-                                  extra_fees_attributes: [:name, :amount, :currency, :is_paid_to_inex, :id, :_destroy],
+                                  extra_fees_attributes:      [:name, :amount, :currency, :is_paid_to_inex, :id, :_destroy],
                                   event_documents_attributes: [:title, :is_mandatory, :id, :_destroy]
     )
   end

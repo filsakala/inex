@@ -8,37 +8,8 @@
   </div>
 </h1>
 
-<div class="ui buttons">
-  <%= link_to new_event_type_event_path(@event_type), class: 'ui green icon button' do %>
-      <i class="add circle icon"></i> <%= t :add %> <%= t :event %>
-  <% end %>
-  <% if current_user.try(:is_employee?) %>
-      <%= link_to bags_event_type_path(@event_type), class: 'ui grey icon button pop_up' do %>
-          <i class="suitcase icon"></i> <%= t :applications %>
-      <% end %>
-      <%= link_to event_type_event_tables_path(@event_type), class: 'ui icon button' do %>
-          <i class="browser icon"></i> <%= t :tables %>
-      <% end %>
-  <% end %>
-</div>
-<div class="ui top attached menu">
-  <div class="ui pagination menu" style="border: none;">
-    <div class="item">Počet na stránku</div>
-    <%= link_to '10', event_type_path(@event_type, page: params[:page], per_page: 10, query: params[:query]), class: 'item' %>
-    <%= link_to '25', event_type_path(@event_type, page: params[:page], per_page: 25, query: params[:query]), class: 'item' %>
-    <%= link_to '100', event_type_path(@event_type, page: params[:page], per_page: 100, query: params[:query]), class: 'item' %>
-  </div>
-  <div class="right menu">
-    <div class="ui right aligned category events search item" data-id="<%= @event_type.id %>" data-page="<%= params[:page] || 1 %>" data-per_page="<%= params[:per_page] || 10 %>">
-      <div class="ui transparent icon input">
-        <input class="prompt" type="text" placeholder="<%= t :search_dots %>" id="search-field" page="<%= params[:page] %>">
-        <i class="search link icon"></i>
-      </div>
-      <div class="results"></div>
-    </div>
-  </div>
-</div>
-<table class="ui attached compact orange selectable celled striped table">
+<%= render 'panel' %>
+<table class="ui attached compact green selectable celled striped table datatable-server" data-entity="events">
   <thead>
   <tr>
     <th><%= t :name_task %></th>
@@ -48,38 +19,11 @@
   </tr>
   </thead>
   <tbody>
-  <% @events.each do |event| %>
-      <tr>
-        <td><%= link_to event.translated_title, event_type_event_path(@event_type, event), class: 'header' %></td>
-        <td><%= date_format(event.from) %>
-          - <%= date_format(event.to) %></td>
-        <td>
-          <% if event.is_published %>
-              <%= link_to t(:published), toggle_is_published_event_path(event), method: :put, class: 'ui green circular label', style: 'min-height: 0px;' %>
-          <% else %>
-              <%= link_to t(:unpublished), toggle_is_published_event_path(event), method: :put, class: 'ui red circular label', style: 'min-height: 0px;' %>
-          <% end %>
-          <% if event.is_cancelled %>
-              <div class="ui red circular label" style="min-height: 0px;">
-                <%= t :cancelled %>
-              </div>
-          <% end %>
-        </td>
-        <td>
-          <%= link_to show_public_event_path(event), class: 'pop_up', title: t(:show_on_webpage) do %>
-              <i class="large grey unhide link icon"></i>
-          <% end %>
-          <%= link_to edit_event_type_event_path(@event_type, event), class: 'pop_up', title: t(:edit_event) do %>
-              <i class="large yellow edit link icon"></i>
-          <% end %>
-          <%= link_to event_type_event_path(@event_type, event), method: :delete, data: { confirm: t(:are_you_sure_remove_event) }, class: 'pop_up', title: t(:remove_event) do %>
-              <i class="large red remove link icon"></i>
-          <% end %>
-        </td>
-      </tr>
-  <% end %>
+  <tr>
+    <td>
+      <h3><i class="large spinner loading icon"></i> Loading</h3>
+    </td>
+    <td></td><td></td><td></td>
+  </tr>
   </tbody>
 </table>
-<div class="ui compact attached segment" style="padding: 0px;">
-  <%= will_paginate(@events, :renderer => 'PaginationHelper::LinkRenderer') %>
-</div>

@@ -1,89 +1,45 @@
 class UsersController < ApplicationController
-  before_action :set_user, only: [:deactivate, :set_inex_member, :destroy_inex_member, :show, :show_bags, :show_events, :edit, :update, :destroy] # must be here!
+  before_action :set_user, only: [:deactivate, :set_inex_member, :destroy_inex_member, :show, :my_applications, :my_events, :edit, :update, :destroy] # must be here!
   before_action :can_do_employee_things, only: [:index, :destroy, :deactivate, :set_inex_member]
   before_action :can_see_or_edit, only: [:show, :edit, :update]
+  include Searchable
+  include UsersHelper
 
-  # GET /users
-  # GET /users.json
   def index
-    per_page = params[:per_page]
-    per_page ||= 10
-    page = params[:page] || 1
-    users = do_search(params[:query])
-    if users.count < (page.to_i - 1) * (per_page.to_i) + 1
-      page = 1
-    end
-    @users = users.paginate(page: page, per_page: per_page)
-    @employees = Employee.all
+    @employees = Employee.includes(:user)
   end
 
+  # DataTable search
   def search
-    users = do_search(params[:q])
-    res = users.collect { |u|
-      {
-        "title": "#{u.name} #{u.surname}",
-        "url": user_path(u),
-        "description": u.login_mail
-      }
-    }
+    results = do_search(User, columns: [:name, :surname, :login_mail, :personal_mail, :role], order_by: { surname: :asc })
+    results = results.collect { |user| [user.name_surname_nickname, mail_links(binding), user_states(binding), user_actions(binding)] }
     render json: {
-      "results": res,
-      "action": {
-        "url": users_path(query: params[:q], page: params[:page], per_page: params[:per_page]),
-        "text": "Obnoviť tabuľku (#{res.size} výsledkov)"
-      }
+      "draw":            params[:draw],
+      "recordsTotal":    User.count,
+      "recordsFiltered": User.count,
+      "data":            results
     }
   end
 
-  def do_search(query)
-    t = User.arel_table
-    if !query.blank?
-      q = query.split(' ').join('|')
-      User.where("`name` REGEXP ? OR `surname` REGEXP ? OR `login_mail` REGEXP ? OR `personal_mail` REGEXP ? OR `role` REGEXP ?", q, q, q, q, q)
-    else
-      User.all
-    end
-  end
-
-  # GET /users/1
-  # GET /users/1.json
   def show
     @addresses = @user.addresses
   end
 
-  def show_events
-    @leaders = @user.leaders
-    @trainers = @user.trainers
-    @local_partners = @user.local_partners
-    @volunteers = @user.volunteers
-  end
-
-  def show_bags
+  def my_applications
     @my_bags = @user.event_lists.order(created_at: :desc).order(state: :asc)
   end
 
-  # GET /users/new
   def new
     @user = User.new
-    @educations = Education.all
   end
 
-  # GET /users/1/edit
-  def edit
-    @educations = Education.all
-  end
-
-  # GET/POST
   def set_inex_member
-    unless params[:commit].blank?
-      @user.role = params[:user][:role]
-      @user.save(validate: false)
-      Employee.create(user: @user) if !@user.employee
-      redirect_to users_path, success: t(:user_was_added_to_inex_office)
-    end
+    @user.role = params[:user][:role]
+    @user.save(validate: false)
+    Employee.create(user: @user) if !@user.employee
+    redirect_to users_path, success: t(:user_was_added_to_inex_office)
   end
 
-  # DELETE
   def destroy_inex_member
     @user.role = nil
     @user.save(validate: false)
@@ -91,13 +47,12 @@ class UsersController < ApplicationController
     redirect_to users_path, success: t(:user_was_removed_from_inex_office)
   end
 
-  # PATCH
   def deactivate
     if @user == current_user
       redirect_to users_path, warning: t(:you_cannot_deactivate_yourself)
     else
       if @user.is_active?
-        if @user.is_inex_member?
+        if @user.is_inex_office?
           if Employee.joins(:user).where(users: { state: "aktívny" }).count +
             Employee.joins(:user).where(users: { state: "active" }).count > 1
             @user.state = "neaktívny"
@@ -119,8 +74,6 @@ class UsersController < ApplicationController
     end
   end
 
-  # POST /users
-  # POST /users.json
   def create
     @user = User.new(user_params)
 
@@ -128,49 +81,40 @@ class UsersController < ApplicationController
       if @user.save
         UserMailer.welcome_email(@user, "#{request.protocol}#{request.host_with_port}").deliver_now
         format.html { redirect_to new_session_path, success: "#{t :you_were_registered_email_was_sent_to} #{@user.login_mail}." }
-        format.json { render :show, status: :created, location: @user }
       else
         format.html { render :new }
-        format.json { render json: @user.errors, status: :unprocessable_entity }
       end
     end
   end
 
-  # PATCH/PUT /users/1
-  # PATCH/PUT /users/1.json
   def update
     if @user.password.blank? || @user.password_confirmation.blank?
       @user.perform_password_validation = false
     end
     respond_to do |format|
       if !current_user.is_employee? && params[:user] && (!params[:user][:name].blank? || !params[:user][:surname].blank?)
-        @educations = Education.all
         @user.errors.add(:name, t(:you_cannot_edit_name))
         @user.errors.add(:surname, t(:you_cannot_edit_surname))
         format.html { render :edit }
       else
         if @user.update(user_params)
           format.html { redirect_to @user, success: "#{t :user} #{define_notice('m', __method__)}" }
-          format.json { render :show, status: :ok, location: @user }
         else
           @educations = Education.all
           format.html { render :edit }
-          format.json { render json: @user.errors, status: :unprocessable_entity }
         end
       end
     end
   end
 
-  # DELETE /users/1
-  # DELETE /users/1.json
   def destroy
     if session[:user_id] == @user.id
       redirect_to :back, error: "Nemôžeš vymazať sám seba. Požiadaj niekoho iného :)"
-    end
-    @user.destroy
-    respond_to do |format|
-      format.html { redirect_to users_url, success: "#{t :user} #{define_notice('m', __method__)}" }
-      format.json { head :no_content }
+    else
+      @user.destroy
+      respond_to do |format|
+        format.html { redirect_to users_url, success: "#{t :user} #{define_notice('m', __method__)}" }
+      end
     end
   end
 

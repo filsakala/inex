@@ -1,11 +1,10 @@
-class IssueTicketsController < EmployeeController
+class IssueTicketsController < InexMemberController
   before_action :set_issue_ticket, only: [:show, :set_done, :edit, :update, :destroy]
 
   # GET /issue_tickets
-  # GET /issue_tickets.json
   def index
-    @issue_tickets = IssueTicket.where('`is_done` IS NOT true')
-    @issue_tickets_done = IssueTicket.where(is_done: true)
+    @issue_tickets = IssueTicket.includes(:user).where('`is_done` IS NOT true')
+    @issue_tickets_done = IssueTicket.includes(:user).where(is_done: true)
   end
 
   def set_done
@@ -13,22 +12,12 @@ class IssueTicketsController < EmployeeController
     redirect_to :back, success: 'Stav problému bol úspešne prestavený.'
   end
 
-  # GET /issue_tickets/1
-  # GET /issue_tickets/1.json
-  def show
-  end
-
   # GET /issue_tickets/new
   def new
     @issue_ticket = IssueTicket.new
   end
 
-  # GET /issue_tickets/1/edit
-  def edit
-  end
-
   # POST /issue_tickets
-  # POST /issue_tickets.json
   def create
     @issue_ticket = IssueTicket.new(issue_ticket_params)
 
@@ -36,35 +25,28 @@ class IssueTicketsController < EmployeeController
       if @issue_ticket.save
         IssueTicketsMailer.created_issue(@issue_ticket, "#{request.protocol}#{request.host_with_port}").deliver_now
         format.html { redirect_to @issue_ticket, notice: 'Issue ticket was successfully created.' }
-        format.json { render :show, status: :created, location: @issue_ticket }
       else
         format.html { render :new }
-        format.json { render json: @issue_ticket.errors, status: :unprocessable_entity }
       end
     end
   end
 
   # PATCH/PUT /issue_tickets/1
-  # PATCH/PUT /issue_tickets/1.json
   def update
     respond_to do |format|
       if @issue_ticket.update(issue_ticket_params)
         format.html { redirect_to @issue_ticket, notice: 'Issue ticket was successfully updated.' }
-        format.json { render :show, status: :ok, location: @issue_ticket }
       else
         format.html { render :edit }
-        format.json { render json: @issue_ticket.errors, status: :unprocessable_entity }
       end
     end
   end
 
   # DELETE /issue_tickets/1
-  # DELETE /issue_tickets/1.json
   def destroy
     @issue_ticket.destroy
     respond_to do |format|
       format.html { redirect_to issue_tickets_url, notice: 'Issue ticket was successfully destroyed.' }
-      format.json { head :no_content }
     end
   end
 

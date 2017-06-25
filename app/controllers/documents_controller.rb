@@ -1,5 +1,5 @@
 # encoding: utf-8
-class DocumentsController < EmployeeController
+class DocumentsController < InexMemberController
   before_action :set_google_drive, except: [:callback, :google_signout]
   before_action :set_drive_folder, only: [:index, :new_file, :edit_file]
   include DocumentsHelper
@@ -9,19 +9,16 @@ class DocumentsController < EmployeeController
 
   rescue_from Google::Apis::ClientError, with: :authorize
 
-  OOB_URI = 'urn:ietf:wg:oauth:2.0:oob'
-  APPLICATION_NAME = 'INEX Webpage'
-  CLIENT_SECRETS_PATH = Rails.root.join('app', 'assets', 'javascripts', 'drive_secret2.json')
   CREDENTIALS_PATH = Rails.root.join('public', '.credentials', 'drive-ruby-quickstart.yaml')
-  SCOPE = [Google::Apis::DriveV3::AUTH_DRIVE_FILE, Google::Apis::DriveV3::AUTH_DRIVE_METADATA_READONLY]
+  SCOPE            = [Google::Apis::DriveV3::AUTH_DRIVE_FILE, Google::Apis::DriveV3::AUTH_DRIVE_METADATA_READONLY]
 
   def authorize
     FileUtils.mkdir_p(File.dirname(CREDENTIALS_PATH))
 
-    client_id = Google::Auth::ClientId.from_file(CLIENT_SECRETS_PATH)
+    client_id   = Google::Auth::ClientId.from_file(Rails.root.join('app', 'assets', 'javascripts', 'drive_secret2.json'))
     token_store = Google::Auth::Stores::FileTokenStore.new(file: CREDENTIALS_PATH)
-    authorizer = Google::Auth::WebUserAuthorizer.new(client_id, SCOPE, token_store, callback_documents_url(host: "#{request.protocol}#{request.host_with_port}"))
-    user_id = 'default'
+    authorizer  = Google::Auth::WebUserAuthorizer.new(client_id, SCOPE, token_store, callback_documents_url(host: "#{request.protocol}#{request.host_with_port}"))
+    user_id     = 'default'
     credentials = authorizer.get_credentials(user_id, request)
     if credentials.nil?
       redirect_to authorizer.get_authorization_url(login_hint: user_id, request: request)
@@ -32,8 +29,7 @@ class DocumentsController < EmployeeController
   end
 
   def callback
-    target_url = Google::Auth::WebUserAuthorizer.handle_auth_callback_deferred(
-      request)
+    target_url = Google::Auth::WebUserAuthorizer.handle_auth_callback_deferred(request)
     redirect_to target_url, success: t(:google_login_was_successful)
   end
 
@@ -43,24 +39,13 @@ class DocumentsController < EmployeeController
   end
 
   def new_file
-    mimetype = ""
-    case params[:type]
-      # when "doc"
-      #   mimetype = "application/vnd.google-apps.document" # doc
-      when "tab"
-        mimetype = "application/vnd.google-apps.spreadsheet" # xls
-      else
-        redirect_to documents_path, warning: "Unknown file type #{params[:type]} to create."
-    end
     file_metadata = {
-      name: "New #{params[:type]} #{DateTime.now.strftime('%d.%m.%Y %H:%m')}",
-      mime_type: mimetype,
-      parents: [@folders.first.id]
+      name:      "New Spreadsheet #{DateTime.now.strftime('%d.%m.%Y %H:%m')}",
+      mime_type: "application/vnd.google-apps.spreadsheet",
+      parents:   [@folders.first.id]
     }
-    file = @service.create_file(file_metadata,
-                                fields: 'id')
-    puts "File Id: #{file.id}"
-    redirect_to documents_path, success: "File was successfully created."
+    @service.create_file(file_metadata, fields: 'id')
+    redirect_to documents_path, success: "#{t :file} #{define_notice('m', :create)}"
   end
 
   def delete_file
@@ -80,35 +65,34 @@ class DocumentsController < EmployeeController
   # GET /documents
   # GET /documents.json
   def index
-    response = @service.list_files(q: "mimeType='application/vnd.google-apps.folder'
-                                          and name = 'INEX Webpage'",
-                                   fields: 'nextPageToken, files(id, name)')
-    if @folders.size == 0
+    @service.list_files(q:      "mimeType='application/vnd.google-apps.folder' and name = 'INEX Webpage'",
+                        fields: 'nextPageToken, files(id, name)')
+    if @folders.size == 0 # Create file folder & JSON folder
       file_metadata = {
-        name: 'INEX Webpage',
+        name:      'INEX Webpage',
         mime_type: 'application/vnd.google-apps.folder'
       }
-      f = @service.create_file(file_metadata, fields: 'id')
+      folder        = @service.create_file(file_metadata, fields: 'id')
       file_metadata = {
-        name: 'json',
+        name:      'json',
         mime_type: 'application/vnd.google-apps.folder',
-        parents: [f.id]
+        parents:   [folder.id]
       }
       @service.create_file(file_metadata, fields: 'id')
       @drive_files = []
     else
       @drive_files = []
       @folders.each do |folder|
-        @drive_files += @service.list_files(q: "'#{folder.id}' in parents and mimeType != 'application/vnd.google-apps.folder'",
+        @drive_files += @service.list_files(q:      "'#{folder.id}' in parents and mimeType != 'application/vnd.google-apps.folder'",
                                             fields: 'nextPageToken, files(id, name, mimeType, webViewLink)').files
 
-        json_folder = @service.list_files(q: "'#{folder.id}' in parents and mimeType = 'application/vnd.google-apps.folder' and name='json'",
+        json_folder = @service.list_files(q:      "'#{folder.id}' in parents and mimeType = 'application/vnd.google-apps.folder' and name='json'",
                                           fields: 'nextPageToken, files(id, name, mimeType, webViewLink)').files
         if json_folder.size == 0
           file_metadata = {
-            name: 'json',
+            name:      'json',
             mime_type: 'application/vnd.google-apps.folder',
-            parents: [folder.id]
+            parents:   [folder.id]
           }
           @service.create_file(file_metadata, fields: 'id')
         end
@@ -123,27 +107,20 @@ class DocumentsController < EmployeeController
 
   def edit_file
     @file = @service.get_file(params[:file_id], fields: "id, name, mimeType, webViewLink")
-    if @file.mime_type == "application/vnd.google-apps.spreadsheet"
-      csv = @service.export_file(@file.id, "text/csv") # File saved to string as csv!
-      if !csv.blank?
-        @csv = CSV.parse(csv)
-      end
-    elsif @file.mime_type == "application/vnd.google-apps.document"
-      @html = @service.export_file(@file.id, "text/html") # File saved to string as html!
-    end
+    csv = @service.export_file(@file.id, "text/csv") # File saved to string as csv!
+    @csv = CSV.parse(csv) if !csv.blank?
   rescue Google::Apis::ClientError
     redirect_to documents_path, error: "Error: #{$!.message}"
   end
 
   def edit_stats
     @file = @service.get_file(params[:file_id], fields: "id, name, mimeType, webViewLink")
-    @row = params[:row]
-    @col = params[:col]
+    @row, @col  = params[:row], params[:col]
     if @row.blank? || @col.blank?
       redirect_to documents_path, flash: { error: "Error: Musíš vyplniť riadok a stĺpec na vyplnenie štatistiky." }
     end
     # Now try to get JSON stats
-    @json_stats_files = @service.list_files(q: "name='#{@file.id}' and mimeType='application/vnd.google-apps.document'",
+    @json_stats_files = @service.list_files(q:      "name='#{@file.id}' and mimeType='application/vnd.google-apps.document'",
                                             fields: 'nextPageToken, files(id, name, mimeType, webViewLink)').files
     if @json_stats_files.any?
       json_file = @service.export_file(@json_stats_files.first.id, "text/plain")
@@ -158,43 +135,36 @@ class DocumentsController < EmployeeController
         end
       end
     end
-
-    if @file.mime_type == "application/vnd.google-apps.spreadsheet"
-      csv = @service.export_file(@file.id, "text/csv") # File saved to string as csv!
-      if !csv.blank?
-        @csv = CSV.parse(csv)
-      end
-    elsif @file.mime_type == "application/vnd.google-apps.document"
-      @html = @service.export_file(@file.id, "text/html") # File saved to string as html!
-    end
+    csv = @service.export_file(@file.id, "text/csv") # File saved to string as csv!
+    @csv = CSV.parse(csv) if !csv.blank?
   rescue Google::Apis::ClientError
     redirect_to documents_path, error: "Error: #{$!.message}"
   end
 
   def update_stats
-    @file = @service.get_file(params[:file_id], fields: "id, mimeType")
-    rcount = result_stats(params)
-    @col = params[:col]
-    @row = params[:row]
+    @file             = @service.get_file(params[:file_id], fields: "id, mimeType")
+    rcount            = result_stats(params)
+    @col              = params[:col]
+    @row              = params[:row]
 
     # prepare JSON string
-    @json_stats_files = @service.list_files(q: "name='#{@file.id}' and mimeType='application/vnd.google-apps.document'",
+    @json_stats_files = @service.list_files(q:      "name='#{@file.id}' and mimeType='application/vnd.google-apps.document'",
                                             fields: 'nextPageToken, files(id, name, mimeType, webViewLink)').files
     # JSON STATS START
-    @my_json_stats = {
-      "stats_type": "#{params[:stats_type]}",
-      "years": "#{params[:years]}",
+    @my_json_stats    = {
+      "stats_type":     "#{params[:stats_type]}",
+      "years":          "#{params[:years]}",
       "event_type_ids": "#{params[:event_type_ids]}",
-      "event_ids": "#{params[:event_ids]}",
-      "do_uniq": "#{params[:do_uniq]}",
-      "people": "#{params[:people]}",
-      "education_ids": "#{params[:education_ids]}",
-      "sex": "#{params[:sex]}"
+      "event_ids":      "#{params[:event_ids]}",
+      "do_uniq":        "#{params[:do_uniq]}",
+      "people":         "#{params[:people]}",
+      "education_ids":  "#{params[:education_ids]}",
+      "sex":            "#{params[:sex]}"
     }
     (0..20).each do |i|
       if !params["age_from_#{i}"].blank? && !params["age_to_#{i}"].blank?
         @my_json_stats["age_from_#{i}"] = params["age_from_#{i}"]
-        @my_json_stats["age_to_#{i}"] = params["age_to_#{i}"]
+        @my_json_stats["age_to_#{i}"]   = params["age_to_#{i}"]
       end
     end
     # JSON STATS END
@@ -208,39 +178,39 @@ class DocumentsController < EmployeeController
           elsif !@json_stats["#{@row}"].blank?
             @json_stats["#{@row}"]["#{@col}"] = @my_json_stats
           else
-            @json_stats["#{@row}"] = {}
+            @json_stats["#{@row}"]            = {}
             @json_stats["#{@row}"]["#{@col}"] = @my_json_stats
           end
         rescue JSON::ParserError # do nothing
-          @json_stats = {}
-          @json_stats["#{@row}"] = {}
+          @json_stats                       = {}
+          @json_stats["#{@row}"]            = {}
           @json_stats["#{@row}"]["#{@col}"] = @my_json_stats
         end
       else
-        @json_stats = {}
-        @json_stats["#{@row}"] = {}
+        @json_stats                       = {}
+        @json_stats["#{@row}"]            = {}
         @json_stats["#{@row}"]["#{@col}"] = @my_json_stats
       end
       # raise "#{@json_stats}"
       @service.update_file(@json_stats_files.first.id, {}, fields: 'id', upload_source: StringIO.new(JSON.generate(@json_stats)), content_type: 'text/plain')
     else # create json file
-      json_folder = @service.list_files(q: "mimeType = 'application/vnd.google-apps.folder' and name='json'",
-                                        fields: 'nextPageToken, files(id, name, mimeType, webViewLink)').files
+      json_folder   = @service.list_files(q:      "mimeType = 'application/vnd.google-apps.folder' and name='json'",
+                                          fields: 'nextPageToken, files(id, name, mimeType, webViewLink)').files
       file_metadata = {
-        name: "#{@file.id}",
+        name:      "#{@file.id}",
         mime_type: 'application/vnd.google-apps.document',
-        parents: [json_folder.first.id]
+        parents:   [json_folder.first.id]
       }
-      file = @service.create_file(file_metadata,
-                                  fields: 'id',
-                                  upload_source: StringIO.new(JSON.generate({ "#{@row}": { "#{@col}": @my_json_stats } })),
-                                  content_type: 'text/plain')
+      file          = @service.create_file(file_metadata,
+                                           fields:        'id',
+                                           upload_source: StringIO.new(JSON.generate({ "#{@row}": { "#{@col}": @my_json_stats } })),
+                                           content_type:  'text/plain')
     end
     if @file.mime_type == "application/vnd.google-apps.spreadsheet"
-      csv = @service.export_file(@file.id, "text/csv") # File saved to string as csv!
-      @csv = CSV.parse(csv) if !csv.blank?
+      csv                        = @service.export_file(@file.id, "text/csv") # File saved to string as csv!
+      @csv                       = CSV.parse(csv) if !csv.blank?
       @csv[@row.to_i][@col.to_i] = "#{rcount}"
-      @csv_string = ""
+      @csv_string                = ""
       @csv.each do |row|
         @csv_string += row.to_csv
       end
@@ -254,13 +224,13 @@ class DocumentsController < EmployeeController
   end
 
   def update_file
-    @file = @service.get_file(params[:file_id])
-    ufile = Google::Apis::DriveV3::File.new
+    @file      = @service.get_file(params[:file_id])
+    ufile      = Google::Apis::DriveV3::File.new
     ufile.name = "Dokument bez názvu"
     ufile.name = params[:name] if !params[:name].blank?
     if @file.mime_type == "application/vnd.google-apps.spreadsheet"
-      csv = @service.export_file(@file.id, "text/csv") # File saved to string as csv!
-      @csv = CSV.parse(csv) if !csv.blank?
+      csv      = @service.export_file(@file.id, "text/csv") # File saved to string as csv!
+      @csv     = CSV.parse(csv) if !csv.blank?
       # change values
       max_size = 100
       # raise "#{@csv}"
@@ -288,13 +258,13 @@ class DocumentsController < EmployeeController
 
   private
   def set_google_drive
-    @service = Google::Apis::DriveV3::DriveService.new
+    @service                                 = Google::Apis::DriveV3::DriveService.new
     @service.client_options.application_name = 'INEX Webpage'
-    @service.authorization = authorize
+    @service.authorization                   = authorize
   end
 
   def set_drive_folder
-    @folders = @service.list_files(q: "mimeType='application/vnd.google-apps.folder'
+    @folders = @service.list_files(q:      "mimeType='application/vnd.google-apps.folder'
                                           and name = 'INEX Webpage'",
                                    fields: 'nextPageToken, files(id, name)').files
   end

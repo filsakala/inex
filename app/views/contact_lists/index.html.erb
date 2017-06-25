@@ -1,22 +1,4 @@
-<%= render 'header' %>
+<%= header :h2, "book", t(:all_contacts), "#{@contacts.count} #{t(:contacts_count)}" %>
 
-<div class="ui padded stackable grid">
-  <div class="ui two column row">
-    <div class="four wide column">
-      <%= render 'panel' %>
-    </div>
-    <div class="twelve wide column">
-      <h2 class="ui header">
-        <i class="book icon"></i>
-        <div class="content">
-          <%= t :all_contacts %>
-          <div class="sub header">
-            <%= @contacts.count %> <%= t :contacts_count %>
-          </div>
-        </div>
-      </h2>
-
-      <%= render 'detail' %>
-    </div>
-  </div>
-</div>
+<%= render 'contact_lists/panel' %>
+<%= render 'detail' %>

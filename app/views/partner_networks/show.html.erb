@@ -1,29 +1,15 @@
-<%= render 'organizations/header' %>
-
-<div class="ui padded stackable grid">
-  <div class="ui two column row">
-    <div class="four wide column">
-      <%= render 'organizations/panel' %>
-    </div>
-    <div class="twelve wide column">
-      <h2 class="ui header">
-        <i class="sitemap icon"></i>
-        <div class="content">
-          <%= @partner_network.name %>
-          <div class="sub header">Detail.</div>
-        </div>
-      </h2>
-      <%= link_to edit_partner_network_path(@partner_network), class: 'ui yellow button' do %>
-          <i class="edit icon"></i> <%= t :edit %> <%= t(:partner_network).downcase %>
-      <% end %>
-
-      <div class="ui dividing sub header"><%= t :description %></div>
-      <p><%= @partner_network.description %></p>
-
-      <div class="ui dividing sub header"><%= t :organizations_in_partner_network %>
-      </div>
-
-      <%= render 'organizations_list', organizations: @my_organizations %>
-    </div>
+<h2 class="ui header">
+  <i class="sitemap icon"></i>
+  <div class="content">
+    <%= @partner_network.name %>
+    <div class="sub header">Detail.</div>
   </div>
+</h2>
+<%= render 'organizations/panel' %>
+<div class="ui dividing sub header"><%= t :description %></div>
+<p><%= @partner_network.description %></p>
+
+<div class="ui dividing sub header"><%= t :organizations_in_partner_network %>
 </div>
+
+<%= render 'organizations_list', organizations: @my_organizations %>

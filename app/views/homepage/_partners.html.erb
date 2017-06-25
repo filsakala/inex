@@ -1,4 +1,4 @@
-<% if @partners.any? || (current_user && current_user.is_inex_member?) %>
+<% if @partners.any? || (current_user && current_user.is_inex_office?) %>
     <h3>
       <%= t(:thanks_for_support) %>
       <% if current_user && current_user.is_employee? %>

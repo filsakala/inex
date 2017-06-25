@@ -1,35 +1,50 @@
-<div class="ui two buttons">
-  <%= link_to t(:new_organization), new_organization_path, class: 'ui fluid basic green button' %>
-  <%= link_to t(:new_partner_network), new_partner_network_path, class: 'ui fluid basic green button' %>
-</div>
-
-<div class="ui middle aligned selection divided list">
-  <%= link_to organizations_path, class: "#{active_class(["organizations"], ["index"])} item" do %>
-      <div class="right floated content">
-        <div class="ui green circular label pop_up" title="<%= t :organizations_count %>">
-          <%= @organizations.count %>
-        </div>
-      </div>
-      <i class="child icon"></i>
-      <div class="content">
-        <div class="header">
-          <%= t :all_organizations %>
-        </div>
-      </div>
-  <% end %>
-  <% @partner_networks.each do |pn| %>
-      <%= link_to pn, class: "#{active_class(["partner_networks"], ["show"], pn.id)} item" do %>
-          <div class="right floated content">
-            <div class="ui green circular label pop_up" title="<%= t :organizations_count %>">
-              <%= pn.organizations.count %>
-            </div>
-          </div>
-          <i class="sitemap icon"></i>
-          <div class="content">
-            <div class="header">
-              <%= pn.name %>
-            </div>
-          </div>
+<div class="ui top attached stackable menu" style="margin-bottom: 10px;">
+  <div class="ui dropdown item">
+    <i class="plus icon pop_up"></i> Nová
+    <i class="dropdown icon"></i>
+    <div class="menu">
+      <%= link_to new_organization_path, class: 'item' do %>
+          <i class="child icon"></i> <%= t(:organization) %>
       <% end %>
+      <%= link_to new_partner_network_path, class: 'item' do %>
+          <i class="sitemap icon"></i> <%= t(:partner_network) %>
+      <% end %>
+    </div>
+  </div>
+  <% if @partner_network.try(:id) || @organization.try(:id) %>
+      <div class="ui dropdown item">
+        <i class="edit icon pop_up"></i> Upraviť
+        <i class="dropdown icon"></i>
+        <div class="menu">
+          <div class="scrolling  menu">
+            <% if @partner_network %>
+                <%= link_to edit_partner_network_path(@partner_network), class: 'item' do %>
+                    <i class="edit icon"></i> Sieť
+                <% end %>
+            <% end %>
+            <% if @organization %>
+                <%= link_to edit_organization_path(@organization), class: 'item' do %>
+                    <i class="edit icon"></i> Organizáciu
+                <% end %>
+            <% end %>
+          </div>
+        </div>
+      </div>
   <% end %>
+  <div class="ui dropdown item">
+    <i class="folder icon pop_up"></i> Zobraziť
+    <i class="dropdown icon"></i>
+    <div class="menu">
+      <div class="scrolling  menu">
+        <%= link_to organizations_path, class: "#{active_class(["organizations"], ["index"])} item" do %>
+            <i class="child icon"></i> <%= t :all_organizations %>
+        <% end %>
+        <% @partner_networks.each do |pn| %>
+            <%= link_to pn, class: "#{active_class(["partner_networks"], ["show"], pn.id)} item" do %>
+                <i class="sitemap icon"></i> <%= pn.name %>
+            <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
 </div>

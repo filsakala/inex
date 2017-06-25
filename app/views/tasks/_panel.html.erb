@@ -1,28 +1,42 @@
-<div class="ui middle aligned selection divided list">
-  <%= link_to tasks_path, class: "#{active_class(["tasks"], ["index"])} item" do %>
-      <i class="user icon"></i>
-      <div class="content">
-        <div class="header">
-          <%= "#{t(:my)} #{t(:tasks).downcase}" %>
-        </div>
+<div class="ui attached stackable menu">
+  <div class="ui dropdown item">
+    <i class="plus icon pop_up"></i> Nová
+    <i class="dropdown icon"></i>
+    <div class="menu">
+      <%= link_to new_task_path, class: 'item' do %>
+          <i class="flag icon"></i> <%= t(:task) %>
+      <% end %>
+    </div>
+  </div>
+  <div class="ui dropdown item">
+    <i class="folder icon pop_up"></i> Zobraziť
+    <i class="dropdown icon"></i>
+    <div class="menu">
+      <div class="scrolling  menu">
+        <%= link_to tasks_path, class: "#{active_class(["tasks"], ["index"])} item" do %>
+            <i class="user icon"></i> <%= "#{t(:my)} #{t(:tasks).downcase}" %>
+        <% end %>
+        <% if current_user.try(:is_employee?) %>
+            <%= link_to index_others_tasks_path, class: "#{active_class(["tasks"], ["index_others"])} item" do %>
+                <i class="users icon"></i> <%= "#{t(:others_assigned_tasks)}" %>
+            <% end %>
+            <%= link_to repeatable_tasks_path, class: "#{active_class(["tasks"], ["repeatable"])} item" do %>
+                <i class="refresh icon"></i> <%= "#{t(:repeatable)} #{t(:tasks).downcase}" %>
+            <% end %>
+        <% end %>
       </div>
-  <% end %>
-  <% if current_user.try(:is_employee?) %>
-      <%= link_to index_others_tasks_path, class: "#{active_class(["tasks"], ["index_others"])} item" do %>
-          <i class="users icon"></i>
-          <div class="content">
-            <div class="header">
-              <%= "#{t(:others_assigned_tasks)}" %>
-            </div>
-          </div>
+    </div>
+  </div>
+  <div class="right menu">
+      <% if current_user.try(:employee) %>
+          <% current_user.employee.event_types.each do |event_type| %>
+            <%= link_to bags_event_type_path(event_type), class: "item pop_up", title: event_type.title  do %>
+                <%= event_type.title[0..10] %>...
+                <div class="floating ui teal label">
+                  <%= EventList.where.not(state: ['opened', 'closed']).includes(:events).where(events: { event_type_id: event_type.id }).count %>
+                </div>
+            <% end %>
+          <% end %>
       <% end %>
-      <%= link_to repeatable_tasks_path, class: "#{active_class(["tasks"], ["repeatable"])} item" do %>
-          <i class="refresh icon"></i>
-          <div class="content">
-            <div class="header">
-              <%= "#{t(:repeatable)} #{t(:tasks).downcase}" %>
-            </div>
-          </div>
-      <% end %>
-  <% end %>
+  </div>
 </div>

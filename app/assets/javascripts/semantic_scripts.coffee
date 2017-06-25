@@ -56,12 +56,11 @@ jQuery ->
     fullTextSearch: true
   )
 
-  $('.pushable .ui.sidebar')
-  .sidebar({
-    context: $('.pushable .bottom.segment')
-  })
-  .sidebar('setting', 'transition', 'overlay')
-  .sidebar('attach events', '.pushable .menu .pusher')
+  $('.ui.sidebar')
+    .sidebar({
+      context: '.pusher'
+    })
+    .sidebar()
 
   $.datepicker.setDefaults($.datepicker.regional['sk']);
   $.timepicker.regional['sk'] = {
@@ -90,8 +89,6 @@ jQuery ->
   $(".accordion-closer").on "click", ->
     $('.accordion').toggle();
 
-  $('table').tablesort();
-
   $('.ui.sticky').sticky({
     offset: 200,
     bottomOffset: 50,
@@ -104,44 +101,44 @@ jQuery ->
     on: 'hover'
   });
 
-  calendar_update = ->
-    $('.popup.demos .browse').popup({
-      on: 'hover',
-      inline: true,
-      hoverable: true,
-      position: 'bottom left'
-    })
+#  calendar_update = ->
+#    $('.popup.demos .browse').popup({
+#      on: 'hover',
+#      inline: true,
+#      hoverable: true,
+#      position: 'bottom left'
+#    })
+#
+#  $(document).on 'page:load', ->
+#    calendar_update()
 
-  $(document).on 'page:load', ->
-    calendar_update()
+#  $('.popup.demos .browse').popup({
+#    on: 'hover',
+#    inline: true,
+#    hoverable: true,
+#    position: 'bottom left'
+#  })
 
-  $('.popup.demos .browse').popup({
-    on: 'hover',
-    inline: true,
-    hoverable: true,
-    position: 'bottom left'
-  })
+#  $('.popup-creator').popup({
+#    on: 'hover',
+#    inline: true,
+#    hoverable: true,
+#    position: 'bottom left'
+#  })
 
-  $('.popup-creator').popup({
-    on: 'hover',
-    inline: true,
-    hoverable: true,
-    position: 'bottom left'
-  })
+#  $('.pulse-on-hover').mouseenter(
+#    (ev) ->
+#      $(this).transition('pulse')
+#  )
 
-  $('.pulse-on-hover').mouseenter(
-    (ev) ->
-      $(this).transition('pulse')
-  )
-
-  $('.pulse-on-timing')
-  .transition('set looping')
-  .transition('bounce', '1900ms')
+#  $('.pulse-on-timing')
+#  .transition('set looping')
+#  .transition('bounce', '1900ms')
 
 
   $('.menu .item').tab()
 
-  $('#nt-example1').newsTicker({
+  $('.newsTicker').newsTicker({
     row_height: 47,
     max_rows: 10,
     duration: 4000
@@ -164,10 +161,19 @@ jQuery ->
 
   $('.event-calendar-list').on "click", ->
     day = $(this).attr('date')
-    meetings = $(this).attr('meetings')
-    $('#modal-header').text("#{day}")
-    $('#event_calendar_list').html("#{meetings}")
-    $('#modal').modal('show')
+    ids = $(this).data('ids')
+    $.ajax "/homepage/meetings_html?ids=#{ids}",
+      type: 'GET'
+      dataType: 'html'
+      error: (jqXHR, textStatus, errorThrown) ->
+        $('#modal-header').text("#{day}")
+        $('#event_calendar_list').html("Nastala chyba pri načítavaní zoznamu.")
+        $('#modal').modal('show')
+      success: (data, textStatus, jqXHR) ->
+#        alert(data)
+        $('#modal-header').text("#{day}")
+        $('#event_calendar_list').html(data)
+        $('#modal').modal('show')
 
   $('#countup').appear()
   $('#countup').on "appear", ->
@@ -186,47 +192,6 @@ jQuery ->
       demo = new CountUp('cntup4', 0, endval);
       demo.start();
       $(this).attr('counted', 'true')
-
-  $('.ui.homepage.search').search({
-    apiSettings: {
-      url: '/homepage/search_page?q={query}'
-    },
-#    fields: {
-#      results : 'results',
-#      title   : 'title',
-#      url     : 'url'
-#    }
-  })
-
-  $('.ui.users.search').search({
-    apiSettings: {
-      url: "/users/search?q={query}&page={page}&per_page={per_page}"
-    }
-  })
-
-  $('.ui.events.search').search({
-    apiSettings: {
-      url: "/event_types/{id}/search?q={query}&page={page}&per_page={per_page}"
-    }
-  })
-
-  $('.ui.bags.search').search({
-    apiSettings: {
-      url: "/event_types/{id}/bags_search?q={query}&page={page}&per_page={per_page}"
-    }
-  })
-
-  $('.ui.participation_fees.search').search({
-    apiSettings: {
-      url: "/participation_fees/search?q={query}&page={page}&per_page={per_page}"
-    }
-  })
-
-  $('.ui.eventTypeIndex.search').search({
-    apiSettings: {
-      url: "/events/search?q={query}"
-    }
-  })
 
   $('#add-age-fields').on "click", ->
     actualHtml = $('#age-container').html()
@@ -256,26 +221,6 @@ jQuery ->
 
   $(".hiding").on "click", ->
     $(".hideable").hide
-
-  $('.task-list-updater').on "click", ->
-    state = $(this).attr('state')
-    tasklistId = $(this).attr('tasklistId')
-    tthis = $(this) # V success je iny this
-    $.ajax "/task_lists/#{tasklistId}/update_state",
-      type: 'PATCH'
-      dataType: 'html'
-      error: (jqXHR, textStatus, errorThrown) ->
-        alert("Nastala chyba pri updatovaní bodov na splnenie: #{textStatus}")
-      success: (data, textStatus, jqXHR) ->
-        iconUpdater = $(tthis).find(".icon-updater")
-        if state == "dokončená"
-          iconUpdater.removeClass('green checkmark icon icon-updater')
-          iconUpdater.addClass('red warning sign icon icon-updater')
-          $(tthis).attr('state', "nedokončená")
-        else
-          iconUpdater.removeClass('red warning sign icon icon-updater')
-          iconUpdater.addClass('green checkmark icon icon-updater')
-          $(tthis).attr('state', "dokončená")
 
   $("#moving-ship").on "click", ->
     clickCnt = parseInt($(this).parent().attr("clickCnt")) + 1
@@ -334,3 +279,17 @@ jQuery ->
           alert("Nastala chyba pri odoberaní článku/videa z doporučenia")
         success: (data, textStatus, jqXHR) ->
           card.remove()
+
+  $(document).ajaxStart ->
+    $("#ajax_loader").show()
+
+  $(document).ajaxStop ->
+    $("#ajax_loader").hide()
+
+  $('.smejo').on 'click', ->
+    if $(this).attr("src") == $(this).data("kukuc-usmiaty")
+      $(this).attr("src", $(this).data("kukuc"))
+    else
+      $(this).attr("src", $(this).data("kukuc-usmiaty")).transition('tada')
+      
+  $('.ui.progress').progress()

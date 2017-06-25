@@ -1,9 +1,10 @@
 class HomepageController < ApplicationController
   layout 'page_part'
+  include HomepageHelper
 
   # GET
   def set_lang
-    if session[:lang] == "sk"
+    if I18n.locale == :sk
       session[:lang] = "en"
     else
       session[:lang] = "sk"
@@ -11,74 +12,71 @@ class HomepageController < ApplicationController
     redirect_to :back
   end
 
+  # GET
   def web
-    if current_user && current_user.is_inex_member?
-      @all_events = Event.where.not(from: nil).where.not(to: nil).includes(:event_categories)
-      @upcoming_events = Event.where.not(from: nil).where.not(to: nil).where('`from` BETWEEN ? AND ?', Date.today, Date.today + 30).order('`from` asc').includes(:event_categories).limit(10)
-      @last_added_events = Event.order('created_at desc').includes(:event_categories).limit(20)
-      @calendar_events = Event.where.not(from: nil).where.not(to: nil).where('`from` BETWEEN ? AND ?', Date.today - Date.today.day, Date.today + 180).includes(:event_categories)
-    else
-      public_events = Event.where(is_published: true)
-      @all_events = public_events.where.not(from: nil).where.not(to: nil)
-      @upcoming_events = public_events.where.not(from: nil).where.not(to: nil).where('`from` BETWEEN ? AND ?', Date.today, Date.today + 30).order('`from` asc').limit(10)
-      @last_added_events = public_events.order('created_at desc').limit(20)
-      @calendar_events = public_events.where.not(from: nil).where.not(to: nil).where('`from` BETWEEN ? AND ?', Date.today - Date.today.day, Date.today + 180).includes(:event_categories)
-    end
-    @flags = {}
-    Country.where(name: @all_events.pluck(:country).uniq).each { |c| @flags[c.name] = c.flag_code }
-    @content = @articles[:footer].take.content
-    @search_events = @all_events.where.not(gps_latitude: nil).where.not(gps_longitude: nil)
-    if !params[:q].blank? || !params[:age].blank? || !params[:sex].blank? || !params[:from].blank? || !params[:to].blank? || !params[:types].blank? || !params[:include_full].blank?
-      @search_events = @search_events.where("`title` LIKE ? OR `code` LIKE ? OR `code_alliance` LIKE ? OR `country` LIKE ?", "%#{params[:q]}%", "%#{params[:q]}%", "%#{params[:q]}%", "%#{params[:q]}%") if !params[:q].blank?
-      @search_events = @search_events.where('? >= `min_age`', params[:age]).where('? <= `max_age`', params[:age]) if !params[:age].blank?
-      from = Event.arel_table[:from]
-      # to = Event.arel_table[:to]
-      @search_events = @search_events.where(from.gteq(Date.parse(params[:from]))) if !params[:from].blank?
-      @search_events = @search_events.where(from.lteq(Date.parse(params[:to]))) if !params[:to].blank?
-      @search_events = @search_events.joins(:event_with_categories).where(event_with_categories: { event_category_id: params[:types] }) if !params[:types].blank?
-      if params[:include_full] != 'on' # Do not include full events - get entered sex and check capacities
-        ignore_sex_events = @search_events.where(ignore_sex_for_capacity: true).pluck(:id)
-        if params[:sex] == 'M'
-          filtered_by_sex = @search_events.where("`capacity_men` > ?", 0).where("`capacity_total` > ?", 0).where('`free_men` > ?', 0).where('`free_total` > ?', 0).pluck(:id)
-        elsif params[:sex] == 'W'
-          filtered_by_sex = @search_events.where("`capacity_women` > ?", 0).where("`capacity_total` > ?", 0).where('`free_women` > ?', 0).where('`free_total` > ?', 0).pluck(:id)
-        else # check total capacity
-          filtered_by_sex = @search_events.where("`capacity_total` > ?", 0).where('`free_total` > ?', 0).pluck(:id)
-        end
-        @search_events = Event.find(ignore_sex_events + filtered_by_sex)
-      end
-      # Fix same location places
-      # (:gps_latitude, :gps_longitude, :address, :city, :country)
-      coords = {}
-      @search_events.each do |l|
-        if (!l.gps_latitude.blank? && !l.gps_longitude.blank?) # Add only places with gps
-          c = [l.gps_latitude, l.gps_longitude]
-          coords[c] ||= []
-          coords[c] << l
-        end
-      end
+    @all_events        = Event.where.not(from: nil).where.not(to: nil).where_is_published(current_user.try(:is_inex_office?))
+    @upcoming_events   = Event.includes(:event_categories).where.not(from: nil).where.not(to: nil)
+                           .where('`from` BETWEEN ? AND ?', Date.today, Date.today + 30)
+                           .order('`from` asc').limit(10)
+                           .where_is_published(current_user.try(:is_inex_office?))
+    @last_added_events = Event.includes(:event_categories).order('created_at desc').limit(20)
+                           .where_is_published(current_user.try(:is_inex_office?))
+    @calendar_events   = Event.includes(:event_categories).where.not(from: nil).where.not(to: nil)
+                           .where('`from` BETWEEN ? AND ?', Date.today - Date.today.day, Date.today + 180)
+                           .where_is_published(current_user.try(:is_inex_office?))
+                           .select(:id, :code, :code_alliance, :title, :title_en, :country, :ignore_sex_for_capacity, :free_total, :free_men, :free_women, :is_only_date, :from, :to)
+    @flags             = Country.flag_codes_for_countries(@all_events.pluck(:country))
+  end
 
-      radius = 0.001
-      coords.each do |c, ary|
-        if c && ary.size > 1
-          ary.each_with_index do |event, index|
-            angle = index * (360 / ary.size)
-            event.gps_latitude = "#{c[0].to_f + (Math.cos(((angle + 0.0) / 180) * Math::PI) * radius)}"
-            event.gps_longitude = "#{c[1].to_f + (Math.sin(((angle + 0.0) / 180) * Math::PI) * radius)}"
-            # raise "#{[event.gps_latitude, event.gps_longitude]}"
-            # binding.pry
-          end
+  #GET
+  def meetings_html
+    events = Event.where(id: params[:ids].split(','))
+    @flags = Country.flag_codes_for_countries(events.pluck(:country))
+    render html: meeting_html(events, view_context).html_safe
+  end
+
+  def map_search
+    @search_events = Event.where.not(from: nil).where.not(to: nil)
+                       .where_is_published(current_user.try(:is_inex_office?))
+                       .where.not(gps_latitude: nil).where.not(gps_longitude: nil)
+    @search_events = @search_events.where_or_like(columns: ['title', 'code', 'code_alliance', 'country'], string: params[:q]) if !params[:q].blank?
+    @search_events = @search_events.where_if('? >= `min_age`', params[:age], !params[:age].blank?).where_if('? <= `max_age`', params[:age], !params[:age].blank?)
+    from           = Event.arel_table[:from]
+    @search_events = @search_events.where(from.gteq(Date.parse(params[:from]))) if !params[:from].blank?
+    @search_events = @search_events.where(from.lteq(Date.parse(params[:to]))) if !params[:to].blank?
+    @search_events = @search_events.joins(:event_with_categories).where(event_with_categories: { event_category_id: params[:types] }) if !params[:types].blank?
+    if params[:include_full] != 'on' # Do not include full events - get entered sex and check capacities
+      ignore_sex_events = @search_events.where(ignore_sex_for_capacity: true).pluck(:id)
+      if params[:sex] == 'M'
+        filtered_by_sex = @search_events.where("`capacity_men` > ?", 0).where("`capacity_total` > ?", 0).where('`free_men` > ?', 0).where('`free_total` > ?', 0).pluck(:id)
+      elsif params[:sex] == 'W'
+        filtered_by_sex = @search_events.where("`capacity_women` > ?", 0).where("`capacity_total` > ?", 0).where('`free_women` > ?', 0).where('`free_total` > ?', 0).pluck(:id)
+      else # check total capacity
+        filtered_by_sex = @search_events.where("`capacity_total` > ?", 0).where('`free_total` > ?', 0).pluck(:id)
+      end
+      @search_events = Event.find(ignore_sex_events + filtered_by_sex)
+    end
+    # Fix same location places
+    coords = {}
+    @search_events.each { |l| (coords[[l.gps_latitude, l.gps_longitude]] ||= []) << l }
+
+    radius = 0.001
+    coords.each do |c, ary|
+      if c && ary.size > 1
+        ary.each_with_index do |event, index|
+          angle               = index * (360 / ary.size)
+          event.gps_latitude  = "#{c[0].to_f + (Math.cos(((angle + 0.0) / 180) * Math::PI) * radius)}"
+          event.gps_longitude = "#{c[1].to_f + (Math.sin(((angle + 0.0) / 180) * Math::PI) * radius)}"
         end
       end
-      # TODO Workcamp, Specialne projekty, Ine...
-      render json: @search_events.to_json
     end
+    render json: @search_events.to_json
   end
 
   # PUT
   def send_question
     email = params[:email]
-    text = params[:text]
+    text  = params[:text]
     if ['inex@inex.sk', 'out@inex.sk', 'finance@inex.sk', 'evs@inex.sk'].include?(email)
       if !text.blank?
         UserMailer.send_question_mail(email, text).deliver_now
@@ -124,70 +122,70 @@ class HomepageController < ApplicationController
     #   #"price": "Optional Price",
     #   "description": "Optional Description"
     # }
-    query = params[:q]
+    query    = params[:q]
     articles = HtmlArticle.where(category: ['o_nas', 'aktivity', 'pomoz',
                                             'pomoz_financne', 'media',
                                             'podpora', 'footer', 'faq',
                                             'membership', 'terms_and_conditions'
-    ]).where("`title` LIKE ?", "%#{query}%")
-    res = []
+                                           ]).where("`title` LIKE ?", "%#{query}%")
+    res      = []
     articles.each do |article|
       res << {
-        "title": article.title,
-        "url": html_article_path(article),
-        "price": '<span class="ui label">Menu</span>',
+        "title":       article.title,
+        "url":         html_article_path(article),
+        "price":       '<span class="ui label">Menu</span>',
         "description": t(:article_in_menu)
       }
     end
-    if t(:my_events).match(/#{query}/i) && current_user
-      res << {
-        "title": t(:my_events),
-        "url": show_events_user_path(current_user),
-        "description": t(:events)
-      }
-    end
-    if t(:my_bags).match(/#{query}/i) && current_user
-      res << {
-        "title": t(:my_bags),
-        "url": show_bags_user_path(current_user),
-        "description": t(:applications)
-      }
-    end
-    if t(:my_profile).match(/#{query}/i) && current_user
-      res << {
-        "title": t(:my_profile),
-        "url": user_path(current_user),
-        "description": t(:info_about_you)
-      }
-    end
-    if t(:my_events).match(/#{query}/i) && current_user
-      res << {
-        "title": t(:my_events),
-        "url": show_events_user_path(current_user),
-        "description": t(:events)
-      }
-    end
+    # if t(:my_events).match(/#{query}/i) && current_user
+    #   res << {
+    #     "title":       t(:my_events),
+    #     "url":         show_events_user_path(current_user),
+    #     "description": t(:events)
+    #   }
+    # end
+    # if t(:my_bags).match(/#{query}/i) && current_user
+    #   res << {
+    #     "title":       t(:my_bags),
+    #     "url":         show_bags_user_path(current_user),
+    #     "description": t(:applications)
+    #   }
+    # end
+    # if t(:my_profile).match(/#{query}/i) && current_user
+    #   res << {
+    #     "title":       t(:my_profile),
+    #     "url":         user_path(current_user),
+    #     "description": t(:info_about_you)
+    #   }
+    # end
+    # if t(:my_events).match(/#{query}/i) && current_user
+    #   res << {
+    #     "title":       t(:my_events),
+    #     "url":         show_events_user_path(current_user),
+    #     "description": t(:events)
+    #   }
+    # end
 
-    if current_user && current_user.is_inex_member?
+    if current_user && current_user.is_inex_office?
       events = Event.where.not(from: nil).where.not(to: nil).where("`title` LIKE ?", "%#{query}%")
-      blogs = BlogPost.where("`title` LIKE ?", "%#{query}%")
+      blogs  = BlogPost.where("`title` LIKE ?", "%#{query}%")
     else
       events = Event.where(is_published: true).where.not(from: nil).where.not(to: nil).where("`title` LIKE ?", "%#{query}%")
-      blogs = BlogPost.where(is_published: true).where("`title` LIKE ?", "%#{query}%")
+      blogs  = BlogPost.where(is_published: true).where("`title` LIKE ?", "%#{query}%")
     end
     events.each do |event|
       res << {
-        "title": event.translated_title,
-        "url": show_public_event_path(event),
-        "price": '<span class="ui green label">Event</span>',
+        "title":       event.translated_title,
+        "url":         show_public_event_path(event),
+        "price":       '<span class="ui green label">Event</span>',
         "description": t(:events)
       }
     end
     blogs.each do |blog|
       res << {
-        "title": blog.title,
-        "url": blog_post_path(blog),
-        "price": '<span class="ui yellow label">Blog</span>',
+        "title":       blog.title,
+        "url":         blog_post_path(blog),
+        "price":       '<span class="ui yellow label">Blog</span>',
         "description": t(:article_in_blog)
       }
     end
@@ -196,54 +194,15 @@ class HomepageController < ApplicationController
     }
   end
 
-  def search
-    if current_user && current_user.is_inex_member?
-      @all_events = Event.where.not(from: nil).where.not(to: nil)
-    else
-      @all_events = Event.where(is_published: true).where.not(from: nil).where.not(to: nil)
-    end
-    @search_events = @all_events
-    if !params[:q].blank? || !params[:age].blank? || !params[:sex].blank? || !params[:from].blank? || !params[:to].blank? || !params[:types].blank?
-      @search_events = @search_events.where("`title` LIKE ? OR `code` LIKE ? OR `code_alliance` LIKE ? OR `country` LIKE ?", "%#{params[:q]}%", "%#{params[:q]}%", "%#{params[:q]}%", "%#{params[:q]}%") if !params[:q].blank?
-      @search_events = @search_events.where('? >= `min_age`', params[:age]).where('? <= `max_age`', params[:age]) if !params[:age].blank?
-      @search_events = @search_events.where(from: params[:from]) if !params[:from].blank?
-      @search_events = @search_events.where(to: params[:to]) if !params[:to].blank?
-      @search_events = @search_events.joins(:event_with_categories).where(event_with_categories: { event_category_id: params[:types] }) if !params[:types].blank?
-      # Do not include full events - get entered sex and check capacities
-      if params[:sex] == 'M'
-        @search_events = @search_events.where("`capacity_men` > ?", 0).where("`capacity_total` > ?", 0).where('`free_men` > ?', 0).where('`free_total` > ?', 0)
-      elsif params[:sex] == 'W'
-        @search_events = @search_events.where("`capacity_women` > ?", 0).where("`capacity_total` > ?", 0).where('`free_women` > ?', 0).where('`free_total` > ?', 0)
-      else # check total capacity
-        @search_events = @search_events.where("`capacity_total` > ?", 0).where('`free_total` > ?', 0)
-      end
-      # TODO Workcamp, Specialne projekty, Ine...
-      render json: @search_events.to_json
-    end
-  end
-
   def kontakty
-    @kontakty[:adresa] = HtmlArticle.where(category: 'kontakty_adresa').take
-    @kontakty[:cislo] = HtmlArticle.where(category: 'kontakty_cislo').take
-    @kontakty[:ico] = HtmlArticle.where(category: 'kontakty_ico').take
-    @kontakty[:ucet] = HtmlArticle.where(category: 'kontakty_ucet').take
-    @kontakty[:otvaracie_description] = HtmlArticle.where(category: 'kontakty_otvaracie_description').take
-    @kontakty[:otvaracie_pon] = HtmlArticle.where(category: 'kontakty_otvaracie_pon').take
-    @kontakty[:otvaracie_uto] = HtmlArticle.where(category: 'kontakty_otvaracie_uto').take
-    @kontakty[:otvaracie_str] = HtmlArticle.where(category: 'kontakty_otvaracie_str').take
-    @kontakty[:otvaracie_stv] = HtmlArticle.where(category: 'kontakty_otvaracie_stv').take
-    @kontakty[:otvaracie_pia] = HtmlArticle.where(category: 'kontakty_otvaracie_pia').take
-    @kontakty[:otvaracie_vik] = HtmlArticle.where(category: 'kontakty_otvaracie_vik').take
-    @kontakty[:person_incoming_number] = HtmlArticle.where(category: 'kontakty_person_incoming_number').take
-    @kontakty[:person_incoming_description] = HtmlArticle.where(category: 'kontakty_person_incoming_description').take
-    @kontakty[:person_incoming_description2] = HtmlArticle.where(category: 'kontakty_person_incoming_description2').take
-    @kontakty[:person_outgoing_number] = HtmlArticle.where(category: 'kontakty_person_outgoing_number').take
-    @kontakty[:person_outgoing_description] = HtmlArticle.where(category: 'kontakty_person_outgoing_description').take
-    @kontakty[:person_outgoing_description2] = HtmlArticle.where(category: 'kontakty_person_outgoing_description2').take
-    @kontakty[:person_eds_number] = HtmlArticle.where(category: 'kontakty_person_eds_number').take
-    @kontakty[:person_eds_description] = HtmlArticle.where(category: 'kontakty_person_eds_description').take
-    @kontakty[:person_eds_description2] = HtmlArticle.where(category: 'kontakty_person_eds_description2').take
-    @faq = HtmlArticle.where(category: 'faq').take
+    categories = %w(kontakty_adresa kontakty_cislo kontakty_ico kontakty_ucet
+      kontakty_otvaracie_description kontakty_otvaracie_pon kontakty_otvaracie_uto
+      kontakty_otvaracie_str kontakty_otvaracie_stv kontakty_otvaracie_pia
+      kontakty_otvaracie_vik kontakty_person_incoming_number kontakty_person_incoming_description
+      kontakty_person_incoming_description2 kontakty_person_outgoing_number kontakty_person_outgoing_description
+      kontakty_person_outgoing_description2 kontakty_person_eds_number kontakty_person_eds_description kontakty_person_eds_description2)
+    @kontakty  ||= {}
+    HtmlArticle.where(category: categories).each { |a| @kontakty[a.category.to_sym] = a }
   end
 
   # PUT

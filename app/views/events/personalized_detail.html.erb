@@ -1,0 +1,92 @@
+<%= header :h1, "plane", "Informácie k eventu" %>
+
+<div class="ui mini horizontal statistics">
+  <div class="statistic">
+    <div class="value">Event:</div>
+    <div class="label">
+      <%= @event.code_or_code_alliance %>
+      <% [@event.translated_title, @event.country, @event.from_to].reject(&:blank?).each do |label| %>
+          <%= ", #{label}" %>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<div>
+  <% unless @event.event_categories.blank? %>
+      <% @event.event_categories.each do |category| %>
+          <span class="ui small label pop_up" title="<%= category.name %>"><%= category.abbr %></span>
+      <% end %>
+  <% end %>
+</div>
+
+
+<div class="ui segments">
+  <div class="ui segment">
+    <h3>Hodnotenie</h3>
+    <p>Hodnotenie je pre nás dôležitou spätnou väzbou. Podnetmi sa zaoberáme a
+      snažíme sa stále zlepšovať.</p>
+    <% if !@volunteers.blank? && !@event.evaluation_url_volunteer.blank? && @event.evaluation_deadline_volunteer && @event.evaluation_deadline_volunteer <= DateTime.now %>
+        <%= link_to @event.evaluation_url_volunteer, class: 'ui button', target: :blank do %>
+            <i class="pie chart icon"></i> Link - <%= t :volunteers %>
+        <% end %>
+    <% end %>
+    <% if !@local_partners.blank? && !@event.evaluation_url_local_partner.blank? && @event.evaluation_deadline_local_partner && @event.evaluation_deadline_local_partner <= DateTime.now %>
+        <%= link_to @event.evaluation_url_local_partner, class: 'ui button', target: :blank do %>
+            <i class="pie chart icon"></i> Link - <%= t :local_partners %>
+        <% end %>
+    <% end %>
+    <% if !@trainers.blank? || !@leaders.blank? %>
+        <% if !@event.evaluation_url_leader.blank? && @event.evaluation_deadline_leader && @event.evaluation_deadline_leader <= DateTime.now %>
+            <%= link_to @event.evaluation_url_leader, class: 'ui button', target: :blank do %>
+                <i class="pie chart icon"></i> Link - <%= t :leaders %>, <%= t :trainers %>
+            <% end %>
+        <% end %>
+    <% end %>
+  </div>
+
+  <div class="ui segment">
+    <h3>Súbory na stiahnutie</h3>
+    <% @volunteers.each do |volunteer| %>
+        <%= link_to employee_show_event_list_path(volunteer.event_list) + ".pdf", class: 'item', download: "#{volunteer.event_list.surname.downcase}_#{volunteer.event_list.name.downcase}_#{volunteer.event_list.id}" do %>
+            <i class="file pdf outline link icon"></i> <%= "#{volunteer.event_list.surname.downcase}_#{volunteer.event_list.name.downcase}_#{volunteer.event_list.id}.pdf" %>
+        <% end %>
+    <% end if !@volunteers.blank? %>
+  </div>
+
+  <% if !@leaders.blank? || !@local_partners.blank? %>
+      <div class="ui segment">
+        <h3>Prihlásení dobrovoľníci</h3>
+
+        <table class="ui compact green selectable celled striped table">
+          <thead>
+          <tr>
+            <th class="two wide"><%= t :name_contact %></th>
+            <th class="two wide"><%= t :date_of_birth %></th>
+            <th class="two wide"><%= t :sex %></th>
+            <th class="two wide"><%= t :country %></th>
+            <th class="two wide"><%= t :actions %></th>
+          </tr>
+          </thead>
+          <tbody>
+          <% @event.volunteers.each do |vol| %>
+              <tr>
+                <td><%= vol.event_list.name %> <%= vol.event_list.surname %></td>
+                <td><%= date_format vol.event_list.birth_date %></td>
+                <td><%= vol.event_list.sex %></td>
+                <td><%= vol.event_list.place_of_birth %></td>
+                <td>
+                  <%= link_to employee_show_event_list_path(vol.event_list) do %>
+                      <i class="grey unhide icon"></i> Detail
+                  <% end %>
+                  <%= link_to employee_show_event_list_path(vol.event_list) + ".pdf", class: 'item', download: "#{vol.event_list.surname.downcase}_#{vol.event_list.name.downcase}_#{vol.event_list.id}" do %>
+                      <i class="file pdf outline link icon"></i> PDF
+                  <% end %>
+                </td>
+              </tr>
+          <% end %>
+          </tbody>
+        </table>
+      </div>
+  <% end %>
+</div>

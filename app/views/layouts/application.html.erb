@@ -8,33 +8,32 @@
   <%= favicon_link_tag 'favicon.png' %>
   <script>
     <!-- Smartlook -->
-    window.smartlook||(function(d) {
-      var o=smartlook=function(){ o.api.push(arguments)},h=d.getElementsByTagName('head')[0];
-      var c=d.createElement('script');o.api=new Array();c.async=true;c.type='text/javascript';
-      c.charset='utf-8';c.src='//rec.smartlook.com/recorder.js';h.appendChild(c);
+    window.smartlook || (function (d) {
+      var o = smartlook = function () {
+        o.api.push(arguments)
+      }, h = d.getElementsByTagName('head')[0];
+      var c = d.createElement('script');
+      o.api = new Array();
+      c.async = true;
+      c.type = 'text/javascript';
+      c.charset = 'utf-8';
+      c.src = '//rec.smartlook.com/recorder.js';
+      h.appendChild(c);
     })(document);
     smartlook('init', '54bfa4e82b0e8a985cb19c3138e5cd2ce13912f0');
-    <!-- Hotjar Tracking Code for www.inex.sk -->
-    (function(h,o,t,j,a,r){
-      h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
-      h._hjSettings={hjid:488874,hjsv:5};
-      a=o.getElementsByTagName('head')[0];
-      r=o.createElement('script');r.async=1;
-      r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
-      a.appendChild(r);
-    })(window,document,'//static.hotjar.com/c/hotjar-','.js?sv=');
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=0.5">
 </head>
 <body class="lightgrey-background">
 <%= render 'layouts/flash_notice' %>
+
 <div class="ui segment">
   <div class="ui secondary menu" style="padding-left: 10px; padding-top: 2px;">
     <%= link_to image_tag("inex_text_a_logo_en.png"), root_path, class: "ui small image grow" %>
     <div class="right menu">
       <% if current_user.try(:is_employee?) %>
           <%= link_to issue_tickets_path, class: 'item' do %>
-              <i class="warning icon"></i> Issues
+              <i class="bug icon"></i> Problémy
           <% end %>
       <% end %>
       <% if current_user.try(:is_employee?) %>
@@ -42,7 +41,7 @@
       <% elsif current_user.try(:is_evs?) %>
           <div class="item"><i class="spy icon"></i> <%= t :evs %></div>
       <% end %>
-      <%= link_to @membership, class: 'item', target: :blank do %>
+      <%= link_to @articles[:membership], class: 'item', target: :blank do %>
           <% if current_user.try(:je_clen_a_platil?) %>
               <i class="checkmark icon"></i> <%= t :membership %> <%= Date.today.year %>
           <% else %>
@@ -60,7 +59,7 @@
       <% end %>
       <% if current_user %>
           <%= link_to session_path('me'), method: :delete, class: "item  ui animated button",
-                      data: { confirm: 'Naozaj sa chceš odhlásiť?' } do %>
+                      data:                       { confirm: 'Naozaj sa chceš odhlásiť?' } do %>
               <div class="visible content">
                 <i class="ui user icon"></i> <%= current_user.try(:nickname_or_name) %>&nbsp;&nbsp;&nbsp;&nbsp;
               </div>
@@ -76,11 +75,12 @@
     </div>
   </div>
 </div>
-<div class="ui grid">
+<div class="ui grid" style="margin-top: 10px;">
   <div class="three wide column">
     <div class="ui vertical fluid pointing menu">
+      <%= image_tag "kukuc.png", class: 'ui image smejo', style: 'top: -35px; margin:0 auto; margin-bottom: -35px; cursor:pointer;', data: { kukuc: image_path("kukuc.png"), kukuc_usmiaty: image_path("kukuc_usmiaty.png")} %>
       <% if current_user %>
-          <% if current_user.is_inex_member? %>
+          <% if current_user.is_inex_office? %>
               <div class="border-bottom">
                 <%= link_to tasks_path, class: "item #{ccp(['tasks', 'task_lists'])}" do %>
                     <% if @undone_tasks != 0 %>
@@ -132,7 +132,7 @@
                 </div>
               </div>
           <% end %>
-          <%= link_to show_events_user_path(current_user), class: "ui #{cp(show_events_user_path(current_user))} item" do %>
+          <%= link_to my_events_user_path(current_user), class: "ui #{cp(my_events_user_path(current_user))} item" do %>
               <div class="content">
                 <div class="header">
                   <i class="calendar icon"></i>
@@ -140,7 +140,7 @@
                 </div>
               </div>
           <% end %>
-          <%= link_to show_bags_user_path(current_user), class: "ui #{cp(show_bags_user_path(current_user))} item" do %>
+          <%= link_to my_applications_user_path(current_user), class: "ui #{cp(my_applications_user_path(current_user))} item" do %>
               <div class="content">
                 <div class="header">
                   <i class="checked calendar icon"></i>
@@ -164,6 +164,21 @@
     <div class="ui attached segment">
       <%= yield %>
     </div>
+  </div>
+</div>
+<div class="ui grey attached vertical footer segment" style="margin-top: 25px;">
+  <div class="ui center aligned container">
+    <%= image_tag "lezim.png", class: 'ui centered tiny image' %>
+
+    <div data-mercury="full" id="footer" style="margin-top: 5px;">
+      <%= @articles[:footer].try(:first).try(:content).try(:html_safe) %>
+    </div>
+    <% if current_user && current_user.is_employee? %>
+        <%= link_to '/editor' + request.path, id: 'edit_link',
+                    data:                         { save_url: mercury_update_link } do %>
+            <i class="ui large yellow edit icon pop_up" title="<%= "#{t :edit} footer" %>"></i>
+        <% end %>
+    <% end %>
   </div>
 </div>
 </body>

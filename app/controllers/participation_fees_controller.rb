@@ -1,4 +1,4 @@
-class ParticipationFeesController < EmployeeController
+class ParticipationFeesController < InexMemberController
   before_action :set_participation_fee, only: [:show, :edit, :update, :destroy]
 
   # GET /participation_fees
@@ -35,16 +35,12 @@ class ParticipationFeesController < EmployeeController
     t = ParticipationFee.arel_table
     if !query.blank?
       q = query.split(' ').join('|')
-      ParticipationFee.joins(:user).where("`users`.`name` REGEXP ? OR `users`.`surname` REGEXP ? OR `users`.`login_mail` REGEXP ? OR `users`.`personal_mail` REGEXP ?", q, q, q, q)
+      ParticipationFee.joins(:user).where_or_regexp(columns: %w(`users`.`name` `users`.`surname` `users`.`login_mail` `users`.`personal_mail`), string: q)
     else
       ParticipationFee.all
     end
   end
 
-  # GET /participation_fees/1
-  # GET /participation_fees/1.json
-  def show
-  end
 
   # GET /participation_fees/new
   def new
@@ -55,7 +51,7 @@ class ParticipationFeesController < EmployeeController
       @user_bags = EventList.where(user_id: @user.id).where.not(state: 'opened').collect {
         |e|
         if e.event_type
-          ["#{e.name} #{e.surname}, #{e.event_type.title}, #{e.created_at.strftime("%d.%m.%Y %H:%m")}", e.id]
+          [e.name_surname_event_type_created_at, e.id]
         else
           [e.created_at, e.id]
         end
@@ -69,7 +65,7 @@ class ParticipationFeesController < EmployeeController
     @user_bags = EventList.where(user_id: @user.id).where.not(state: 'opened').collect {
       |e|
       if e.event_type
-        ["#{e.name} #{e.surname}, #{e.event_type.title}, #{e.created_at.strftime("%d.%m.%Y %H:%m")}", e.id]
+        [e.name_surname_event_type_created_at, e.id]
       else
         [e.created_at, e.id]
       end
@@ -78,7 +74,6 @@ class ParticipationFeesController < EmployeeController
   end
 
   # POST /participation_fees
-  # POST /participation_fees.json
   def create
     @participation_fee = ParticipationFee.new(participation_fee_params)
 
@@ -90,36 +85,29 @@ class ParticipationFeesController < EmployeeController
           RegisteredBagMailer.added_payment_mail(employee, @participation_fee, "#{request.protocol}#{request.host_with_port}").deliver_now
         end
         format.html { redirect_to @participation_fee, success: "#{t :participation_fee} #{define_notice('m', __method__)}" }
-        format.json { render :show, status: :created, location: @participation_fee }
       else
         @users = User.all
         format.html { render :new }
-        format.json { render json: @participation_fee.errors, status: :unprocessable_entity }
       end
     end
   end
 
   # PATCH/PUT /participation_fees/1
-  # PATCH/PUT /participation_fees/1.json
   def update
     respond_to do |format|
       if @participation_fee.update(participation_fee_params)
         format.html { redirect_to participation_fees_path, success: "#{t :participation_fee} #{define_notice('m', __method__)}" }
-        format.json { render :show, status: :ok, location: @participation_fee }
       else
         format.html { render :edit }
-        format.json { render json: @participation_fee.errors, status: :unprocessable_entity }
       end
     end
   end
 
   # DELETE /participation_fees/1
-  # DELETE /participation_fees/1.json
   def destroy
     @participation_fee.destroy
     respond_to do |format|
       format.html { redirect_to participation_fees_url, success: "#{t :participation_fee} #{define_notice('m', __method__)}" }
-      format.json { head :no_content }
     end
   end
 

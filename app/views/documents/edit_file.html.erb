@@ -1,12 +1,4 @@
-<h1 class="ui header">
-  <i class="circular file outline icon"></i>
-  <div class="content">
-    <%= t :edit %> Google Drive <%= t(:file).downcase %> <%= @file.name %>
-    <div class="sub header">
-      <%= t :document_edit_header %>
-    </div>
-  </div>
-</h1>
+<%= header :h1, "circular file outline", "#{t(:edit)} Google Drive #{t(:file).downcase} #{@file.name}", t(:document_edit_header) %>
 
 <%= form_tag({ controller: :documents, action: :update_file }, method: :put, class: 'ui form') do %>
     <%= hidden_field_tag :file_id, @file.id %>

@@ -2,8 +2,8 @@ module ApplicationHelper
 
   def link_to_add_fields(name, f, association)
     new_object = f.object.send(association).klass.new
-    id = new_object.object_id
-    fields = f.fields_for(association, new_object, child_index: id) do |builder|
+    id         = new_object.object_id
+    fields     = f.fields_for(association, new_object, child_index: id) do |builder|
       render(association.to_s.singularize + "_fields", f: builder)
     end
     link_to(name, '#', class: "add_fields ui right floated yellow button", data: { id: id, fields: fields.gsub("\n", "") })
@@ -43,34 +43,34 @@ module ApplicationHelper
     if @menu.blank?
       @menu ||= [
         {
-          link: event_types_path,
+          link:  event_types_path,
           class: "item #{ccp(['events', 'event_types'])}",
-          icon: 'announcement icon',
-          text: t(:events)
+          icon:  'announcement icon',
+          text:  t(:events)
         }, {
-          link: contact_lists_path,
+          link:  contact_lists_path,
           class: "item #{ccp(['contacts', 'contact_lists'])}",
-          icon: 'address book icon',
-          text: t(:contacts)
+          icon:  'address book icon',
+          text:  t(:contacts)
         }, {
-          link: organizations_path,
+          link:  organizations_path,
           class: "item #{ccp(['organizations', 'partner_networks'])}",
-          icon: 'child icon',
-          text: t(:organizations)
+          icon:  'child icon',
+          text:  t(:organizations)
         },
       ]
       if current_user && current_user.is_employee? && !@menu.blank?
         @menu << {
-          link: documents_path,
+          link:  documents_path,
           class: "item #{ccp(['documents'])}",
-          icon: 'file outline icon',
-          text: t(:documents)
+          icon:  'file outline icon',
+          text:  t(:documents)
         }
         @menu << {
-          link: users_path,
+          link:  users_path,
           class: "item #{ccp(['users'])}",
-          icon: 'users icon',
-          text: t(:accounts)
+          icon:  'users icon',
+          text:  t(:accounts)
         }
       end
     end
@@ -133,7 +133,7 @@ module ApplicationHelper
   end
 
   def build_breadcrumb(controller = controller_name, action = action_name)
-    divider = '<i class="right chevron icon divider"></i>'
+    divider    = '<i class="right chevron icon divider"></i>'
     breadcrumb = ""
     breadcrumb << link_to("Home", root_path, class: "section")
     case controller
@@ -143,10 +143,10 @@ module ApplicationHelper
           when "show"
             breadcrumb << divider << link_to(@user.name, @user, class: "section") if @user
             breadcrumb << divider << link_to(current_user.nickname, current_user, class: "section") if !@user
-          when "show_events"
-            breadcrumb << divider << link_to("#{t(:my)} #{t(:events).downcase}", show_events_user_path(current_user), class: "section")
-          when "show_bags"
-            breadcrumb << divider << link_to("#{t(:my)} #{t(:bags).downcase}", show_bags_user_path(current_user), class: "section")
+          when "my_events"
+            breadcrumb << divider << link_to("#{t(:my)} #{t(:events).downcase}", my_events_user_path(current_user), class: "section")
+          when "my_applications"
+            breadcrumb << divider << link_to("#{t(:my)} #{t(:bags).downcase}", my_applications_user_path(current_user), class: "section")
           when "new"
             breadcrumb << divider << link_to(@user.name, @user, class: "section") unless @user.name.blank?
             breadcrumb << divider << link_to(current_user.nickname, current_user, class: "section") if @user.name.blank?
@@ -348,7 +348,7 @@ module ApplicationHelper
             breadcrumb << divider << link_to(t(:application), edit_event_list_path(@event_list), class: "section")
             breadcrumb << divider << link_to(t(:check_and_confirmation), step_second_event_list_path(@event_list), class: "section")
           when "payment_info"
-            breadcrumb << divider << link_to("#{t(:my)} #{t(:bags).downcase}", show_bags_user_path(current_user), class: "section")
+            breadcrumb << divider << link_to("#{t(:my)} #{t(:bags).downcase}", my_applications_user_path(current_user), class: "section")
             breadcrumb << divider << link_to(t(:information_about_fees), payment_info_event_list_path(@event_list), class: "section")
         end
       when "permissions"
@@ -392,7 +392,7 @@ module ApplicationHelper
   end
 
   def build_breadcrumb_homepage(controller = controller_name, action = action_name)
-    divider = '<i class="right chevron icon divider"></i>'
+    divider    = '<i class="right chevron icon divider"></i>'
     breadcrumb = ""
     breadcrumb << link_to("Home", root_path, class: "section")
     case controller
@@ -497,9 +497,7 @@ module ApplicationHelper
   end
 
   def mercury_update_link
-    if current_controller?("blog_posts") && action_name == 'show'
-      mercury_update_blog_post_path(@blog_post)
-    elsif current_controller?("html_articles") && action_name == 'show'
+    if current_controller?("html_articles") && action_name == 'show'
       mercury_update_html_article_path(@html_article)
     else
       mercury_update_homepage_index_path
@@ -509,5 +507,25 @@ module ApplicationHelper
   # def paginator(entity)
   #
   # end
+
+  # string to style
+  def str2style(string)
+    hash = string.hash.to_s(2) # Create hash of length 62 bits
+    r    = hash[0...8].to_i(2).abs
+    g    = hash[8...16].to_i(2).abs
+    b    = hash[16...24].to_i(2).abs
+    "background-color: rgb(#{r},#{g},#{b}); "
+  end
+
+  def header(header_tag = :div, icon = "", header = "", sub_header = "")
+    icon_tag       = content_tag(:i, nil, class: "#{icon} icon") if !icon.blank?
+    header_content = content_tag(:div, class: 'content') do
+      [header, content_tag(:div, sub_header, class: 'sub header')].join.html_safe
+    end
+
+    content_tag header_tag, class: 'ui header' do
+      [icon_tag, header_content].join.html_safe
+    end
+  end
 
 end

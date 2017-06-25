@@ -1,10 +1,11 @@
-class TasksController < EmployeeController
-  before_action :set_task, only: [:generate_ical, :highlight, :add_to_my_list, :edit, :update, :destroy]
+class TasksController < InexMemberController
+  include ActionView::Helpers::UrlHelper
+  include TasksHelper
+  before_action :set_task, only: [:generate_ical, :highlight, :add_to_my_list, :edit, :update, :destroy, :task_modal_html]
   before_action :employee_whithout_eds_check, only: [:index_others, :repeatable]
 
   def generate_ical
     cal = Icalendar::Calendar.new
-    filename = "INEX task.ics"
 
     cal.event do |e|
       e.dtstart     = Icalendar::Values::DateTime.new(@task.deadline)
@@ -14,22 +15,32 @@ class TasksController < EmployeeController
       e.url         = "http://inex.sk"
     end
 
-    send_data cal.to_ical, type: 'text/calendar', disposition: 'attachment', filename: filename
+    send_data cal.to_ical, type: 'text/calendar', disposition: 'attachment', filename: "INEX_task.ics"
   end
 
-  # GET /tasks
-  # GET /tasks.json
+  def task_modal_html
+    file = File.open(Rails.root.join("app", "views", "tasks", "modal.html.erb")).read
+    render html: ERB.new(file).result(binding).html_safe
+  end
+
   def index
-    @tasks = current_user.employee.tasks.includes(:task_lists).order('is_highlighted DESC').order('deadline')
+    @tasks = current_user.employee.tasks.includes(:task_lists)
+               .include_done_task_list_counts.include_task_list_counts
+               .order(is_highlighted: :desc).order(:deadline)
   end
 
   def index_others
-    emp_tasks = current_user.employee.tasks
-    @tasks = Task.where(is_repeatable: false).order('is_highlighted DESC').order('deadline') - emp_tasks
+    @tasks = Task.includes(:task_lists, employee: [:user])
+               .include_done_task_list_counts.include_task_list_counts
+               .where(is_repeatable: false)
+               .where.not(employee_id: current_user.employee.id)
+               .order(is_highlighted: :desc).order(:deadline)
   end
 
   def repeatable
-    @tasks = Task.where(is_repeatable: true).order('is_highlighted DESC').order('deadline')
+    @tasks = Task.where(is_repeatable: true)
+               .include_done_task_list_counts.include_task_list_counts
+               .order(is_highlighted: :desc).order(:deadline)
   end
 
   def highlight
@@ -43,15 +54,10 @@ class TasksController < EmployeeController
     @members = User.where(role: ['employee', 'eds', 'evs'])
   end
 
-  # GET /tasks/1/edit
-  def edit
-  end
-
   # POST
   def add_to_my_list
     task = @task.dup # duplicate tasks attributes
-    task.is_repeatable = false
-    task.employee = current_user.employee
+    task.update_attributes(is_repeatable: false, employee: current_user.employee)
     if task.save
       @task.task_lists.each do |tl|
         ctl = tl.dup
@@ -70,7 +76,6 @@ class TasksController < EmployeeController
   end
 
   # POST /tasks
-  # POST /tasks.json
   def create
     @task = Task.new(task_params)
     if @task.is_repeatable # If the task is repeatable, save another copy

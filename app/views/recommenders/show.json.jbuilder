@@ -1,1 +1,0 @@
-json.partial! "recommenders/recommender", recommender: @recommender

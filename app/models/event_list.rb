@@ -101,6 +101,10 @@ class EventList < ActiveRecord::Base
     end
   end
 
+  def name_surname_event_type_created_at
+    "#{name} #{surname}, #{event_type.title}, #{created_at.strftime("%d.%m.%Y %H:%m")}"
+  end
+
   def event_type
     events.first.event_type if events.any?
   end

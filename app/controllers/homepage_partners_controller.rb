@@ -2,10 +2,6 @@ class HomepagePartnersController < ApplicationController
   layout 'page_part'
   before_action :set_partner, only: [:edit, :update, :destroy]
 
-  def index
-
-  end
-
   def new
     @partner = HomepagePartner.new
   end

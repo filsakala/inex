@@ -1,13 +1,34 @@
-class ContactsController < EmployeeController
+class ContactsController < InexMemberController
   before_action :set_contact, only: [:show, :edit, :update, :destroy]
   before_action :set_panel_variables, only: [:index, :show, :new, :edit]
+  include Searchable
+  include ContactsHelper
+
+  def search
+    if !params[:eid].blank?
+      if params[:eid] != "0"
+        contacts = ContactList.find(params[:eid]).contacts.includes(:organization)
+      else
+        contacts = Contact.joins(:organization)
+      end
+    else
+      contacts = Contact.includes(:organization)
+    end
+    results = do_search(contacts, columns: [:name, :nickname, :surname, :dept, :mail, :phone], order_by: { surname: :asc })
+    results = results.collect { |r| [r.try(:name), r.surname, r.organization.try(:name), r.dept, r.mail, r.phone, contact_actions(r, view_context, params[:eid])] }
+    render json: {
+      "draw":            params[:draw],
+      "recordsTotal":    contacts.count,
+      "recordsFiltered": contacts.count,
+      "data":            results
+    }
+  end
 
   # GET /contacts
-  # GET /contacts.json
   def index
     @contacts = Contact.all
-    @mails = @contacts.where('`mail` > \'\'').pluck(:mail).uniq.join(', ') # get non-blank mail contacts
-    @mails = t(:empty) if @mails.blank?
+    @mails    = @contacts.where('`mail` > \'\'').pluck(:mail).uniq.join(', ') # get non-blank mail contacts
+    @mails    = t(:empty) if @mails.blank?
   end
 
   # GET /contacts/1
@@ -40,7 +61,7 @@ class ContactsController < EmployeeController
         format.html { redirect_to @contact, success: "Kontakt  #{define_notice('m', __method__)}" }
         format.json { render :show, status: :created, location: @contact }
       else
-        @contact_lists = ContactList.all
+        @contact_lists    = ContactList.all
         @my_contact_lists = @contact.contact_lists
         format.html { render :new }
         format.json { render json: @contact.errors, status: :unprocessable_entity }
@@ -62,7 +83,7 @@ class ContactsController < EmployeeController
         format.html { redirect_to contacts_path, success: "Kontakt  #{define_notice('m', __method__)}" }
         format.json { render :show, status: :ok, location: @contact }
       else
-        @contact_lists = ContactList.all
+        @contact_lists    = ContactList.all
         @my_contact_lists = @contact.contact_lists
         format.html { render :edit }
         format.json { render json: @contact.errors, status: :unprocessable_entity }
@@ -87,8 +108,8 @@ class ContactsController < EmployeeController
   end
 
   def set_panel_variables
-    @contact_lists = current_user.employee.contact_lists
-    @contact_lists_others = ContactList.all - current_user.employee.contact_lists
+    @contact_lists              = current_user.employee.contact_lists
+    @contact_lists_others       = ContactList.includes(employee: [:user]) - current_user.employee.contact_lists
     @organization_contact_count = Contact.joins(:organization).count
   end
 

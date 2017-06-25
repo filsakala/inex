@@ -15,33 +15,73 @@
   <div class="ui divider"></div>
 
   <% if @events.any? %>
-      <%= form_tag({ controller: :event_lists, action: :state }, method: :put, class: 'ui form') do %>
-          <% @event_list.event_in_lists.each do |eil| %>
-              <div class="fields">
-                <div class="twelve wide field">
-                  <label><%= "#{t :state_for_event}: #{eil.event.translated_title}" %></label>
-                  <%= text_field_tag eil.id, eil.state %>
-                </div>
-                <div class="four wide field">
-                  <label><%= t(:going_here) %></label>
-                  <% vol = eil.event_list.volunteers.where(event: eil.event).take %>
-                  <% if vol %>
-                      <i class="big green checkmark icon"></i>
-                      <%= link_to t(:remove_him), vol, method: :delete, data: { confirm: "#{t :are_you_sure_to_remove_volunteer_from} #{eil.event.translated_title}?" }, class: 'ui red button' %>
-                  <% else %>
-                      <i class="big red remove icon"></i>
-                      <%= link_to t(:add_him), new_event_event_list_volunteer_path(eil.event, @event_list), data: { confirm: "#{t :are_you_sure_to_add_volunteer_on} #{eil.event.translated_title}?" }, class: 'ui green button' %>
-                  <% end %>
-                </div>
-              </div>
-          <% end %>
+      <table class="ui celled green table">
+        <thead>
+        <tr class="center aligned">
+          <th>Event</th>
+          <th><%= t :date %></th>
+          <th><%= t :country %></th>
+          <th>Stav</th>
+          <th class="four wide">Výsledok prihlášky</th>
+        </tr>
+        </thead>
 
-          <%= submit_tag t(:save), class: 'ui green submit button' %>
-      <% end %>
-      <%= render 'event_list', events: @events %>
-      <% if @event_list.state == 'opened' || @event_list.state == 'reopened' %>
-          <%= link_to t(:register_bag), edit_event_list_path(@my_bag), class: 'ui right floated green submit button' %>
-      <% end %>
+        <tbody>
+        <% @event_list.event_in_lists.each do |eil| %>
+            <tr>
+              <td>
+                <%= link_to eil.event.translated_title, event_type_event_path(eil.event.event_type, eil.event), target: :blank %>
+                <% if !eil.event.code.blank? %>
+                    (<%= t :code %> <%= eil.event.code %>)
+                <% elsif !eil.event.code_alliance.blank? %>
+                    (<%= t :code %> <%= eil.event.code_alliance %>)
+                <% end %>
+              </td>
+              <td><%= eil.event.from_to %></td>
+              <td>
+                <% unless eil.event.country.blank? %>
+                    <%= eil.event.country %>
+                    <i class="<%= Country.find_by_name(eil.event.country).try(:flag_code) unless eil.event.country.blank? %> flag"></i>
+                <% end %>
+              </td>
+              <td>
+                <% vol = eil.event_list.volunteers.where(event: eil.event).take %>
+                <% if vol %>
+                    <div class="ui green label">
+                      <i class="checkmark icon"></i> Pridaný
+                    </div>
+                <% else %>
+                    <div class="ui red label">
+                      <i class="remove icon"></i> Nepridaný
+                    </div>
+                <% end %>
+              </td>
+              <td>
+                <div class="ui dropdown item label">
+                  <i class="setting icon"></i> <%= t :actions %>
+                  <i class="dropdown icon"></i>
+                  <div class="menu">
+                    <% if vol %>
+                        <%= link_to remove_participant_from_event_event_lists_path(id: vol.id, classname: vol.class.name), method: :delete, data: { confirm: "#{t :are_you_sure_to_remove_volunteer_from} #{eil.event.translated_title}?" }, class: 'item' do %>
+                            <i class="red remove icon"></i> Odobrať dobrovoľníka
+                        <% end %>
+                    <% else %>
+                        <%= link_to add_volunteer_on_event_event_event_list_path(eil.event, @event_list), data: { confirm: "#{t :are_you_sure_to_add_volunteer_on} #{eil.event.translated_title}?" }, class: 'item' do %>
+                            <i class="green add icon"></i>  Pridať dobrovoľníka
+                        <% end %>
+                    <% end %>
+                    <%= link_to remove_event_event_event_list_path(eil.event, @event_list), method: :delete,
+                                data: { confirm: t(:are_you_sure_remove_from_your_bag) },
+                                class: 'item' do %>
+                        <i class="red minus icon"></i> Odstráň event
+                    <% end %>
+                  </div>
+                </div>
+              </td>
+            </tr>
+        <% end %>
+        </tbody>
+      </table>
   <% else %>
       <div class="ui icon message">
         <i class="frown icon"></i>

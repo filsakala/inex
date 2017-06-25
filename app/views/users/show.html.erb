@@ -77,15 +77,15 @@
       <div class="ui right floated">
         <div class="ui buttons">
           <div class="pop_up ui green circular label" title="<%= t :number_of_addresses %>">
-            <%= @addresses.count %>
+            <%= @user.addresses.count %>
           </div>
         </div>
       </div>
     </div>
     <div class="content">
       <div class="description">
-        <% if @addresses.any? %>
-            <% @addresses.each do |address| %>
+        <% if @user.addresses.any? %>
+            <% @user.addresses.each do |address| %>
                 <h5 class="header"><%= t :address %> <%= address.title %></h5>
                 <table class="ui unstackable celled table">
                   <tbody>

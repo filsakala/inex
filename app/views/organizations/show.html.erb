@@ -1,69 +1,59 @@
-<%= render 'organizations/header' %>
-
-<div class="ui padded stackable grid">
-  <div class="ui two column row">
-    <div class="four wide column">
-      <%= render 'organizations/panel' %>
-    </div>
-    <div class="twelve wide column">
-      <h2 class="ui header">
-        <% if !@organization.image.blank? %>
-            <%= image_tag @organization.image.url(:medium), class: 'ui mini image' %>
-        <% else %>
-            <i class="child icon"></i>
-        <% end %>
-        <div class="content">
-          <%= t :organization %> <%= @organization.name %>
-          <div class="sub header">
-            <%= @organization.description %>
-          </div>
-        </div>
-      </h2>
-
-      <% if @organization.partner_networks.any? %>
-          <h2 class="ui header">
-            <%= t :in_partner_networks %>:
-            <% @organization.partner_networks.each do |pn| %>
-                <%= link_to pn.name, pn, class: "ui blue label" %>
-            <% end %>
-          </h2>
-      <% end %>
-
-      <% if @organization.contacts.any? %>
-          <h2 class="ui header">
-            <%= t :contacts %>:
-            <% @organization.contacts.each do |cp| %>
-                <%= link_to contact_path(cp), class: 'ui label ' do %>
-                    <i class="ui user icon"></i>
-                    <%= "#{cp.name} (#{cp.dept})" %>
-                <% end %>
-            <% end %>
-          </h2>
-      <% end %>
-
-      <h2><%= t :events_organized_by_this_organization %></h2>
-      <table class="ui compact green selectable celled striped table datatable">
-        <thead>
-        <tr>
-          <th><%= t :name_task %></th>
-          <th><%= t :from %></th>
-          <th><%= t :to %></th>
-          <th><%= t :actions %></th>
-        </tr>
-        </thead>
-        <tbody>
-        <% @events.each do |e| %>
-            <tr>
-              <td><%= e.title %></td>
-              <td><%= text_or_icon datetime_format e.from %></td>
-              <td><%= text_or_icon datetime_format e.to %></td>
-              <td>
-                <%= link_to "Detail", [e.event_type, e], class: 'ui button' %>
-              </td>
-            </tr>
-        <% end %>
-        </tbody>
-      </table>
+<h2 class="ui header">
+  <% if !@organization.image.blank? %>
+      <%= image_tag @organization.image.url(:medium), class: 'ui mini image' %>
+  <% else %>
+      <i class="child icon"></i>
+  <% end %>
+  <div class="content">
+    <%= t :organization %> <%= @organization.name %>
+    <div class="sub header">
+      <%= @organization.description %>
     </div>
   </div>
-</div>
+</h2>
+<%= render 'organizations/panel' %>
+
+<% if @organization.partner_networks.any? %>
+    <h2 class="ui header">
+      <%= t :in_partner_networks %>:
+      <% @organization.partner_networks.each do |pn| %>
+          <%= link_to pn.name, pn, class: "ui blue label" %>
+      <% end %>
+    </h2>
+<% end %>
+
+<% if @organization.contacts.any? %>
+    <h2 class="ui header">
+      <%= t :contacts %>:
+      <% @organization.contacts.each do |cp| %>
+          <%= link_to contact_path(cp), class: 'ui label ' do %>
+              <i class="ui user icon"></i>
+              <%= "#{cp.name} (#{cp.dept})" %>
+          <% end %>
+      <% end %>
+    </h2>
+<% end %>
+
+<h2><%= t :events_organized_by_this_organization %></h2>
+<table class="ui compact green selectable celled striped table datatable">
+  <thead>
+  <tr>
+    <th><%= t :name_task %></th>
+    <th><%= t :from %></th>
+    <th><%= t :to %></th>
+    <th><%= t :actions %></th>
+  </tr>
+  </thead>
+  <tbody>
+  <% @organization.events.each do |e| %>
+      <tr>
+        <td><%= e.title %></td>
+        <td><%= datetime_format e.from %></td>
+        <td><%= datetime_format e.to %></td>
+        <td>
+          <%= link_to "Detail", [e.event_type, e], class: 'ui button' %>
+        </td>
+      </tr>
+  <% end %>
+  </tbody>
+</table>

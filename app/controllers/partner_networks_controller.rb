@@ -3,12 +3,10 @@ class PartnerNetworksController < ApplicationController
   before_action :set_panel, only: [:index, :show, :new, :edit, :create, :update, :destroy]
 
   # GET /partner_networks
-  # GET /partner_networks.json
   def index
   end
 
   # GET /partner_networks/1
-  # GET /partner_networks/1.json
   def show
     @my_organizations = @partner_network.organizations.order(:name)
   end
@@ -30,10 +28,8 @@ class PartnerNetworksController < ApplicationController
     respond_to do |format|
       if @partner_network.save
         format.html { redirect_to @partner_network, success: "#{t :partner_network} #{define_notice('ž', __method__)}" }
-        format.json { render :show, status: :created, location: @partner_network }
       else
         format.html { render :new }
-        format.json { render json: @partner_network.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -44,10 +40,8 @@ class PartnerNetworksController < ApplicationController
     respond_to do |format|
       if @partner_network.update(partner_network_params)
         format.html { redirect_to @partner_network, success: "#{t :partner_network} #{define_notice('ž', __method__)}" }
-        format.json { render :show, status: :ok, location: @partner_network }
       else
         format.html { render :edit }
-        format.json { render json: @partner_network.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -58,7 +52,6 @@ class PartnerNetworksController < ApplicationController
     @partner_network.destroy
     respond_to do |format|
       format.html { redirect_to partner_networks_url, success: "#{t :partner_network} #{define_notice('ž', __method__)}" }
-      format.json { head :no_content }
     end
   end
 
@@ -72,8 +65,7 @@ class PartnerNetworksController < ApplicationController
     @organizations = Organization.includes(:events, :partner_networks, :contacts)
     @partner_networks = PartnerNetwork.includes(:organizations).order(:name)
     @event_counts = Event.group(:organization_id).count(:organization_id) # Event count for each org.
-    @flags = {}
-    Country.where(name: @organizations.pluck(:country)).each { |c| @flags[c.name] = c.flag_code }
+    @flags = Country.flag_codes_for_countries(@organizations.pluck(:country))
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.

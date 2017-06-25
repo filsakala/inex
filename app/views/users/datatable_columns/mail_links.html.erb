@@ -1,0 +1,2 @@
+<%= link_to(user.login_mail, "mailto:#{user.login_mail}", class: 'pop_up', title: t(:write_email)) if !user.login_mail.blank? %>
+<%= link_to(user.personal_mail, "mailto:#{user.personal_mail}", class: 'pop_up', title: t(:write_email)) if !user.personal_mail.blank? %>

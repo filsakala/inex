@@ -1,69 +1,22 @@
-<% if organizations.any? %>
-    <table class="ui compact green selectable celled striped table datatable">
-      <thead>
-      <tr>
-        <th class="three wide"><%= t :name_task %></th>
-        <th class="two wide"><%= t :country %></th>
-        <th class="two wide"><%= t :events %></th>
-        <th class="three wide"><%= t :partner_networks %></th>
-        <th class="three wide"><%= t :contacts %></th>
-        <th class="two wide"><%= t :actions %></th>
-      </tr>
-      </thead>
-      <tbody>
-
-      <% organizations.each do |organization| %>
-          <tr>
-            <td><%= link_to organization.name, organization %></td>
-            <td>
-              <i class="<%= @flags[organization.country] %> flag"></i><%= organization.country %>
-            </td>
-            <td>
-              <%= link_to organization, class: 'ui fluid grey label' do %>
-                  <%= t :events %>:<%= @event_counts[organization.id] || 0 %>
-              <% end %>
-            </td>
-            <td>
-              <% if organization.partner_networks.any? %>
-                  <% organization.partner_networks.each do |net| %>
-                      <%= link_to net.name, partner_network_path(net), class: 'ui blue label' %>
-                  <% end %>
-              <% end %>
-            </td>
-            <td>
-              <% if organization.contacts.any? %>
-                  <% organization.contacts.each do |cp| %>
-                      <%= link_to contact_path(cp), class: 'ui label ', target: "_blank" do %>
-                          <i class="ui user icon"></i>
-                          <%= cp.name %>
-                          <%= "(#{cp.dept})" unless cp.dept.blank? %>
-                      <% end %>
-                  <% end %>
-              <% end %>
-            </td>
-            <td>
-              <%= link_to organization do %>
-                  <i class="large unhide icon pop_up" title="Detail"></i>
-              <% end %>
-              <%= link_to edit_organization_path(organization) do %>
-                  <i class="large yellow edit icon pop_up" title="<%= t :edit %>"></i>
-              <% end %>
-              <%= link_to organization, method: :delete, data: { confirm: t(:are_you_sure_organization) } do %>
-                  <i class="large red remove icon pop_up" title="<%= t :remove %>"></i>
-              <% end %>
-            </td>
-          </tr>
-      <% end %>
-      </tbody>
-    </table>
-<% else %>
-    <div class="ui icon message">
-      <i class="frown icon"></i>
-      <div class="content">
-        <div class="header">
-          <%= t :partner_network_does_not_exist %>
-        </div>
-        <p><%= t :partner_network_does_not_exist_sub %></p>
-      </div>
-    </div>
-<% end %>
+<table class="ui compact green selectable celled striped table datatable-server" data-entity="organizations" data-eid="<%= @partner_network.try(:id) %>">
+  <thead>
+  <tr>
+    <th class="three wide"><%= t :name_task %></th>
+    <th class="two wide"><%= t :country %></th>
+    <th class="three wide"><%= t :partner_networks %></th>
+    <th class="three wide"><%= t :contacts %></th>
+    <th class="two wide"><%= t :actions %></th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr>
+    <td>
+      <h3><i class="large spinner loading icon"></i> Loading</h3>
+    </td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+  </tbody>
+</table>

@@ -13,11 +13,12 @@
 </div>
 <div class="padded row">
   <div class="column">
-    <h3><%= t :list_of_found_events %> <span class="ui green circular label" id="map-search-count">0</span></h3>
-    <% if @search_events.any? %>
-        <div id="map-search-table"></div>
-    <% else %>
-
-    <% end %>
+    <h3><%= t :list_of_found_events %>
+      <span class="ui green circular label" id="map-search-count">0</span>
+      <span id='ajax_loader'>
+        <i class="large spinner loading icon"></i> Loading
+      </span>
+    </h3>
+    <div id="map-search-table"></div>
   </div>
 </div>

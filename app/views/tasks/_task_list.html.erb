@@ -1,0 +1,44 @@
+<div class="ui bottom attached segment">
+  <% if @tasks.any? %>
+      <div class="ui four stackable cards" id="cardlist">
+        <% @tasks.each do |task| %>
+            <%= link_to "#cardlist", class: 'ui card modal-opener', data: { taskid: task.id } do %>
+                <div class="content">
+                  <div class="header">
+                    <%= task.title %>
+                    <%= star_if_highlighted(task.is_highlighted) %>
+                  </div>
+                  <div class="meta">
+                    <i class="checkmark box icon"></i>
+                    <%= done_all_count(task) %>
+                    <%= deadline_with_icon(task) %>
+                  </div>
+                </div>
+                <div class="extra content">
+                  <% if task.employee.try(:user).try(:nickname_or_name) %>
+                      <div class="ui large circular label pop_up" style="<%= str2style(task.employee.try(:user).try(:name)) %> color: white;" title="<%= task.employee.try(:user).try(:nickname_or_name) %>">
+                        <%= task.employee.try(:user).try(:nickname_or_name)[0..1] %>
+                      </div>
+                  <% end %>
+                </div>
+                <div class="ui huge top attached green progress"
+                     data-value="<%= done_count(task) %>"
+                     data-total="<%= all_count(task) %>">
+                  <div class="bar"></div>
+                </div>
+            <% end %>
+        <% end %>
+      </div>
+  <% else %>
+      <div class="ui icon message">
+        <i class="remove icon"></i>
+        <div class="content">
+          <div class="header">
+            <%= t :no_task_header %>
+          </div>
+          <p><%= t :no_task_description %></p>
+        </div>
+      </div>
+  <% end %>
+</div>
+<div class="ui modal" id="task-modal"></div>

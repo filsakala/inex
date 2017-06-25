@@ -8,7 +8,7 @@
   </div>
 </h1>
 
-<%= link_to "Pridať platbu", new_participation_fee_path, class: 'ui green button' %>
+<%= render 'event_types/panel' %>
 
 <div class="ui top attached menu">
   <div class="ui pagination menu" style="border: none;">
@@ -27,7 +27,7 @@
     </div>
   </div>
 </div>
-<table class="ui attached compact orange selectable celled striped table">
+<table class="ui attached compact green selectable celled striped table">
   <thead>
   <tr>
     <th><%= t :name_contact %></th>

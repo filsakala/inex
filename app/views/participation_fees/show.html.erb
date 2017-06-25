@@ -8,18 +8,7 @@
   </div>
 </h1>
 
-<%= link_to participation_fees_path, class: 'ui grey icon button' do %>
-    <i class="money link icon"></i> Späť na príspevky
-<% end %>
-<% if @participation_fee.event_list && @participation_fee.event_list.event_type %>
-    <%= link_to bags_event_type_path(@participation_fee.event_list.event_type, query: @participation_fee.event_list.surname), class: 'ui grey icon button' do %>
-        <i class="suitcase link icon"></i> Na tašky
-    <% end %>
-<% end %>
-<%= link_to edit_participation_fee_path(@participation_fee), class: 'ui yellow icon button' do %>
-    <i class="write link icon"></i> <%= t(:edit) %>
-<% end %>
-
+<%= render 'event_types/panel' %>
 
 <div class="ui items" style="border: 2px solid black; padding: 10px;">
   <div class="item">

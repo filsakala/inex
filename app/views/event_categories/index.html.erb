@@ -1,13 +1,6 @@
-<h1 class="ui header">
-  <i class="options icon"></i>
-  <div class="content">
-    <%= t :workcamp_types %>
-    <div class="sub header">
-      <%= t :workcamp_types_header %>
-    </div>
-  </div>
-</h1>
-<%= link_to t(:add), new_event_category_path, class: 'ui green button' %>
+<%= header :h1, "options", t(:workcamp_types), t(:workcamp_types_header) %>
+
+<%= render 'event_types/panel' %>
 
 <table class="ui green table">
   <thead>

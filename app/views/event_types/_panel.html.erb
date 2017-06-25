@@ -1,0 +1,109 @@
+<div class="ui top attached stackable menu" style="margin-bottom: 10px;">
+  <div class="ui dropdown item">
+    <i class="plus icon"></i> Nový
+    <i class="dropdown icon"></i>
+    <div class="menu">
+      <% if @event_type.try(:id) %>
+          <%= link_to new_event_type_event_path(@event_type), class: 'item' do %>
+              <i class="plane icon"></i> <%= t :event %>
+          <% end %>
+      <% end %>
+      <% if controller_name == 'event_categories' %>
+          <%= link_to new_event_category_path, class: 'item' do %>
+              <i class="options icon"></i> <%= t :workcamp_type %>
+          <% end %>
+      <% end %>
+      <% if controller_name == 'participation_fees' %>
+          <%= link_to new_participation_fee_path, class: 'item' do %>
+              <i class="money icon"></i> <%= t :participation_fee %>
+          <% end %>
+      <% end %>
+      <% if current_user.try(:is_employee?) %>
+          <%= link_to new_event_type_path, class: 'item' do %>
+              <i class="list layout icon"></i> <%= t :event_type %>
+          <% end %>
+      <% end %>
+      <%= link_to import_1_events_path, class: 'item' do %>
+          <i class="black file icon"></i> Import CSV/XML
+      <% end %>
+    </div>
+  </div>
+  <% if @participation_fee.try(:id) || @event_type.try(:id) || @event.try(:id) %>
+      <div class="ui dropdown item">
+        <i class="edit icon pop_up"></i> Upraviť
+        <i class="dropdown icon"></i>
+        <div class="menu">
+          <div class="scrolling  menu">
+            <% if @event.try(:id) %>
+                <% if @event.is_published %>
+                    <%= link_to toggle_is_published_event_path(@event), method: :put, class: 'item' do %>
+                        <i class="unhide icon"></i> <%= "#{t(:published_unpublish)}" %>
+                    <% end %>
+                <% else %>
+                    <%= link_to toggle_is_published_event_path(@event), method: :put, class: 'item' do %>
+                        <i class="hide icon"></i> <%= "#{t(:unpublished_publish)}" %>
+                    <% end %>
+                <% end %>
+                <%= link_to edit_event_type_event_path(@event.event_type, @event), class: 'item' do %>
+                    <i class="configure icon"></i> <%= "#{t :basic_info}" %>
+                <% end %>
+                <%= link_to step_second_event_type_event_path(@event.event_type, @event), class: 'item' do %>
+                    <i class="road icon"></i> <%= "#{t :place_and_transport}" %>
+                <% end %>
+                <%= link_to step_third_event_type_event_path(@event.event_type, @event), class: 'item' do %>
+                    <i class="users icon"></i> <%= t :capacity %>
+                <% end %>
+                <%= link_to step_fourth_event_type_event_path(@event.event_type, @event), class: 'item' do %>
+                    <i class="archive icon"></i> <%= t :applications %>
+                <% end %>
+                <%= link_to step_fifth_event_type_event_path(@event.event_type, @event), class: 'item' do %>
+                    <i class="content icon"></i> <%= t :descriptions %>
+                <% end %>
+            <% end %>
+            <%= link_to edit_participation_fee_path(@participation_fee), class: 'item' do %>
+                <i class="edit icon"></i> <%= t(:participation_fee) %>
+            <% end if @participation_fee.try(:id) %>
+            <%= link_to edit_event_type_path(@event_type), class: 'item' do %>
+                <i class="edit icon"></i> <%= t(:event_type) %>
+            <% end if @event_type.try(:id) %>
+          </div>
+        </div>
+      </div>
+  <% end %>
+  <div class="ui dropdown item">
+    <i class="folder icon"></i> Zobraziť
+    <i class="dropdown icon"></i>
+    <div class="menu">
+      <div class="scrolling  menu">
+        <% if @event.try(:id) %>
+            <%= link_to show_public_event_path(@event), target: '_blank', class: 'item' do %>
+                <i class="world icon"></i> <%= t(:show_on_webpage) %>
+            <% end %>
+        <% end %>
+        <%= link_to event_types_path, class: 'item' do %>
+            <i class="list layout icon"></i> <%= t :event_types %>
+        <% end %>
+        <%= link_to event_categories_path, class: 'item' do %>
+            <i class="options icon"></i> <%= t :workcamp_types %>
+        <% end %>
+        <% if current_user.try(:is_employee?) %>
+            <%= link_to bags_event_type_path(@event_type), class: 'item' do %>
+                <i class="suitcase icon"></i> <%= t :applications %>
+            <% end if @event_type.try(:id) %>
+            <%= link_to participation_fees_path, class: 'item' do %>
+                <i class="money icon"></i> <%= t :payments %>
+            <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+  <div class="right menu">
+    <div class="ui right aligned category eventTypeIndex search item">
+      <div class="ui transparent icon input">
+        <input class="prompt" type="text" placeholder="<%= t :events %>: <%= t :search_dots %>" id="search-field">
+        <i class="search link icon"></i>
+      </div>
+      <div class="results"></div>
+    </div>
+  </div>
+</div>

@@ -8,36 +8,7 @@
   </div>
 </h1>
 
-<div class="ui top attached stackable menu">
-  <% if current_user.try(:is_employee?) %>
-      <%= link_to new_event_type_path, class: 'active green item' do %>
-          <i class="add circle icon"></i> <%= t :add %> <%= t :event_type %>
-      <% end %>
-  <% end %>
-  <%= link_to event_categories_path, class: 'active yellow item' do %>
-      <i class="options icon"></i> <%= t :workcamp_types %>
-  <% end %>
-  <% if current_user.try(:is_employee?) %>
-      <%= link_to participation_fees_path, class: 'active grey item' do %>
-          <i class="money icon"></i> <%= t :payments %>
-      <% end %>
-  <% end %>
-  <%= link_to import_1_events_path, class: 'active green item' do %>
-      <i class="large link icons">
-        <i class="black file icon"></i>
-        <i class="green corner plus icon"></i>
-      </i> Import CSV/XML
-  <% end %>
-  <div class="right menu">
-    <div class="ui right aligned category eventTypeIndex search item">
-      <div class="ui transparent icon input">
-        <input class="prompt" type="text" placeholder="<%= t :search_dots %>" id="search-field" >
-        <i class="search link icon"></i>
-      </div>
-      <div class="results"></div>
-    </div>
-  </div>
-</div>
+<%= render 'panel' %>
 <div class="ui two cards">
   <% @super_event_types.each do |set| %>
       <div class="ui card">

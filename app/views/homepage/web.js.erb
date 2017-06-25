@@ -1,8 +1,19 @@
 $("#events_calendar").html("<%= escape_javascript render(partial: "calendar") %>");
 $("#events_calendar").on("click", ".event-calendar-list", function () {
   var day = $(this).attr('date');
+  var ids = $(this).data('ids');
   var meetings = $(this).attr('meetings');
-  $('#modal-header').text(day);
-  $('#event_calendar_list').html(meetings);
-  $('#modal').modal('show');
+  $.ajax({
+    type: "GET",
+    url: "/homepage/meetings_html?ids=" + ids,
+    dataType: "HTML"
+  }).error(function (html) {
+    $('#modal-header').text(day);
+    $('#event_calendar_list').html("Nastala chyba pri načítavaní zoznamu.");
+    $('#modal').modal('show');
+  }).success(function (html) {
+    $('#modal-header').text(day);
+    $('#event_calendar_list').html(html);
+    $('#modal').modal('show');
+  });
 });

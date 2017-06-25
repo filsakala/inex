@@ -1,0 +1,22 @@
+// Headers for /homepage/konakty
+.contacts.header {
+  cursor: pointer;
+}
+
+.contacts.header:hover {
+  cursor: pointer;
+}
+
+.contacts.header.cactive .icon {
+  background-color: rgba(0, 0, 0, 0.1);
+  -webkit-transition: background-color 125ms linear;
+  -ms-transition: background-color 125ms linear;
+  transition: background-color 125ms linear;
+}
+
+.contacts.header:hover .icon {
+  background-color: rgba(0, 0, 0, 0.1);
+  -webkit-transition: background-color 125ms linear;
+  -ms-transition: background-color 125ms linear;
+  transition: background-color 125ms linear;
+}

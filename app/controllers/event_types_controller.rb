@@ -3,50 +3,11 @@ class EventTypesController < ApplicationController
   layout "page_part", only: [:application_conditions]
 
   # GET /event_types
-  # GET /event_types.json
   def index
     @event_types = EventType.all
     @without_type = Event.where(event_type_id: nil)
-    @super_event_types = SuperEventType.all
+    @super_event_types = SuperEventType.includes(:event_types).all
     @event_types_without_super_type = EventType.where(super_event_type_id: nil)
-  end
-
-  # GET /event_types/1
-  # GET /event_types/1.json
-  def show
-    per_page = params[:per_page]
-    per_page ||= 10
-    page = params[:page] || 1
-    events = do_search(@event_type, params[:query])
-    if events.count < (page.to_i - 1) * (per_page.to_i) + 1
-      page = 1
-    end
-    @events = events.order(from: :desc).paginate(page: page, per_page: per_page)
-  end
-
-  def search
-    events = do_search(@event_type, params[:q])
-    res = events.collect { |u|
-      { "title": "#{u.title}", "url": event_type_event_path(@event_type, u),
-        "description": u.from_to }
-    }
-    render json: {
-      "results": res,
-      "action": {
-        "url": event_type_path(@event_type, query: params[:q], page: params[:page], per_page: params[:per_page]),
-        "text": "Obnoviť tabuľku (#{res.size} výsledkov)"
-      }
-    }
-  end
-
-  def do_search(event_type, query)
-    t = Event.arel_table
-    if !query.blank?
-      q = query.split(' ').join('|')
-      event_type.events.where("`title` REGEXP ? OR `from` REGEXP ? OR `to` REGEXP ? OR `country` REGEXP ? OR `code` REGEXP ? OR `code_alliance` REGEXP ? ", q, q, q, q, q, q)
-    else
-      event_type.events
-    end
   end
 
   # GET
@@ -90,7 +51,7 @@ class EventTypesController < ApplicationController
   def new
     @event_type = EventType.new
     @supertypes = SuperEventType.all
-    @employees = Employee.joins(:user).select(:id, :name, :nickname, :user_id)
+    @employees = Employee.joins(:user).select(:id, :name, :nickname, :user_id).includes(:user)
   end
 
   # GET /event_types/1/edit
@@ -99,47 +60,35 @@ class EventTypesController < ApplicationController
     @employees = Employee.joins(:user).select(:id, :name, :nickname, :user_id)
   end
 
-  # GET
-  def application_conditions
-  end
-
   # POST /event_types
-  # POST /event_types.json
   def create
     @event_type = EventType.new(event_type_params)
 
     respond_to do |format|
       if @event_type.save
         format.html { redirect_to @event_type, success: 'Event type was successfully created.' }
-        format.json { render :show, status: :created, location: @event_type }
       else
         format.html { render :new }
-        format.json { render json: @event_type.errors, status: :unprocessable_entity }
       end
     end
   end
 
   # PATCH/PUT /event_types/1
-  # PATCH/PUT /event_types/1.json
   def update
     respond_to do |format|
       if @event_type.update(event_type_params)
         format.html { redirect_to @event_type, success: 'Event type was successfully updated.' }
-        format.json { render :show, status: :ok, location: @event_type }
       else
         format.html { render :edit }
-        format.json { render json: @event_type.errors, status: :unprocessable_entity }
       end
     end
   end
 
   # DELETE /event_types/1
-  # DELETE /event_types/1.json
   def destroy
     @event_type.destroy
     respond_to do |format|
       format.html { redirect_to event_types_url, success: 'Event type was successfully destroyed.' }
-      format.json { head :no_content }
     end
   end
 

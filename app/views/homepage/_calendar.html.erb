@@ -6,7 +6,7 @@
             <div class="sub header">
               <a class="browse item event-calendar-list" href="#events_calendar"
                  date="<%= t :events %> <%= date_format date %>"
-                 meetings="<%= meeting_html(meetings) %>">
+                 data-ids="<%= meetings.collect { |m| m.id } %>">
                 <div class="ui green circular right floated icon label">
                   <%= meetings.count %>
                 </div>

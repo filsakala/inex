@@ -14,9 +14,9 @@
         <td>
           <%= link_to event.translated_title, show_public_event_path(event), target: :blank %>
           <% if !event.code.blank? %>
-              (<%= t :code %> <%= text_or_icon event.code %>)
+              (<%= t :code %> <%= event.code %>)
           <% elsif !event.code_alliance.blank? %>
-              (<%= t :code %> <%= text_or_icon event.code_alliance %>)
+              (<%= t :code %> <%= event.code_alliance %>)
           <% end %>
         </td>
         <td><%= event.from_to %></td>

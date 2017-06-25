@@ -1,6 +1,6 @@
 <h1><%= t :add_inex_member %> <%= @user.login_mail %></h1>
 
-<%= form_for(@user, url: set_inex_member_user_url(@user), html: { class: 'ui form' }) do |f| %>
+<%= form_for(@user, url: set_inex_member_user_url(@user), html: { class: 'ui form' }, method: :patch) do |f| %>
     <%= write_error(@user) %>
 
     <div class="field">

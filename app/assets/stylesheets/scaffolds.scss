@@ -191,3 +191,14 @@ div {
   filter: FlipH;
   -ms-filter: "FlipH";
 }
+
+.doneTask {
+  font-size: 1.5em;
+  text-decoration: line-through;
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.undoneTask {
+  font-size: 1.5em;
+  text-decoration: none;
+}

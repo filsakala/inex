@@ -1,0 +1,28 @@
+<li class="item">
+  <div class="ui avatar image">
+    <% if !event.country.blank? && !@flags[event.country].blank? %>
+        <i class="large <%= @flags[event.country] %> middle aligned flag"></i>
+    <% else %>
+        <i class="black flag icon"></i>
+    <% end %>
+  </div>
+  <%= link_to show_public_event_path(event), class: 'content', target: '_blank' do %>
+      <div class="header">
+        <%= event.translated_title %>
+        <%= "(#{event.code_or_code_alliance})" unless event.code_or_code_alliance.blank? %>
+      </div>
+      <div class="description">
+        <% if !event.from_to.blank? %>
+            <%= "#{event.country}, " unless event.country.blank? %>
+            <%= "#{event.from_to}" %>
+        <% else %>
+            <%= event.country %>
+        <% end %>
+        <div>
+          <% event.event_categories.each do |category| %>
+              <div class="ui tiny green label"><%= category.abbr %></div>
+          <% end %>
+        </div>
+      </div>
+  <% end %>
+</li>

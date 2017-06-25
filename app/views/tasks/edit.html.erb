@@ -1,20 +1,10 @@
-<%= render 'header' %>
-
-<div class="ui padded stackable grid">
-  <div class="ui two column row">
-    <div class="four wide column">
-      <%= render 'panel' %>
-    </div>
-    <div class="twelve wide column">
-      <h2 class="ui header">
-        <i class="edit icon"></i>
-        <div class="content">
-          <%= t :edit_task %>
-          <div class="sub header"><%= t :edit_task_description %></div>
-        </div>
-      </h2>
-
-      <%= render 'form' %>
-    </div>
+<h2 class="ui header">
+  <i class="edit icon"></i>
+  <div class="content">
+    <%= t :edit_task %>
+    <div class="sub header"><%= t :edit_task_description %></div>
   </div>
-</div>
+</h2>
+
+<%= render 'panel' %>
+<%= render 'form' %>

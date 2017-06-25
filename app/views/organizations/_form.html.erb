@@ -16,7 +16,7 @@
 
     <div class="field">
       <%= label_tag t(:partner_networks) %>
-      <%= select_tag :network_ids, options_from_collection_for_select(@networks, "id", "name", (params[:network_ids] || @my_networks)), multiple: true, class: "ui dropdown" %>
+      <%= select_tag :network_ids, options_from_collection_for_select(@partner_networks, "id", "name", (params[:network_ids] || @my_networks)), multiple: true, class: "ui dropdown" %>
     </div>
 
     <div class="field">
@@ -25,6 +25,7 @@
     </div>
 
     <div class="field">
+      <%= f.label :description, t(:description) %>
       <%= f.label :description, t(:description) %>
       <%= f.text_area :description %>
     </div>

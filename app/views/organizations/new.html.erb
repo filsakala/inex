@@ -1,20 +1,10 @@
-<%= render 'organizations/header' %>
-
-<div class="ui padded stackable grid">
-  <div class="ui two column row">
-    <div class="four wide column">
-      <%= render 'organizations/panel' %>
-    </div>
-    <div class="twelve wide column">
-      <h2 class="ui header">
-        <i class="add circle icon"></i>
-        <div class="content">
-          <%= t :add_organization %>
-          <div class="sub header"><%= t :add_organization_header %></div>
-        </div>
-      </h2>
-
-      <%= render 'form' %>
-    </div>
+<h2 class="ui header">
+  <i class="add circle icon"></i>
+  <div class="content">
+    <%= t :add_organization %>
+    <div class="sub header"><%= t :add_organization_header %></div>
   </div>
-</div>
+</h2>
+
+<%= render 'organizations/panel' %>
+<%= render 'form' %>

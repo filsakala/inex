@@ -1,22 +1,4 @@
-<%= render 'contact_lists/header' %>
+<%= header :h2, "edit", "#{t(:edit)} #{t(:contact)} #{name_nickname_format(@contact)}", t(:edit_contact_header) %>
 
-<div class="ui padded stackable grid">
-  <div class="ui two column row">
-    <div class="four wide column">
-      <%= render 'contact_lists/panel' %>
-    </div>
-    <div class="twelve wide column">
-      <h2 class="ui header">
-        <i class="edit icon"></i>
-        <div class="content">
-          <%= t :edit %> <%= t :contact %> <%= name_nickname_format(@contact) %>
-          <div class="sub header">
-            <%= t :edit_contact_header %>
-          </div>
-        </div>
-      </h2>
-
-      <%= render 'form' %>
-    </div>
-  </div>
-</div>
+<%= render 'contact_lists/panel' %>
+<%= render 'form' %>

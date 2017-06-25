@@ -1,25 +1,4 @@
-<%= render 'header' %>
+<%= header :h2, "users", t(:others_assigned_tasks), t(:tasks_others_header_description) %>
 
-<%= link_to t(:add_task), new_task_path, class: 'ui basic green button' %>
-
-<div class="ui padded stackable grid">
-  <div class="ui two column row">
-    <div class="four wide column">
-      <%= render 'panel' %>
-    </div>
-    <div class="twelve wide column">
-      <h2 class="ui header">
-        <i class="users icon"></i>
-        <div class="content">
-          <%= t(:others_assigned_tasks) %>
-          <div class="sub header">
-            <%= t(:tasks_others_header_description) %>
-          </div>
-        </div>
-      </h2>
-
-      <%= render 'index' %>
-    </div>
-  </div>
-</div>
-
+<%= render 'panel' %>
+<%= render 'task_list' %>

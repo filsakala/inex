@@ -1,0 +1,23 @@
+<% if user.is_active? %>
+	<div class="ui green label">
+		<i class="icons pop_up" title="<%= t(:deactivate_user) %>">
+    	<i class="user icon"></i>
+      <i class="black corner checkmark icon"></i>
+    </i> Aktívny
+  </div>
+<% else %>
+	<div class="ui red label">
+		<i class="icons pop_up" title="<%= t(:deactivate_user) %>">
+    	<i class="user icon"></i>
+      <i class="black corner ban icon"></i>
+    </i> Neaktívny
+  </div>
+<% end %>
+<% if user.is_inex_office? %>
+	<div class="ui orange label">
+		<i class="icons pop_up">
+		  <i class="home icon"></i>
+		  <i class="black corner checkmark icon"></i>
+		</i> <%= user.role %>
+	</div>
+<% end %>

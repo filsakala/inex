@@ -1,11 +1,5 @@
 <% if vols.any? %>
-    <h3>
-      <%= t :volunteers %>
-      <%= link_to bags_event_type_path(@event_type), class: 'pop_up', title: t(:applications) do %>
-          <i class="big grey unhide icon"></i>
-      <% end %>
-    </h3>
-    <table class="ui green celled table">
+    <table class="ui compact green selectable celled striped table">
       <thead>
       <tr>
         <th class="two wide"><%= t :name_contact %></th>
@@ -32,7 +26,7 @@
               <%= link_to employee_show_event_list_path(vol.event_list), class: 'pop_up', title: 'Detail' do %>
                   <i class="big grey unhide icon"></i>
               <% end %>
-              <%= link_to vol, method: :delete, data: { confirm: t(:are_you_sure_remove_participant) }, class: 'pop_up', title: t(:remove) do %>
+              <%= link_to remove_participant_from_event_event_lists_path(id: vol.id, classname: vol.class.name), method: :delete, data: { confirm: t(:are_you_sure_remove_participant) }, class: 'pop_up', title: t(:remove) do %>
                   <i class="big red remove icon"></i>
               <% end %>
             </td>

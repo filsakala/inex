@@ -1,16 +1,5 @@
 <div class="ui container">
-  <h1 class="ui header">
-    <i class="large icons">
-      <i class="world icon"></i>
-      <i class="green corner plus icon"></i>
-    </i>
-    <div class="content">
-      Upraviť článok blogu
-      <div class="sub header">
-        <%= t :new_blog_header_description %>
-      </div>
-    </div>
-  </h1>
+  <%= header :h1, "world", "Upraviť článok blogu", t(:new_blog_header_description) %>
 
   <%= render "form" %>
 </div>

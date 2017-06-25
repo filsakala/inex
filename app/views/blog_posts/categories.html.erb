@@ -1,17 +1,9 @@
-<div class="ui segment container">
-  <h1 class="ui header">
-    <i class="world icon"></i>
-    <div class="content">
-      <%= t :blog_categories %>
-      <div class="sub header">
-        <%= t :blog_categories_description %>
-      </div>
-    </div>
-  </h1>
+<div class="ui container">
+  <%= header :h1, "world", t(:blog_categories), t(:blog_categories_description) %>
 
   <%= form_for 'categories', html: { class: 'ui form' } do |f| %>
       <% @categories.each do |category| %>
-          <div class="fields">
+          <div class="three fields">
             <div class="field">
               <%= text_field_tag "#{category.id}[]", category.name %>
             </div>
@@ -26,12 +18,11 @@
       <% end %>
       <h3><%= t :add_categories %></h3>
       <% (0..5).each do %>
-          <div class="fields">
             <div class="field">
               <%= text_field_tag "new[]" %>
             </div>
-          </div>
       <% end %>
       <%= f.submit t(:save), class: 'ui green submit button' %>
   <% end %>
 </div>
+

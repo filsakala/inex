@@ -1,13 +1,9 @@
 module SessionsHelper
 
-  def colored_labeled_icon_button(par = {})
-    size = par[:size] if par[:size]
-    color = par[:color] if par[:color]
-    icon = par[:icon] if par[:icon]
-    text = par[:text] if par[:text]
-    "<div class=\"ui #{size} #{color} labeled icon button\">
-      <i class=\"#{icon} icon\"></i>
-      #{text}
+  def colored_labeled_icon_button(params = {})
+    "<div class=\"ui #{params[:size]} #{params[:color]} labeled icon button\">
+      <i class=\"#{params[:icon]} icon\"></i>
+      #{params[:text]}
     </div>"
   end
 end

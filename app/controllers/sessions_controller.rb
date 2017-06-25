@@ -8,19 +8,17 @@ class SessionsController < ApplicationController
     user = User.find_by_login_mail(params[:login_mail])
     if user && user.authenticate_active(params[:password])
       session[:user_id] = user.id
-      if user.is_inex_member?
+      if user.is_inex_office?
         redirect_to tasks_path, success: t(:you_were_successfully_logged_in)
       else
         redirect_to user, success: t(:you_were_successfully_logged_in)
       end
     else
-      if !user
-        flash.now.alert = t(:login_was_unsuccessfull)
-      elsif !user.is_active?
-        flash.now.alert = t(:user_is_inactive)
-      else
-        flash.now.alert = t(:login_was_unsuccessfull)
-      end
+      flash.now.alert = if !user.try(:is_active?)
+                          t(:user_is_inactive)
+                        else
+                          t(:login_was_unsuccessfull)
+                        end
       render :new
     end
   end

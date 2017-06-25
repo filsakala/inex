@@ -5,7 +5,6 @@ Predpoklady:
 2. Kazda skorsia rola moze vsetko co ta potom (employee > eds > user > nologin) + nieco navyse.
 3. Ostatne role: Musi byt definovane danej roli alebo rolam pod nou. Inak sa berie, ze to nemoze.
 =end
-
   def self.user_role(user)
     if user
       if user.is_employee?
@@ -43,7 +42,7 @@ Predpoklady:
   end
 
   def self.can?(controller, action, user)
-    return true if controller == "homepage" && action == "web" # root adresa nech je pristupna
+    return true if controller == "homepage" && action == "web" # root adresa je pristupna
     role = self.user_role(user)
     return true if role == "employee" # Predpoklad 1
     cperm = Permission.where(controller: controller).where(action: action)

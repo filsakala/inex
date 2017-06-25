@@ -1,11 +1,4 @@
-<h1 class="ui header">
-  <i class="add circle icon"></i>
-  <div class="content">
-    <%= t :add %> <%= t(:workcamp_type).downcase %>
-    <div class="sub header">
-      <%= t :add_workcamp_type_header %>
-    </div>
-  </div>
-</h1>
+<%= header :h1, "add circle", "#{t(:add)} #{t(:workcamp_type).downcase}", t(:add_workcamp_type_header) %>
 
+<%= render 'event_types/panel' %>
 <%= render 'form' %>

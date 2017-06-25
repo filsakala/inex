@@ -29,12 +29,12 @@
             <i class="red corner ban icon"></i>
           </i>
       <% end %>
-      <% if current_user && current_user.is_inex_member? %>
+      <% if current_user && current_user.is_inex_office? %>
           <%= link_to edit_event_type_event_path(@event.event_type, @event), class: 'pop_up', title: "#{t :edit} event" do %>
               <i class="yellow edit link icon"></i>
           <% end %>
       <% end %>
-      <% if current_user && current_user.is_inex_member? %>
+      <% if current_user && current_user.is_inex_office? %>
           <% if @event.is_published %>
               <%= link_to t(:published), toggle_is_published_event_path(@event), method: :put, class: 'ui green circular label' %>
           <% else %>

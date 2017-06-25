@@ -1,31 +1,13 @@
-<%= render 'header' %>
+<%= header :h2, "book", "Events", t(:contacts_event_header) %>
 
-<div class="ui padded stackable grid">
-  <div class="ui two column row">
-    <div class="four wide column">
-      <%= render 'panel' %>
+<%= render 'panel' %>
+<%= form_tag('events_second', { class: 'ui form' }) do |f| %>
+    <div class="field">
+      <%= label_tag t(:contacts_event_choose_years) %>
+      <%= select_tag :year, options_for_select(Date.today.year.downto(1993)), multiple: true, include_blank: true, class: 'ui dropdown' %>
     </div>
-    <div class="twelve wide column">
-      <h2 class="ui header">
-        <i class="book icon"></i>
-        <div class="content">
-          Events
-          <div class="sub header">
-            <%= t :contacts_event_header %>
-          </div>
-        </div>
-      </h2>
 
-      <%= form_tag('events_second', { class: 'ui form' }) do |f| %>
-          <div class="field">
-            <%= label_tag t(:contacts_event_choose_years) %>
-            <%= select_tag :year, options_for_select(Date.today.year.downto(1993)), multiple: true, include_blank: true, class: 'ui dropdown' %>
-          </div>
-
-          <div class="actions">
-            <%= submit_tag t(:contacts_event_next_step), class: 'ui green button' %>
-          </div>
-      <% end %>
+    <div class="actions">
+      <%= submit_tag t(:contacts_event_next_step), class: 'ui green button' %>
     </div>
-  </div>
-</div>
+<% end %>

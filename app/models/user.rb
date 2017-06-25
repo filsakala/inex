@@ -51,7 +51,7 @@ class User < ActiveRecord::Base
     role == "evs" || role == "eds"
   end
 
-  def is_inex_member?
+  def is_inex_office?
     is_employee? || is_evs?
   end
 
@@ -64,7 +64,7 @@ class User < ActiveRecord::Base
   end
 
   def name_with_mail
-    "#{name || "???"} #{surname || "???"} (#{nickname || "???"}) - #{login_mail}"
+    "#{name || "???"} #{surname || "???"} - #{login_mail}"
   end
 
   def name_surname
@@ -83,17 +83,20 @@ class User < ActiveRecord::Base
     end
   end
 
+  def name_surname_nickname
+    s = "#{name} #{surname}"
+    s += " (#{nickname})" unless nickname.blank?
+    s
+  end
+
   def both_mails
     "#{login_mail}, #{personal_mail}" if !personal_mail.blank?
     login_mail if personal_mail.blank?
   end
 
   def personal_mail_or_login_mail
-    if personal_mail.blank?
-      login_mail
-    else
-      personal_mail
-    end
+    return personal_mail if !personal_mail.blank?
+    login_mail
   end
 
   def user_event_list(is_child)

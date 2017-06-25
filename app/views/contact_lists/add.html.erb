@@ -1,89 +1,70 @@
-<%= render 'header' %>
+<%= header :h2, "add user", "#{t(:choose_contacts_in_address_book)} #{@contact_list.title}", t(:choose_contacts_header) %>
 
-<div class="ui padded stackable grid">
-  <div class="ui two column row">
-    <div class="four wide column">
-      <%= render 'panel' %>
-    </div>
-    <div class="twelve wide column">
-      <h2 class="ui header">
-        <i class="add user icon"></i>
-        <div class="content">
-          <%= t :choose_contacts_in_address_book %> <%= @contact_list.title %>
-          <div class="sub header">
-            <%= t :choose_contacts_header %>
-          </div>
-        </div>
-      </h2>
+<%= render 'panel' %>
 
-      <%= form_tag add_put_contact_list_path(@contact_list, html: { class: 'ui form' }), method: :put do %>
-          <% if @contacts.any? %>
-              <div class="ui four doubling cards">
-                <% @contacts.each do |contact| %>
-                    <div class="card">
-                      <div class="content">
-                        <div class="header">
-                          <%= name_nickname_format(contact) %>
-                        </div>
-                        <div class="meta">
-                          <%= contact.notes %>
-                        </div>
-                        <div class="description">
-                          <div class="ui list">
-                            <% unless contact.mail.blank? %>
-                                <div class="item">
-                                  <i class="mail icon"></i>
-                                  <div class="content">
-                                    <a href="mailto:<%= contact.mail %>"><%= contact.mail %></a>
-                                  </div>
-                                </div>
-                            <% end %>
-                            <% unless contact.phone.blank? %>
-                                <div class="item">
-                                  <i class="phone icon"></i>
-                                  <div class="content">
-                                    <%= contact.phone %>
-                                  </div>
-                                </div>
-                            <% end %>
-                            <% unless contact.other_contacts.blank? %>
-                                <div class="item">
-                                  <i class="archive icon"></i>
-                                  <div class="content">
-                                    <%= contact.other_contacts %>
-                                  </div>
-                                </div>
-                            <% end %>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="extra content">
-                        <div class="ui two buttons">
-                          <div class="ui toggle checkbox two wide field">
-                            <%= check_box_tag 'contact_ids[]', contact.id, contact.contact_lists.include?(@contact_list) %>
-                            <%= label_tag t(:add_to_address_book) %>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                <% end %>
-              </div>
-
-              <%= submit_tag t(:save), class: 'ui green button' %>
-          <% else %>
-              <div class="ui icon message">
-                <i class="frown icon"></i>
+<%= form_tag add_put_contact_list_path(@contact_list, html: { class: 'ui form' }), method: :put do %>
+    <% if @contacts.any? %>
+        <div class="ui four doubling cards">
+          <% @contacts.each do |contact| %>
+              <div class="card">
                 <div class="content">
                   <div class="header">
-                    <%= t :contacts_does_not_exist %>
+                    <%= name_nickname_format(contact) %>
                   </div>
-                  <p><%= t :contacts_does_not_exist_sub %></p>
+                  <div class="meta">
+                    <%= contact.notes %>
+                  </div>
+                  <div class="description">
+                    <div class="ui list">
+                      <% unless contact.mail.blank? %>
+                          <div class="item">
+                            <i class="mail icon"></i>
+                            <div class="content">
+                              <a href="mailto:<%= contact.mail %>"><%= contact.mail %></a>
+                            </div>
+                          </div>
+                      <% end %>
+                      <% unless contact.phone.blank? %>
+                          <div class="item">
+                            <i class="phone icon"></i>
+                            <div class="content">
+                              <%= contact.phone %>
+                            </div>
+                          </div>
+                      <% end %>
+                      <% unless contact.other_contacts.blank? %>
+                          <div class="item">
+                            <i class="archive icon"></i>
+                            <div class="content">
+                              <%= contact.other_contacts %>
+                            </div>
+                          </div>
+                      <% end %>
+                    </div>
+                  </div>
+                </div>
+                <div class="extra content">
+                  <div class="ui two buttons">
+                    <div class="ui toggle checkbox two wide field">
+                      <%= check_box_tag 'contact_ids[]', contact.id, contact.contact_lists.include?(@contact_list) %>
+                      <%= label_tag t(:add_to_address_book) %>
+                    </div>
+                  </div>
                 </div>
               </div>
           <% end %>
-      <% end %>
-    </div>
-  </div>
-</div>
+        </div>
 
-
+        <%= submit_tag t(:save), class: 'ui green button' %>
+    <% else %>
+        <div class="ui icon message">
+          <i class="frown icon"></i>
+          <div class="content">
+            <div class="header">
+              <%= t :contacts_does_not_exist %>
+            </div>
+            <p><%= t :contacts_does_not_exist_sub %></p>
+          </div>
+        </div>
+    <% end %>
+<% end %>

@@ -1,5 +1,5 @@
 # encoding: UTF-8
-class RecommendersController < EmployeeController
+class RecommendersController < InexMemberController
   before_action :set_google_drive, except: [:callback, :google_signout]
   include DocumentsHelper
   require 'google/apis/youtube_v3'

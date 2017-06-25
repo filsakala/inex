@@ -1,0 +1,30 @@
+<div class="ui top attached stackable menu" style="margin-bottom: 10px;">
+  <div class="ui dropdown item">
+    <i class="plus icon"></i> Nový
+    <i class="dropdown icon"></i>
+    <div class="menu">
+      <%= link_to t(:article), new_blog_post_path(category: params[:category]), class: 'item' %>
+    </div>
+  </div>
+  <div class="ui dropdown item">
+    <i class="edit icon"></i> Upraviť
+    <i class="dropdown icon"></i>
+    <div class="menu">
+      <% if @blog_post.try(:id) %>
+          <%= link_to edit_blog_post_path(@blog_post), class: 'item' do %>
+              <i class="ui yellow edit icon"></i> <%= t :article %>
+          <% end %>
+          <% if !@blog_post.is_published %>
+              <%= link_to toggle_is_published_blog_post_path(@blog_post), method: :put, class: 'item', data: { confirm: t(:are_you_sure_publish_article) } do %>
+                  <i class="red hide link icon"></i> <%= t(:unpublished_publish) %>
+              <% end %>
+          <% else %>
+              <%= link_to toggle_is_published_blog_post_path(@blog_post), method: :put, class: 'item', data: { confirm: t(:are_you_sure_unpublish_article) } do %>
+                  <i class="grey unhide link icon"></i> <%= t(:published_unpublish) %>
+              <% end %>
+          <% end %>
+      <% end %>
+      <%= link_to t(:categories), categories_blog_posts_path, class: 'item' %>
+    </div>
+  </div>
+</div>

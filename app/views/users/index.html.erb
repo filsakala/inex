@@ -19,105 +19,26 @@
   </div>
 </h1>
 
-<div class="ui top attached menu">
-  <div class="ui pagination menu" style="border: none;">
-    <div class="item">Počet na stránku</div>
-    <%= link_to '10', users_path(page: params[:page], per_page: 10, query: params[:query]), class: 'item' %>
-    <%= link_to '25', users_path(page: params[:page], per_page: 25, query: params[:query]), class: 'item' %>
-    <%= link_to '100', users_path(page: params[:page], per_page: 100, query: params[:query]), class: 'item' %>
-  </div>
-  <div class="right menu">
-    <div class="ui right aligned category users search item" data-page="<%= params[:page] || 1 %>" data-per_page="<%= params[:per_page] || 10 %>">
-      <div class="ui transparent icon input">
-        <input class="prompt" type="text" placeholder="<%= t :search_dots %>" id="search-field" page="<%= params[:page] %>">
-        <i class="search link icon"></i>
-      </div>
-      <div class="results"></div>
-    </div>
-  </div>
-</div>
-<table class="ui attached compact orange selectable celled striped table">
+<table class="ui attached compact green selectable celled striped table datatable-server" data-entity="users">
   <thead>
   <tr>
     <th><%= t :name_contact %></th>
     <th><i class="mail icon"></i> <%= t :mails %></th>
     <th><%= t :states %></th>
-    <th><%= t :actions %></th>
+    <th class="four wide"><%= t :actions %></th>
   </tr>
   </thead>
   <tbody>
-  <% @users.each do |user| %>
-      <tr>
-        <td class="single line">
-          <%= user.name %> <%= user.surname %>
-          <%= "(#{user.nickname})" unless user.nickname.blank? %>
-        </td>
-        <td class="ui center aligned">
-          <a class="pop_up" href="mailto:<%= user.login_mail %>" title="<%= t :write_email %>"><%= user.login_mail %></a>
-          <a class="pop_up" href="mailto:<%= user.personal_mail %>" title="<%= t :write_email %>"><%= user.personal_mail %></a>
-        </td>
-        <td>
-          <% if user.is_active? %>
-              <%= link_to deactivate_user_path(user), class: 'ui green label', method: :patch, data: { confirm: t(:are_you_sure_deactivate_user) } do %>
-                  <i class="icons pop_up" title="<%= t :deactivate_user %>">
-                    <i class="user icon"></i>
-                    <i class="black corner checkmark icon"></i>
-                  </i>
-                  <%= t :active_deactivate %>
-              <% end %>
-          <% else %>
-              <%= link_to deactivate_user_path(user), class: 'ui red label', method: :patch, data: { confirm: t(:are_you_sure_deactivate_user) } do %>
-                  <i class="icons pop_up" title="<%= t :deactivate_user %>">
-                    <i class="user icon"></i>
-                    <i class="black corner ban icon"></i>
-                  </i>
-                  <%= t :inactive_activate %>
-              <% end %>
-          <% end %>
-          <% if !user.is_inex_member? %>
-              <%= link_to new_employee_path(user_id: user), data: { confirm: t(:are_you_sure_add_inex_member) }, class: 'ui grey label' do %>
-                  <i class="icons pop_up" title="<%= t :add_inex_member %>">
-                    <i class="home icon"></i>
-                    <i class="black corner add icon"></i>
-                  </i>
-                  <%= t :add_to_inex_office %>
-              <% end %>
-          <% else %>
-              <% if !user.role.blank? %>
-                  <div class="ui orange label">
-                    <i class="icons pop_up">
-                      <i class="home icon"></i>
-                      <i class="black corner checkmark icon"></i>
-                    </i>
-                    <%= user.role %>
-                  </div>
-              <% end %>
-          <% end %>
-        </td>
-        <td>
-          <%= link_to user_path(user), class: 'pop_up', title: t(:my_profile) do %>
-              <i class="large user icon"></i>
-          <% end %>
-          <%= link_to show_events_user_path(user), class: 'pop_up', title: t(:my_events) do %>
-              <i class="large calendar icon"></i>
-          <% end %>
-          <%= link_to show_bags_user_path(user), class: 'pop_up', title: t(:my_applications) do %>
-              <i class="large checked calendar icon"></i>
-          <% end %>
-          <%= link_to edit_user_path(user), class: 'pop_up', title: t(:edit) do %>
-              <i class="large yellow edit link icon"></i>
-          <% end %>
-          <%= link_to user, method: :delete, data: { confirm: t(:are_you_sure_remove_user) }, class: 'pop_up', title: t(:remove) do %>
-              <i class="large red remove link icon"></i>
-          <% end %>
-        </td>
-      </tr>
-  <% end %>
+  <tr>
+    <td>
+      <h3><i class="large spinner loading icon"></i> Loading</h3>
+    </td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
   </tbody>
 </table>
-<div class="ui compact attached segment" style="padding: 0px;">
-  <%= will_paginate(@users, :renderer => 'PaginationHelper::LinkRenderer') %>
-</div>
 
 <h1 class="ui header">
   <i class="circular spy icon"></i>
@@ -129,7 +50,7 @@
   </div>
 </h1>
 
-<table class="ui compact green selectable celled striped table datatable">
+<table class="ui compact green selectable celled striped table">
   <thead>
   <tr>
     <th><%= t :name_contact %></th>
@@ -137,7 +58,7 @@
     <th><%= t :work_mail %></th>
     <th><%= t :work_phone %></th>
     <th><%= t :role %></th>
-    <th><%= t :actions %></th>
+    <th class="four wide"><%= t :actions %></th>
   </tr>
   </thead>
   <tbody>
@@ -152,19 +73,22 @@
         <td><%= employee.work_phone %></td>
         <td><%= employee.try(:user).try(:role) %></td>
         <td>
-          <%= link_to employee.try(:user), class: 'pop_up', title: 'Detail' do %>
-              <i class="large grey unhide link icon"></i>
-          <% end %>
-          <%= link_to edit_employee_path(employee), class: 'pop_up', title: t(:edit_data) do %>
-              <i class="large yellow edit link icon"></i>
-          <% end %>
+          <div class="ui teal right dropdown item label">
+            <i class="setting icon"></i> <%= t :actions %>
+            <i class="dropdown icon"></i>
+            <div class="menu">
+              <%= link_to employee.try(:user), class: 'item', target: "_blank" do %>
+                  <i class="unhide link icon"></i> Detail
+              <% end %>
+              <%= link_to edit_employee_path(employee), class: 'item', target: "_blank" do %>
+                  <i class="yellow edit link icon"></i> <%= t(:edit_data) %>
+              <% end %>
 
-          <%= link_to destroy_inex_member_user_path(employee.user), method: :delete, data: { confirm: t(:are_you_sure_remove_inex_member) } do %>
-              <i class="large icons pop_up" title="<%= t :remove_inex_member %>">
-                <i class="home icon"></i>
-                <i class="red corner minus icon"></i>
-              </i>
-          <% end %>
+              <%= link_to destroy_inex_member_user_path(employee.user), method: :delete, data: { confirm: t(:are_you_sure_remove_inex_member) }, class: 'item' do %>
+                  <i class="red remove icon"></i> <%= t :remove_inex_member %>
+              <% end %>
+            </div>
+          </div>
         </td>
       </tr>
   <% end %>

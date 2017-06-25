@@ -20,14 +20,8 @@
             <td><%= vol.event.try(:from_to) %></td>
             <td>
               <% if vol.event %>
-                  <%= link_to show_public_event_path(vol.event), class: 'pop_up', title: 'Detail' do %>
-                      <i class="big grey unhide icon"></i>
-                  <% end %>
-              <% end %>
-              <% if !vol.event.evaluation_url_volunteer.blank? && vol.event.evaluation_deadline_volunteer <= DateTime.now %>
-                  <%= link_to vol.event.evaluation_url_volunteer, class: 'ui button', target: :blank do %>
-                      <i class="pie chart icon"></i>
-                      <%= t :evaluation %>
+                  <%= link_to personalized_detail_event_path(vol.event), class: 'pop_up', title: 'Detail' do %>
+                      <i class="grey unhide icon"></i> Informácie
                   <% end %>
               <% end %>
             </td>

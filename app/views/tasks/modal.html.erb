@@ -1,0 +1,56 @@
+<div class="header">
+  <%= @task.title %>
+  <%= star_if_highlighted(@task.is_highlighted) %>
+  <span style="font-size: 0.75em; color: rgba(0, 0, 0, 0.4); padding-left: 10px;">
+    <%= deadline_with_icon(@task) %>
+  </span>
+</div>
+<div class="content">
+  <% unless @task.description.blank? %>
+      <p><%= @task.description %></p>
+  <% end %>
+  <% if @task.task_lists.any? %>
+      <h3 class="ui header">
+        <i class="unordered list icon"></i>
+        <div class="content">Check list</div>
+      </h3>
+      <div class="ui list">
+        <% @task.task_lists.each do |tl| %>
+            <a class="item task-list-updater" href="#" state="<%= tl.state %>" tasklistId="<%= tl.id %>">
+              <% if tl.state == 'dokončená' %>
+                  <i class="green checkmark box icon icon-updater"></i>
+                  <div class="content content-updater doneTask"><%= tl.title %></div>
+              <% else %>
+                  <i class="red square outline icon icon-updater"></i>
+                  <div class="content content-updater undoneTask"><%= tl.title %></div>
+              <% end %>
+            </a>
+        <% end %>
+      </div>
+  <% end %>
+</div>
+<div class="actions">
+  <div class="ui buttons">
+    <% unless @task.deadline.blank? %>
+        <div class="ui dropdown button">
+          <i class="ui calendar icon"></i>
+          Pridať do kalendára
+          <i class="dropdown icon"></i>
+          <div class="menu">
+            <%= link_to "<i class=\"google icon\"></i> Google calendar".html_safe,
+                        add_event_to_google_calendar(@task), class: "item", target: "_blank" %>
+            <%= link_to "<i class=\"apple icon\"></i> Apple calendar".html_safe,
+                        generate_ical_task_path(@task), class: "item", target: "_blank" %>
+          </div>
+        </div>
+    <% end %>
+    <% if @task.is_repeatable? %>
+        <%= link_to "<i class=\"add link icon\"></i> Pridať do mojich úloh".html_safe,
+                    add_to_my_list_task_path(@task), method: :post, class: 'ui green button' %>
+    <% end %>
+    <%= link_to "<i class=\"edit icon\"></i> Upraviť".html_safe,
+                edit_task_path(@task), class: 'ui yellow button' %>
+    <%= link_to "<i class=\"remove icon\"></i> Vymazať".html_safe,
+                task_path(@task), method: :delete, data: { confirm: t(:are_you_sure_task) }, class: 'ui red button' %>
+  </div>
+</div>

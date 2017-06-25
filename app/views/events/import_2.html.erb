@@ -40,9 +40,9 @@
                   <td>
                     <div class="field">
                       <% if @event_column_set %>
-                          <%= select_tag file_header, options_for_select(Event.my_columns, @event_column_set.event_columns.where(their: file_header).pluck(:my).first) %>
+                          <%= select_tag file_header, options_for_select(EventImporter.event_columns, @event_column_set.event_columns.where(their: file_header).pluck(:my).first) %>
                       <% else %>
-                          <%= select_tag file_header, options_for_select(Event.my_columns, "ignore") %>
+                          <%= select_tag file_header, options_for_select(EventImporter.event_columns, "ignore") %>
                       <% end %>
                     </div>
                   </td>

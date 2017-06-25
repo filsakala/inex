@@ -7,4 +7,114 @@
 </h1>
 <%= link_to t(:back), @user, class: 'ui inverted orange button' %>
 
-<%= render 'form_edit' %>
+<%= form_for(@user, html: { class: 'ui form' }) do |f| %>
+    <%= write_error(@user) %>
+
+    <div class="field">
+      <% if current_user.is_employee? %>
+          <%= f.label :login_mail, t(:login_mail) %>
+          <%= f.email_field :login_mail %>
+      <% else %>
+          <%= f.label :login_mail, t(:login_mail) %>
+          <%= f.email_field :login_mail, disabled: true %>
+      <% end %>
+    </div>
+    <fieldset><%= t :changing_password %>:
+      <div class="fields">
+        <div class="eight wide field">
+          <%= f.label :password, t(:password) %>
+          <%= f.password_field :password %>
+        </div>
+        <div class="eight wide field">
+          <%= f.label :password_confirmation, t(:password_confirmation) %>
+          <%= f.password_field :password_confirmation %>
+        </div>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend><%= t :my_address_card %></legend>
+      <div class="fields">
+        <% if current_user.is_employee? %>
+            <div class="five wide field">
+              <%= f.label :name, t(:name_contact) %>
+              <%= f.text_field :name %>
+            </div>
+            <div class="five  wide field">
+              <%= f.label :surname, t(:surname) %>
+              <%= f.text_field :surname %>
+            </div>
+        <% else %>
+            <div class="five wide field">
+              <%= f.label :name, t(:name_contact) %>
+              <%= f.text_field :name, disabled: true %>
+            </div>
+            <div class="five  wide field">
+              <%= f.label :surname, t(:surname) %>
+              <%= f.text_field :surname, disabled: true %>
+            </div>
+        <% end %>
+        <div class="four wide field">
+          <%= f.label :nickname, t(:nickname) %>
+          <%= f.text_field :nickname %>
+        </div>
+        <div class="two wide field">
+          <%= f.label :sex, t(:sex) %>
+          <%= f.select :sex, { "#{t(:man)}": 'M', "#{t(:woman)}": 'Ž' } %>
+        </div>
+      </div>
+      <div class="two fields">
+        <div class="field">
+          <%= f.label :birth_date, t(:date_of_birth) %>
+          <%= f.text_field :birth_date, value: date_format(@user.birth_date), class: 'datepick' %>
+        </div>
+        <div class="field">
+          <%= f.label :place_of_birth, t(:place_of_birth) %>
+          <%= f.text_field :place_of_birth %>
+        </div>
+      </div>
+      <div class="two fields">
+        <div class="field">
+          <%= f.label :nationality, t(:nationality) %>
+          <%= f.text_field :nationality %>
+        </div>
+        <div class="field">
+          <%= f.label :occupation, t(:occupation) %>
+          <%= f.select :occupation, ['Student', 'Employed', 'Unemployed', 'Other'] %>
+        </div>
+      </div>
+      <div class="field">
+        <%= f.label :education_id, t(:ended_education) %>
+        <% if I18n.locale.to_s == "sk" %>
+            <%= f.select :education_id, options_from_collection_for_select(Education.all, 'id', 'name_sk', @user.education_id), include_blank: true %>
+        <% else %>
+            <%= f.select :education_id, options_from_collection_for_select(Education.all, 'id', 'name_sk', @user.education_id), include_blank: true %>
+        <% end %>
+      </div>
+      <div class="fields">
+        <div class="eight wide field">
+          <%= f.label :personal_mail, t(:personal_mail) %>
+          <%= f.email_field :personal_mail %>
+        </div>
+        <div class="eight wide field">
+          <%= f.label :personal_phone, t(:phone) %>
+          <%= f.text_field :personal_phone %>
+        </div>
+      </div>
+      <div class="field">
+        <%= f.label :other_contacts, t(:other_contacts) %>
+        <%= f.text_area :other_contacts %>
+      </div>
+    </fieldset>
+
+    <fieldset id="fs">
+      <legend><%= t :my %> <%= t(:addresses).downcase %></legend>
+      <% @user.addresses.new %>
+      <%= f.fields_for(:addresses) do |builder| %>
+          <%= render 'address_fields', f: builder %>
+      <% end %>
+      <%= link_to_add_fields t(:add_address), f, :addresses %>
+    </fieldset>
+
+    <%= f.submit t(:save), class: 'ui green button' %>
+<% end %>
+

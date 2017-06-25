@@ -21,7 +21,6 @@
 //= require semantic_scripts
 //= require homepage_cards
 //= require permissions
-//= require tablesort
 //= require jquery.newsTicker.min
 //= require jquery.sortable.min
 //= require jquery.purr
@@ -30,6 +29,9 @@
 //= require best_in_place.jquery-ui
 //= require countupjs/countUp
 //= require tinymce-jquery
+//= require data_tables
+//= require contacts
+//= require tasks
 
 var set_positions;
 
@@ -41,11 +43,15 @@ set_positions = function () {
     });
 }
 
+// Init map search
+function initMap() {
+    $('.form.map-search').submit(); // Call updateMap - show all markers
+}
+
 $(document).ready(function () {
 
     var clip = new Clipboard('.copy_button');
     $('.field_with_errors').closest('.field').addClass('error');
-    $('.datatable').DataTable();
     set_positions();
     $('.sortable').sortable();
 

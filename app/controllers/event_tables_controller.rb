@@ -1,4 +1,4 @@
-class EventTablesController < EmployeeController
+class EventTablesController < InexMemberController
   before_action :set_event_table, only: [:add_row, :remove_row, :show, :edit, :update, :destroy]
   before_action :set_event_type, only: [:index, :new, :add_row, :remove_row, :show, :edit, :update, :destroy]
 
@@ -24,38 +24,35 @@ class EventTablesController < EmployeeController
   # GET /event_tables
   # GET /event_tables.json
   def index
-    @event_tables = @event_type.event_tables
-    @users = User.all
-    if @event_tables.any?
-      @first = @event_tables.first
-      @other = @event_tables.where.not(id: @first.id)
-    else
-      @other = []
-    end
+    @event_tables  = @event_type.event_tables
+    @users         = User.all
+    @first, @other = if @event_tables.any?
+                       [@event_tables.first, @event_tables.where.not(id: @first.id)]
+                     else
+                       [nil, []]
+                     end
   end
 
   # GET /event_tables/1
-  # GET /event_tables/1.json
   def show
     @event_tables = @event_type.event_tables
-    @users = User.all
+    @users        = User.all
   end
 
   # GET /event_tables/new
   def new
     @event_table = EventTable.new
-    @headers = []
+    @headers     = []
   end
 
   # GET /event_tables/1/edit
   def edit
     @header_row = @event_table.event_table_rows.where(is_header: true).take
     @header_row = @event_table.event_table_rows.create(is_header: true) if !@header_row
-    @headers = @header_row.event_table_columns
+    @headers    = @header_row.event_table_columns
   end
 
   # POST /event_tables
-  # POST /event_tables.json
   def create
     @event_table = EventTable.new(event_table_params)
 
@@ -77,16 +74,13 @@ class EventTablesController < EmployeeController
         end
         @event_table.build_table # fill blank cells
         format.html { redirect_to [@event_table.event_type, @event_table], success: "#{t :table} #{define_notice('ž', __method__)}" }
-        format.json { render :show, statusy: :created, location: @event_table }
       else
         format.html { render :new }
-        format.json { render json: @event_table.errors, status: :unprocessable_entity }
       end
     end
   end
 
   # PATCH/PUT /event_tables/1
-  # PATCH/PUT /event_tables/1.json
   def update
     respond_to do |format|
       if @event_table.update(event_table_params)
@@ -97,7 +91,7 @@ class EventTablesController < EmployeeController
               header.destroy
             elsif header.name != params[header.id.to_s][0] || header.ctype != params[header.id.to_s][1]
               header.ctype = params[header.id.to_s][1]
-              header.name = params[header.id.to_s][0]
+              header.name  = params[header.id.to_s][0]
               header.save
             end
           else
@@ -116,21 +110,17 @@ class EventTablesController < EmployeeController
         @event_table.add_to_header(columns)
         @event_table.build_table # fill blank cells
         format.html { redirect_to [@event_table.event_type, @event_table], success: "#{t :table} #{define_notice('ž', __method__)}" }
-        format.json { render :show, status: :ok, location: @event_table }
       else
         format.html { render :edit }
-        format.json { render json: @event_table.errors, status: :unprocessable_entity }
       end
     end
   end
 
   # DELETE /event_tables/1
-  # DELETE /event_tables/1.json
   def destroy
     @event_table.destroy
     respond_to do |format|
       format.html { redirect_to event_tables_url, success: "#{t :table} #{define_notice('ž', __method__)}" }
-      format.json { head :no_content }
     end
   end
 

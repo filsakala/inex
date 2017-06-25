@@ -20,6 +20,7 @@
     <%= image_tag "event_list_states.svg", class: 'ui image' %>
   </div>
 </div>
+<%= render 'panel' %>
 <div class="ui top attached menu">
   <div class="ui pagination menu" style="border: none;">
     <div class="item">Počet na stránku</div>
@@ -64,39 +65,32 @@
         <td><%= datetime_format event_list.updated_at %></td>
         <td><%= event_list.events.count %></td>
         <td>
-          <span class="ui orange label"><%= event_list.state %></span>
-          <% if event_list.state == "submitted" || event_list.state == "pending"%>
-              <%= link_to reopen_event_list_path(event_list), method: :put, data: { confirm: "#{t :are_you_sure_change_state} reopened?" }, class: 'pop_up', title: "#{t :set} Reopened" do %>
-                  <i class="large icons">
-                    <i class="black suitcase link icon"></i>
-                    <i class="green corner refresh icon"></i>
-                  </i>
+          <div class="ui orange dropdown item label">
+            <%= event_list.state %>
+            <i class="dropdown icon"></i>
+            <div class="menu">
+              <% if event_list.state == "submitted" || event_list.state == "pending" %>
+                  <%= link_to set_state_event_list_path(event_list, state: 'reopened'), method: :patch, data: { confirm: "#{t :are_you_sure_change_state} reopened?" }, class: 'item' do %>
+                      <i class="green refresh icon"></i> <%= "#{t :set} Reopened" %>
+                  <% end %>
               <% end %>
-          <% end %>
-          <% if event_list.state == "submitted" || event_list.state == "closed" || event_list.state == "storno" %>
-              <%= link_to pending_event_list_path(event_list), method: :put, data: { confirm: "#{t :are_you_sure_change_state} pending?" }, class: 'pop_up', title: "#{t :set} Pending" do %>
-                  <i class="large icons">
-                    <i class="black suitcase link icon"></i>
-                    <i class="yellow corner write icon"></i>
-                  </i>
+              <% if event_list.state == "submitted" || event_list.state == "closed" || event_list.state == "storno" %>
+                  <%= link_to set_state_event_list_path(event_list, state: 'pending'), method: :patch, data: { confirm: "#{t :are_you_sure_change_state} pending?" }, class: 'item' do %>
+                      <i class="yellow write icon"></i> <%= "#{t :set} Pending" %>
+                  <% end %>
               <% end %>
-          <% end %>
-          <% if event_list.state == "submitted" || event_list.state == "pending" %>
-              <%= link_to close_event_list_path(event_list), method: :put, data: { confirm: "#{t :are_you_sure_change_state} closed?" }, class: 'pop_up', title: "#{t :set} Closed" do %>
-                  <i class="large icons">
-                    <i class="black suitcase link icon"></i>
-                    <i class="red corner delete icon"></i>
-                  </i>
+              <% if event_list.state == "submitted" || event_list.state == "pending" %>
+                  <%= link_to set_state_event_list_path(event_list, state: 'closed'), method: :patch, data: { confirm: "#{t :are_you_sure_change_state} closed?" }, class: 'item' do %>
+                      <i class="red delete  icon"></i> <%= "#{t :set} Closed" %>
+                  <% end %>
               <% end %>
-          <% end %>
-          <% if event_list.state != "storno" %>
-              <%= link_to storno_event_list_path(event_list), method: :put, data: { confirm: "#{t :are_you_sure_change_state} storno?" }, class: 'pop_up', title: "#{t :set} Storno" do %>
-                  <i class="large icons">
-                    <i class="black suitcase link icon"></i>
-                    <i class="red delete icon"></i>
-                  </i>
+              <% if event_list.state != "storno" %>
+                  <%= link_to set_state_event_list_path(event_list, state: 'storno'), method: :patch, data: { confirm: "#{t :are_you_sure_change_state} storno?" }, class: 'item' do %>
+                      <i class="red ban icon"></i>  <%= "#{t :set} Storno" %>
+                  <% end %>
               <% end %>
-          <% end %>
+            </div>
+          </div>
         </td>
         <td>
           <% if event_list.participation_fees.any? %>
@@ -111,27 +105,27 @@
           <% end %>
         </td>
         <td>
-          <%= link_to employee_show_event_list_path(event_list), class: 'pop_up', title: 'Detail' do %>
-              <i class="large grey unhide link icon"></i>
-          <% end %>
-          <%= link_to employee_edit_event_list_path(event_list), class: 'pop_up', title: t(:edit) do %>
-              <i class="large yellow corner write icon"></i>
-          <% end %>
-          <%= link_to participation_fees_path, class: 'pop_up', title: t(:view_payments) do %>
-              <i class="large money link icon"></i>
-          <% end %>
-          <%= link_to state_event_list_path(event_list), class: 'pop_up', title: t(:results_of_this_application) do %>
-              <i class="large icons">
-                <i class="suitcase icon"></i>
-                <i class="red corner question mark icon"></i>
-              </i>
-          <% end %>
-          <%= link_to employee_show_event_list_path(event_list) + ".pdf", class: 'pop_up', title: 'PDF', download: "#{event_list.surname.downcase}_#{event_list.name.downcase}_#{event_list.id}" do %>
-              <i class="large file pdf outline link icon"></i>
-          <% end %>
-          <%= link_to employee_show_event_list_path(event_list) + ".pdf", class: 'pop_up', title: 'PDF' do %>
-              <i class="large file pdf outline link icon"></i>
-          <% end %>
+          <div class="ui dropdown item label">
+            <i class="setting icon"></i> <%= t :actions %>
+            <i class="dropdown icon"></i>
+            <div class="menu">
+              <%= link_to employee_show_event_list_path(event_list), class: 'item', target: "_blank" do %>
+                  <i class="grey unhide link icon"></i> Detail
+              <% end %>
+              <%= link_to employee_edit_event_list_path(event_list), class: 'item', target: "_blank" do %>
+                  <i class="yellow corner write icon"></i> <%= t(:edit) %>
+              <% end %>
+              <%= link_to state_event_list_path(event_list), class: 'item', target: "_blank" do %>
+                  <i class="red question mark icon"></i>  <%= t(:results_of_this_application) %>
+              <% end %>
+              <%= link_to employee_show_event_list_path(event_list) + ".pdf", class: 'item', target: "_blank" do %>
+                  <i class="file pdf outline link icon"></i> PDF (zobraziť)
+              <% end %>
+              <%= link_to employee_show_event_list_path(event_list) + ".pdf", class: 'item', download: "#{event_list.surname.downcase}_#{event_list.name.downcase}_#{event_list.id}" do %>
+                  <i class="file pdf outline link icon"></i> PDF (uložiť)
+              <% end %>
+            </div>
+          </div>
         </td>
       </tr>
   <% end %>

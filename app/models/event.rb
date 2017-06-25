@@ -7,11 +7,11 @@ class Event < ActiveRecord::Base
 
   has_many :extra_fees, dependent: :destroy
   accepts_nested_attributes_for :extra_fees, allow_destroy: true,
-                                reject_if: proc { |attributes| attributes['name'].blank? }
+                                reject_if:                  proc { |attributes| attributes['name'].blank? }
 
   has_many :event_documents, dependent: :destroy
   accepts_nested_attributes_for :event_documents, allow_destroy: true,
-                                reject_if: proc { |attributes| attributes['title'].blank? }
+                                reject_if:                       proc { |attributes| attributes['title'].blank? }
 
 
   has_many :event_in_lists, dependent: :destroy
@@ -69,12 +69,20 @@ class Event < ActiveRecord::Base
     "" # nothing
   end
 
+  def code_or_code_alliance
+    if !code.blank?
+      code
+    else
+      code_alliance
+    end
+  end
+
   # title for selected language
   def translated_title
     if I18n.locale == :en && !title_en.blank?
       title_en
     else
-      title # mandatory attribute, is not blank in most cases
+      title
     end
   end
 
@@ -123,229 +131,6 @@ class Event < ActiveRecord::Base
       true
     else
       false
-    end
-  end
-
-  require 'csv'
-
-  def self.my_columns
-    %w(employee title from to code code_alliance country city address gps_latitude gps_longitude
-      notes airport bus_train capacity_men capacity_women capacity_total free_men
-      free_women free_total min_age max_age fees_sk fees_en registration_deadline
-      registration_deadline can_create_member_registration is_cancelled
-      required_spoken_language introduction_sk type_of_work_sk study_theme_sk
-      accomodation_sk camp_advert_sk language_description_sk requirements_sk
-      location_sk additional_camp_notes_sk introduction_en type_of_work_en
-      study_theme_en accomodation_en camp_advert_en language_description_en
-      requirements_en location_en additional_camp_notes_en ignore event_category
-      event_document extra_fee no_more_from ignore_sex_for_capacity).sort
-  end
-
-  # Krok 1: Skús priradiť stĺpce, ktoré vieš - ak niektorý nevieš, opýtaj sa
-  def self.process_csv_1(path)
-    ecs = nil
-    header = []
-    # Kontrola 1: Header zo suboru je v event column sete
-    CSV.foreach(path, :col_sep => ";") do |row|
-      header = row.collect { |x| x.to_s }
-      ecs = EventColumnSet.includes(:event_columns).where(event_columns: { their: header })
-      break
-    end
-    # Kontrola 2: header zo suboru obsahuje prave to, co event column set (nic viac, nic menej)
-    sizeok = []
-    ecs.each do |e|
-      sizeok << e.id if e.event_columns.size == header.size
-    end
-    # Nechaj si jeden a ostatne destroy (naco ti je viac rovnakych)
-    if sizeok.count > 1
-      EventColumnSet.where(id: sizeok[1..-1]).destroy_all
-      sizeok = [sizeok[0]]
-    end
-    [EventColumnSet.includes(:event_columns).where(id: sizeok), header]
-  end
-
-  # Get header from csv file
-  def self.get_csv_header(path, sorted = true)
-    CSV.foreach(path, :col_sep => ";") do |row|
-      if sorted
-        return row.collect { |x| x.to_s }.sort
-      else
-        return row
-      end
-    end
-  end
-
-  def self.row_identificator(row, event_column_set)
-    code = EventColumn.where(event_column_set: event_column_set, my: ['code', 'code_alliance']) # nieco, co v mojej DB je code/code_alliance
-    from = EventColumn.where(event_column_set: event_column_set, my: 'from') # nieco, co v mojej db je from
-    to = EventColumn.where(event_column_set: event_column_set, my: 'to') # nieco, co v mojej db je to
-    result = {}
-    result[:errors] = []
-
-    if code.count > 0
-      code = code.collect { |one| row[one.their] }.join(' ')
-    else
-      result[:errors] << I18n.t(:there_is_no_assignment_for_code)
-    end
-
-    if from.count == 1
-      from = row[from.take.their]
-    elsif from.count == 0
-      result[:errors] << I18n.t(:there_is_no_assignment_for_start)
-    else
-      result[:errors] << I18n.t(:there_are_more_choices_for_start)
-    end
-
-    if to.count == 1
-      to = row[to.take.their]
-    elsif to.count == 0
-      result[:errors] << I18n.t(:there_is_no_assignment_for_end)
-    else
-      result[:errors] << I18n.t(:there_are_more_choices_for_end)
-    end
-
-    return result if result[:errors].any?
-    return { code: code, from: from, to: to }
-  end
-
-  # Identifikuj 1 riadok z CSV ako event
-  def self.identify_event(row, event_column_set)
-    id = row_identificator(row, event_column_set) # Get row code, start, end
-    return id if !id[:errors].blank?
-    event = Event.where('code=? OR code_alliance=?', id[:code], id[:code])
-      .where('`from` LIKE ?', "%#{id[:from]}%")
-      .where('`to` LIKE ?', "%#{id[:to]}%").take # TODO ? Co ak takych je viac?
-    return { event: event, event_identificator: [id[:code], id[:from], id[:to]].join(' ') }
-  end
-
-  # Vezmi eventy a rozdel ich na nove, aktualizovane a nezmenene
-  # 1. identifikuj riadok - existuje uz v tvojej DB?
-  # 2. Ak neexistuje, pridaj ho s danym mapovanim parametrov
-  # 3. Ak existuje, skontroluj, ci sa nieco zmenilo. Ak nie -> unchanged
-  # 4. Ak sa nieco zmenilo, uloz to.
-  def self.process_csv_2(path, event_column_set, my_theirs)
-    new = {}
-    unchanged = {}
-    changed = {}
-    errors = []
-    CSV.foreach(path, col_sep: ";", headers: true) do |row|
-      identified_event = Event.identify_event(row, event_column_set) # identifikuj konkretny event = datumy + kod
-      return identified_event if !identified_event[:errors].blank?
-      id = identified_event[:event_identificator]
-      event = identified_event[:event]
-      if event # Existuje taky event
-        if !row['no_more_from'].nil? && row['no_more_from'].include?('SVK') # Pokracuj na dalsi riadok, ignoruj tento uplne
-          unchanged[id] = row
-        else
-          is_changed = false
-          event_column_set.event_columns.each do |event_column|
-            theirs_cols = my_theirs[event_column.my] # Toto su len nazvy stlpcov, este spoj hodnoty
-            theirs = theirs_cols.collect { |their_col| row[their_col] }.join(' ')
-            if event_column.my != 'ignore' && event_column.my != 'code' && !theirs.blank? && event_column.my != 'no_more_from'
-              if event_column.my == 'extra_fee' # TODO pastni do notes?
-              elsif event_column.my == 'event_document' # TODO pastni do notes?
-              elsif event_column.my == 'event_category' # TODO pastni do notes?
-              elsif event_column.my == 'notes' # TODO Davaj tam stlpec:hodnota\n
-              else # Porovnaj a podla toho povedz, ci je to ok...
-                if event.send(event_column.my).is_a?(ActiveSupport::TimeWithZone) && event.send(event_column.my).to_date == Date.parse(theirs) # OK! Datumy sa zhoduju
-                elsif event.send(event_column.my).is_a?(FalseClass) && (theirs == '0' || theirs.blank?)
-                elsif event.send(event_column.my).is_a?(TrueClass) && theirs == '1'
-                elsif event.send(event_column.my).is_a?(Fixnum) && event.send(event_column.my) == theirs.to_i
-                elsif event.send(event_column.my).to_s == theirs # string check
-                else
-                  is_changed = true
-                end
-              end
-            end
-          end
-          changed[id] = row if is_changed
-          unchanged[id] = row if !is_changed
-        end
-      else # Taky event nie je
-        new[id] = row
-      end
-    end
-    return { new: new, unchanged: unchanged, changed: changed, ok_errors: errors }
-  rescue CSV::MalformedCSVError => e
-    return { errors: [e.message] }
-  end
-
-  def self.process_csv_3(path, event_column_set, params, my_theirs)
-    new = []
-    changed = []
-    CSV.foreach(path, col_sep: ";", headers: true) do |row|
-      identified_event = Event.identify_event(row, event_column_set) # identifikuj konkretny event = datumy + kod
-      return identified_event if !identified_event[:errors].blank?
-      id = identified_event[:event_identificator]
-      event = identified_event[:event]
-      if id && params.include?(id)
-        if !row['no_more_from'].nil? && row['no_more_from'].include?('SVK') # Ignoruj row
-        else
-          if event
-            ewc = event_with_changes(row, event_column_set, my_theirs, event)
-            changed << ewc if !ewc.blank?
-          else
-            ewc = event_with_changes(row, event_column_set, my_theirs)
-            new << ewc if !ewc.blank?
-          end
-        end
-      end
-    end
-    return { new: new, changed: changed }
-  rescue CSV::MalformedCSVError => e
-    return { errors: [e.message] }
-  rescue ActiveRecord::StatementInvalid => e
-    return { errors: [e.message] }
-  end
-
-  # Buď vezme konkrétny event a nastaví mu parametre, alebo vytvorí nový
-  # Asi by neskor sla pouzit metoda event.attributes = {title: 'Nase mesto - Integra', ...}; event.save
-  # TODO set event type id!
-  def self.event_with_changes(row, event_column_set, my_theirs, event = Event.new(event_type_id: EventType.first.id))
-    changes = {}
-    is_changed = false
-    changes["notes"] ||= ""
-    changes["notes"] += "Import " + DateTime.now.strftime("%d.%m.%Y %H:%M") + " | "
-    event_column_set.event_columns.each do |event_column|
-      theirs_cols = my_theirs[event_column.my] # Toto su len nazvy stlpcov, este spoj hodnoty
-      theirs = theirs_cols.collect { |their_col|
-        if event_column.my == 'event_category'
-          if row[their_col] == "1" || row[their_col] == "true"
-            their_col
-          end
-        else
-          row[their_col]
-        end
-      }.uniq.join(' ')
-      if event_column.my != 'ignore' && !theirs.blank? && event_column.my != 'no_more_from'
-        if event_column.my == 'extra_fee' # TODO pastni do notes?
-          changes["notes"] += "Extra Fees: " + theirs + " | "
-        elsif event_column.my == 'event_document' # TODO pastni do notes?
-          changes["notes"] += "Documents: " + theirs + " | "
-        elsif event_column.my == 'event_category' # TODO Skus preliezt EventCategories a najst, inak pridat do notes
-          changes["notes"] += "Categories: " + theirs + " | "
-        elsif event_column.my == 'notes' # TODO Davaj tam stlpec:hodnota\n
-          changes["notes"] += "Notes " + theirs + " | "
-        else # Porovnaj a podla toho povedz, ci je to ok...
-          if event.send(event_column.my).is_a?(ActiveSupport::TimeWithZone) && event.send(event_column.my).to_date == Date.parse(theirs) # OK! Datumy sa zhoduju
-          elsif event.send(event_column.my).is_a?(FalseClass) && (theirs == '0' || theirs.blank?)
-          elsif event.send(event_column.my).is_a?(TrueClass) && theirs == '1'
-          elsif event.send(event_column.my).is_a?(Fixnum) && event.send(event_column.my) == theirs.to_i
-          elsif event.send(event_column.my).to_s == theirs # string check
-          else
-            is_changed = true
-            changes[event_column.my] = theirs
-          end
-        end
-      end
-    end
-    event.attributes = changes
-    if !is_changed
-      return nil
-    elsif event.save(validate: false)
-      return { event: event, changes: changes }
-    else
-      return { event: event, changes: changes, errors: event.errors }
     end
   end
 

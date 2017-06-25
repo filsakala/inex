@@ -1,0 +1,26 @@
+<div class="ui teal dropdown item label">
+  <i class="setting icon"></i> <%= t :actions %> <i class="dropdown icon"></i>
+	<div class="menu">
+		<%= link_to "<i class=\"user icon\"></i> #{t(:my_profile)}".html_safe, 
+							user_path(user), class: 'item', target: "_blank" %>
+		<%= link_to "<i class=\"calendar icon\"></i> #{t(:my_events)}".html_safe,
+								my_events_user_path(user), class: 'item', target: "_blank" %>
+		<%= link_to "<i class=\"checked calendar icon\"></i> #{t(:my_applications)}".html_safe,
+								my_applications_user_path(user), class: 'item', target: "_blank" %>
+    <div class="ui divider"></div>
+		<%= link_to "<i class=\"yellow edit icon\"></i> #{t(:edit)}".html_safe,
+								edit_user_path(user), class: 'item', target: "_blank" %>
+		<%= link_to "<i class=\"home icon\"></i> #{t(:add_to_inex_office)}".html_safe,
+								new_employee_path(user_id: user), data: { confirm: t(:are_you_sure_add_inex_member) }, class: 'item' if !user.is_inex_office? %>
+		<% if user.is_active? %>
+			<%= link_to "<i class=\"black corner ban icon\"></i> Dektivovať".html_safe,
+									deactivate_user_path(user), class: 'item', method: :patch, data: { confirm: t(:are_you_sure_deactivate_user) } %>
+		<% else %>
+			<%= link_to "<i class=\"black corner checkmark icon\"></i> Aktivovať".html_safe,
+									deactivate_user_path(user), class: 'item', method: :patch, data: { confirm: t(:are_you_sure_deactivate_user) } %>
+		<% end %>
+		<%= link_to "<i class=\"red remove icon\"></i> #{t(:remove)}".html_safe,
+								user_path(user), method: :delete, data: { confirm: t(:are_you_sure_remove_user) }, class: 'item' %>
+	</div>
+</div>
+

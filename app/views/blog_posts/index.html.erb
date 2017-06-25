@@ -1,28 +1,13 @@
 <div class="ui container">
-  <h1 class="ui header">
-    <i class="world icon"></i>
-    <div class="content">
-      Blog
-      <% if current_user && current_user.is_inex_member? %>
-          <%= link_to new_blog_post_path(category: params[:category]), class: 'pop_up', title: t(:add_article) do %>
-              <i class="green add circle link icon"></i>
-          <% end %>
-      <% end %>
-      <div class="sub header">
-        <%= t :blog_description %>
-      </div>
-    </div>
-  </h1>
+  <%= header :h1, "world", "Blog", t(:blog_description) %>
   <div class="ui divider"></div>
+
+  <%= if_is_inex_office render "panel" %>
+
   <div class="ui sub header"><%= t :categories %>:
     <%= link_to t(:all).downcase, blog_posts_path, class: 'ui grey label' %>
     <% BlogPostCategory.all.each do |category| %>
         <%= link_to category.name, blog_posts_path(category: category.name), class: "ui #{category.color.try(:downcase)} label" %>
-    <% end %>
-    <% if current_user && current_user.is_inex_member? %>
-        <%= link_to categories_blog_posts_path, class: 'pop_up', title: t(:edit_categories) do %>
-            <i class="big yellow edit link icon"></i>
-        <% end %>
     <% end %>
   </div>
 
@@ -30,22 +15,20 @@
       <div class="ui divided items">
         <% @blog_posts.each do |post| %>
             <div class="item">
-              <% if !post.image.blank? %>
-                  <%= link_to post, class: 'image' do %>
+              <%= link_to post, class: 'image' do %>
+                  <% if !post.image.blank? %>
                       <%= image_tag post.image.url(:medium) %>
-                  <% end %>
-              <% else %>
-                  <%= link_to post, class: 'image' do %>
+                  <% else %>
                       <%= image_tag "noimage.png" %>
                   <% end %>
               <% end %>
+
               <div class="content">
                 <%= link_to post, class: 'header' do %>
                     <%= post.title %>
-                    <% if current_user && current_user.is_inex_member? %>
-                        <%= link_to edit_blog_post_path(post), class: 'pop_up', title: t(:edit),
-                                    id: 'edit_link', data: { save_url: mercury_update_blog_post_path(post) } do %>
-                            <i class="large yellow edit link icon"></i>
+                    <% if current_user.try(:is_inex_office?) %>
+                        <%= link_to edit_blog_post_path(post), class: 'pop_up', title: t(:edit) do %>
+                            <i class="ui yellow edit icon"></i>
                         <% end %>
                         <% if !post.is_published %>
                             <%= link_to toggle_is_published_blog_post_path(post), method: :put, class: 'pop_up', title: t(:unpublished_publish), data: { confirm: t(:are_you_sure_publish_article) } do %>
@@ -60,19 +43,19 @@
                 <% end %>
 
                 <div class="meta">
-              <span class="cinema">
-                <%= datetime_format post.created_at %>
-                <% if post.created_at != post.updated_at %>
-                  (<%= t(:updated).downcase %> <%= datetime_format post.updated_at %>)
-              <% end %>
-              </span>
+                  <span class="cinema">
+                    <%= datetime_format post.created_at %>
+                    <% if post.created_at != post.updated_at %>
+                      (<%= t(:updated).downcase %> <%= datetime_format post.updated_at %>
+                        )
+                    <% end %>
+                 </span>
                 </div>
-                <div class="description">
-                  <%= post.perex.try(:html_safe) %>
-                </div>
+                <div class="description"><%= post.perex.try(:html_safe) %></div>
                 <div class="extra">
                   <% unless post.blog_post_category.blank? %>
-                      <div class="ui right floated sub header"><%= t :category %>:
+                      <div class="ui right floated sub header">
+                        <%= t :category %>:
                         <%= link_to post.blog_post_category.name, blog_posts_path(category: post.blog_post_category.name), class: "ui #{post.blog_post_category.color.try(:downcase)} label" %>
                       </div>
                   <% end %>

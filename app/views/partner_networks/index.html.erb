@@ -1,63 +1,53 @@
-<%= render 'organizations/header' %>
-
-<div class="ui padded stackable grid">
-  <div class="ui two column row">
-    <div class="four wide column">
-      <%= render 'organizations/panel' %>
-    </div>
-    <div class="twelve wide column">
-      <h2 class="ui header">
-        <i class="sitemap icon"></i>
-        <div class="content">
-          <%= t :partner_networks %>
-          <div class="sub header"><%= t :partner_networks_header %></div>
-        </div>
-      </h2>
-
-      <div class="ui relaxed divided list">
-        <% @partner_networks.each do |partner_network| %>
-            <div class="item">
-              <div class="ui left floated">
-                <div class="ui buttons">
-                  <%= link_to partner_network do %>
-                      <div class="pop_up ui grey circular label" title="<%= t :organizations_count %>">
-                        <%= partner_network.organizations.count %>
-                      </div>
-                  <% end %>
-                </div>
-              </div>
-              <div class="content">
-                <div class="ui header">
-                  <%= partner_network.name %>
-
-                </div>
-                <div class="description">
-                  <%= partner_network.description %>
-                </div>
-              </div>
-              <div class="ui right floated basic buttons">
-                <%= link_to partner_network, class: 'ui animated fade grey basic button' do %>
-                    <div class="visible content">Detail</div>
-                    <div class="hidden content">
-                      <i class="ui unhide icon"></i>
-                    </div>
-                <% end %>
-                <%= link_to edit_partner_network_path(partner_network), class: 'ui animated fade yellow basic button' do %>
-                    <div class="visible content"><%= t :edit %></div>
-                    <div class="hidden content">
-                      <i class="ui edit icon"></i>
-                    </div>
-                <% end %>
-                <%= link_to partner_network, method: :delete, data: { confirm: t(:are_you_sure_partner_networks) }, class: 'ui animated fade red basic button' do %>
-                    <div class="visible content"><%= t :remove %></div>
-                    <div class="hidden content">
-                      <i class="ui remove circle outline icon"></i>
-                    </div>
-                <% end %>
-              </div>
-            </div>
-        <% end %>
-      </div>
-    </div>
+<h2 class="ui header">
+  <i class="sitemap icon"></i>
+  <div class="content">
+    <%= t :partner_networks %>
+    <div class="sub header"><%= t :partner_networks_header %></div>
   </div>
+</h2>
+<%= render 'organizations/panel' %>
+
+<div class="ui relaxed divided list">
+  <% @partner_networks.each do |partner_network| %>
+      <div class="item">
+        <div class="ui left floated">
+          <div class="ui buttons">
+            <%= link_to partner_network do %>
+                <div class="pop_up ui grey circular label" title="<%= t :organizations_count %>">
+                  <%= partner_network.organizations.count %>
+                </div>
+            <% end %>
+          </div>
+        </div>
+        <div class="content">
+          <div class="ui header">
+            <%= partner_network.name %>
+
+          </div>
+          <div class="description">
+            <%= partner_network.description %>
+          </div>
+        </div>
+        <div class="ui right floated basic buttons">
+          <%= link_to partner_network, class: 'ui animated fade grey basic button' do %>
+              <div class="visible content">Detail</div>
+              <div class="hidden content">
+                <i class="ui unhide icon"></i>
+              </div>
+          <% end %>
+          <%= link_to edit_partner_network_path(partner_network), class: 'ui animated fade yellow basic button' do %>
+              <div class="visible content"><%= t :edit %></div>
+              <div class="hidden content">
+                <i class="ui edit icon"></i>
+              </div>
+          <% end %>
+          <%= link_to partner_network, method: :delete, data: { confirm: t(:are_you_sure_partner_networks) }, class: 'ui animated fade red basic button' do %>
+              <div class="visible content"><%= t :remove %></div>
+              <div class="hidden content">
+                <i class="ui remove circle outline icon"></i>
+              </div>
+          <% end %>
+        </div>
+      </div>
+  <% end %>
 </div>

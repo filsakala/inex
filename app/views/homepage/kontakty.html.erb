@@ -8,272 +8,120 @@
       <% end %>
   </div>
 </div>
-<div class="ui row">
-  <div class="column">
-    <h2 class="ui block header">
-      <i class="home circular icon"></i>
-      <div class="content">
-        <%= t :personal_visit %>
-        <div class="sub header">
-          <%= t :personal_visit_description %>
-        </div>
-      </div>
-    </h2>
-  </div>
-</div>
-<div class="ui two column row">
-  <div class="column">
-    <table class="ui table">
-      <tr>
-        <td data-mercury="full" id="adresa">
-          <%= @kontakty[:adresa].content.html_safe %>
-        </td>
-      </tr>
-    </table>
-    <p>
-      <i class="pop_up large phone icon" title="<%= t :phone %>"></i>
-      <span data-mercury="full" id="cislo">
-        <%= @kontakty[:cislo].content.html_safe %>
-      </span>
-    </p>
-    <p><strong>IČO:</strong>
-      <span data-mercury="full" id="ico">
-        <%= @kontakty[:ico].content.html_safe %>
-      </span></p>
-    <p><h4><i class="large money icon"></i><%= t :bank_account_number %></h4>
-    <span data-mercury="full" id="ucet">
-        <%= @kontakty[:ucet].content.html_safe %>
-      </span>
-    </p>
-  </div>
-  <div class="column">
-    <h4>
-      <i class="large wait loading icon"></i>
-      <%= t :opening_hours %>
-      <td>
-          <span data-mercury="full" id="otvaracie_description">
-            <%= @kontakty[:otvaracie_description].content.html_safe %>
-          </span>
-      </td>
-    </h4>
-    <table class="ui table">
-      <tr>
-        <td><%= t(:day_names)[1] %></td>
-        <td>
-          <span data-mercury="full" id="otvaracie_pon">
-            <%= @kontakty[:otvaracie_pon].content.html_safe %>
-          </span>
-        </td>
-      </tr>
-      <tr>
-        <td><%= t(:day_names)[2] %></td>
-        <td>
-          <span data-mercury="full" id="otvaracie_uto">
-            <%= @kontakty[:otvaracie_uto].content.html_safe %>
-          </span>
-        </td>
-      </tr>
-      <tr>
-        <td><%= t(:day_names)[3] %></td>
-        <td>
-          <span data-mercury="full" id="otvaracie_str">
-            <%= @kontakty[:otvaracie_str].content.html_safe %>
-          </span>
-        </td>
-      </tr>
-      <tr>
-        <td><%= t(:day_names)[4] %></td>
-        <td>
-          <span data-mercury="full" id="otvaracie_stv">
-            <%= @kontakty[:otvaracie_stv].content.html_safe %>
-          </span>
-        </td>
-      </tr>
-      <tr>
-        <td><%= t(:day_names)[5] %></td>
-        <td>
-          <span data-mercury="full" id="otvaracie_pia">
-            <%= @kontakty[:otvaracie_pia].content.html_safe %>
-          </span>
-        </td>
-      </tr>
-      <tr>
-        <td><%= t(:day_names)[6] %>, <%= t(:day_names)[0] %></td>
-        <td>
-          <span data-mercury="full" id="otvaracie_vik">
-            <%= @kontakty[:otvaracie_vik].content.html_safe %>
-          </span>
-        </td>
-      </tr>
-    </table>
-  </div>
-</div>
+
 
 <div class="ui row">
-  <div class="column">
-    <h2 class="ui block header">
-      <i class="at circular icon"></i>
-      <div class="content">
-        <%= t :contacts %>
-        <div class="sub header">
-          Ako nás môžeš kontaktovať.
-        </div>
-      </div>
-    </h2>
-  </div>
+	<div class="ui center aligned icon header cactive contacts" data-tab="vseobecne" style="margin: auto;">
+		<i class="circular home icon"></i>
+		Všeobecné
+	</div>
+	<div class="ui center aligned icon header contacts" data-tab="mhd" style="margin: auto;">
+		<i class="circular bus icon"></i>
+		MHD
+	</div>
+	<div class="ui center aligned icon header contacts" data-tab="incoming" style="margin: auto;">
+		<i class="circular users icon"></i>
+		Incoming
+	</div>
+	<div class="ui center aligned icon header contacts" data-tab="outgoing" style="margin: auto;">
+		<i class="circular users icon"></i>
+		Outgoing
+	</div>
+	<div class="ui center aligned icon header contacts" data-tab="evs" style="margin: auto;">
+		<i class="circular users icon"></i>
+		EVS
+	</div>
 </div>
-
-<div class="ui three column row">
-  <div class="center aligned column">
-    <h2>Incoming</h2>
-    <div class="ui centered card">
-      <%= image_tag "inex_logo.svg", class: "ui centered tiny image" %>
-      <div class="content">
-        <a class="header" data-mercury="full" id="person_incoming_name">
-          <%= @kontakty[:person_incoming_name].content.html_safe %>
-        </a>
-        <div class="meta">
-          <span class="date" data-mercury="full" id="person_incoming_description">
-            <%= @kontakty[:person_incoming_description].content.html_safe %>
-          </span>
-        </div>
-        <div class="description">
-          <div class="ui list">
-            <div class="item">
-              <i class="mail icon"></i>
-              <div class="content">
-                <a href="mailto:<%= @kontakty[:person_incoming_mail].content.html_safe %>" data-mercury="full" id="person_incoming_mail">
-                  <%= @kontakty[:person_incoming_mail].content.html_safe %>
-                </a>
-              </div>
-            </div>
-            <div class="item">
-              <i class="phone icon"></i>
-              <div class="content" data-mercury="full" id="person_incoming_number">
-                <%= @kontakty[:person_incoming_number].content.html_safe %>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <h4 class="ui horizontal divider header">
-      <i class="info circle icon"></i>
-      Opýtaj sa ma:
-    </h4>
-    <div class="ui left aligned container">
-      <span data-mercury="full" id="person_incoming_description2">
-        <%= @kontakty[:person_incoming_description2].content.html_safe %>
-      </span>
-    </div>
-  </div>
-  <div class="center aligned column">
-    <h2>Outgoing</h2>
-    <div class="ui centered card">
-      <%= image_tag "inex_logo.svg", class: "ui centered tiny image" %>
-      <div class="content">
-        <a class="header" data-mercury="full" id="person_outgoing_name">
-          <%= @kontakty[:person_outgoing_name].content.html_safe %>
-        </a>
-        <div class="meta">
-          <span class="date" data-mercury="full" id="person_outgoing_description">
-            <%= @kontakty[:person_outgoing_description].content.html_safe %>
-          </span>
-        </div>
-        <div class="description">
-          <div class="ui list">
-            <div class="item">
-              <i class="mail icon"></i>
-              <div class="content">
-                <a href="mailto:<%= @kontakty[:person_outgoing_mail].content.html_safe %>" data-mercury="full" id="person_outgoing_mail">
-                  <%= @kontakty[:person_outgoing_mail].content.html_safe %>
-                </a>
-              </div>
-            </div>
-            <div class="item">
-              <i class="phone icon"></i>
-              <div class="content" data-mercury="full" id="person_outgoing_number">
-                <%= @kontakty[:person_outgoing_number].content.html_safe %>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <h4 class="ui horizontal divider header">
-      <i class="info circle icon"></i>
-      Opýtaj sa ma:
-    </h4>
-    <div class="ui left aligned container">
-      <span data-mercury="full" id="person_outgoing_description2">
-        <%= @kontakty[:person_outgoing_description2].content.html_safe %>
-      </span>
-    </div>
-  </div>
-  <div class="center aligned column">
-    <h2>EDS
-      <i class="question mark circle icon pop_up" title="Európska dobrovoľnícka služba"></i>
-    </h2>
-    <div class="ui centered card">
-      <%= image_tag "inex_logo.svg", class: "ui centered tiny image" %>
-      <div class="content">
-        <a class="header" data-mercury="full" id="person_eds_name">
-          <%= @kontakty[:person_eds_name].content.html_safe %>
-        </a>
-        <div class="meta">
-          <span class="date" data-mercury="full" id="person_eds_description">
-            <%= @kontakty[:person_eds_description].content.html_safe %>
-          </span>
-        </div>
-        <div class="description">
-          <div class="ui list">
-            <div class="item">
-              <i class="mail icon"></i>
-              <div class="content">
-                <a href="mailto:<%= @kontakty[:person_eds_mail].content.html_safe %>" data-mercury="full" id="person_eds_mail">
-                  <%= @kontakty[:person_eds_mail].content.html_safe %>
-                </a>
-              </div>
-            </div>
-            <div class="item">
-              <i class="phone icon"></i>
-              <div class="content" data-mercury="full" id="person_eds_number">
-                <%= @kontakty[:person_eds_number].content.html_safe %>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <h4 class="ui horizontal divider header">
-      <i class="info circle icon"></i>
-      Opýtaj sa ma:
-    </h4>
-    <div class="ui left aligned container">
-      <span data-mercury="full" id="person_eds_description2">
-        <%= @kontakty[:person_eds_description2].content.html_safe %>
-      </span>
-    </div>
-  </div>
+	
+<div id="vseobecne" class="ui two column row contact-tab">
+	<div class="column">
+		<table class="ui table">
+			<tr>
+			  <td data-mercury="full" id="adresa">
+			    <%= @kontakty[:kontakty_adresa].content.html_safe %>
+			  </td>
+			</tr>
+		</table>
+		<p>
+			<i class="pop_up large phone icon" title="<%= t :phone %>"></i>
+			<span data-mercury="full" id="cislo">
+			  <%= @kontakty[:kontakty_cislo].content.html_safe %>
+			</span>
+		</p>
+		<p><strong>IČO:</strong>
+			<span data-mercury="full" id="ico">
+			  <%= @kontakty[:kontakty_ico].content.html_safe %>
+			</span></p>
+		<p><h4><i class="large money icon"></i><%= t :bank_account_number %></h4>
+		<span data-mercury="full" id="ucet">
+			  <%= @kontakty[:kontakty_ucet].content.html_safe %>
+			</span>
+		</p>
+	</div>
+	<div class="column">
+		<h4>
+			<i class="large wait loading icon"></i>
+			<%= t :opening_hours %>
+			<td>
+			    <span data-mercury="full" id="otvaracie_description">
+			      <%= @kontakty[:kontakty_otvaracie_description].content.html_safe %>
+			    </span>
+			</td>
+		</h4>
+		<table class="ui table">
+			<tr>
+			  <td><%= t(:day_names)[1] %></td>
+			  <td>
+			    <span data-mercury="full" id="otvaracie_pon">
+			      <%= @kontakty[:kontakty_otvaracie_pon].content.html_safe %>
+			    </span>
+			  </td>
+			</tr>
+			<tr>
+			  <td><%= t(:day_names)[2] %></td>
+			  <td>
+			    <span data-mercury="full" id="otvaracie_uto">
+			      <%= @kontakty[:kontakty_otvaracie_uto].content.html_safe %>
+			    </span>
+			  </td>
+			</tr>
+			<tr>
+			  <td><%= t(:day_names)[3] %></td>
+			  <td>
+			    <span data-mercury="full" id="otvaracie_str">
+			      <%= @kontakty[:kontakty_otvaracie_str].content.html_safe %>
+			    </span>
+			  </td>
+			</tr>
+			<tr>
+			  <td><%= t(:day_names)[4] %></td>
+			  <td>
+			    <span data-mercury="full" id="otvaracie_stv">
+			      <%= @kontakty[:kontakty_otvaracie_stv].content.html_safe %>
+			    </span>
+			  </td>
+			</tr>
+			<tr>
+			  <td><%= t(:day_names)[5] %></td>
+			  <td>
+			    <span data-mercury="full" id="otvaracie_pia">
+			      <%= @kontakty[:kontakty_otvaracie_pia].content.html_safe %>
+			    </span>
+			  </td>
+			</tr>
+			<tr>
+			  <td><%= t(:day_names)[6] %>, <%= t(:day_names)[0] %></td>
+			  <td>
+			    <span data-mercury="full" id="otvaracie_vik">
+			      <%= @kontakty[:kontakty_otvaracie_vik].content.html_safe %>
+			    </span>
+			  </td>
+			</tr>
+		</table>
+	</div>
 </div>
-
-<div class="row">
-  <div class="column">
-    <h2 class="ui block header">
-      <i class="marker circular icon"></i>
-      <div class="content">
-        Ako sa k nám dostaneš
-        <div class="sub header">Linky mestskej hromadnej dopravy a trasa k nám.
-        </div>
-      </div>
-    </h2>
-  </div>
-</div>
-<div class="ui two column row">
-  <div class="column">
+<div id="mhd" class="ui two column row contact-tab">
+	<div class="column">
     <h3>
       <i class="large bus icon"></i>
       Kde treba vystúpiť?
@@ -363,6 +211,120 @@
          data-icon="right circle arrow">
     </div>
   </div>
+</div>
+<div id="incoming" class="ui row contact-tab">
+	<div class="ui items">
+		<div class="item">
+			<a class="ui tiny image">
+				<%= image_tag "stevie.jpg" %>
+			</a>
+			<div class="content">
+			  <a class="header" data-mercury="full" id="person_incoming_name">
+			    <%= @kontakty[:kontakty_person_incoming_name].content.html_safe %>
+			  </a>
+			  <div class="description">
+			    <span class="date" data-mercury="full" id="person_incoming_description">
+	        	<%= @kontakty[:kontakty_person_incoming_description].content.html_safe %>
+	      	</span>	
+			  </div>
+			  <div class="description">
+          <i class="mail icon"></i>
+          <a href="mailto:<%= @kontakty[:kontakty_person_incoming_mail].content.html_safe %>" data-mercury="full" id="person_incoming_mail">
+            <%= @kontakty[:kontakty_person_incoming_mail].content.html_safe %>
+          </a>
+          <i class="phone icon"></i>
+          <span data-mercury="full" id="person_incoming_number">
+            <%= @kontakty[:kontakty_person_incoming_number].content.html_safe %>
+          </span>
+	      </div>
+			</div>
+		</div>
+	</div>
+	<h4 class="ui horizontal divider header">
+	  <i class="info circle icon"></i>
+	  Môžeš sa ma opýtať na:
+	</h4>
+	<div class="ui left aligned container">
+	  <span data-mercury="full" id="person_incoming_description2">
+	    <%= @kontakty[:kontakty_person_incoming_description2].content.html_safe %>
+	  </span>
+	</div>
+</div>
+<div id="outgoing" class="ui row contact-tab">
+	<div class="ui items">
+		<div class="item">
+			<a class="ui tiny image">
+				<%= image_tag "stevie.jpg" %>
+			</a>
+			<div class="content">
+			  <a class="header" data-mercury="full" id="person_outgoing_name">
+			    <%= @kontakty[:kontakty_person_outgoing_name].content.html_safe %>
+			  </a>
+			  <div class="description">
+			    <span class="date" data-mercury="full" id="person_outgoing_description">
+	        	<%= @kontakty[:kontakty_person_outgoing_description].content.html_safe %>
+	      	</span>	
+			  </div>
+			  <div class="description">
+          <i class="mail icon"></i>
+          <a href="mailto:<%= @kontakty[:kontakty_person_outgoing_mail].content.html_safe %>" data-mercury="full" id="person_outgoing_mail">
+            <%= @kontakty[:kontakty_person_outgoing_mail].content.html_safe %>
+          </a>
+          <i class="phone icon"></i>
+          <span data-mercury="full" id="person_outgoing_number">
+            <%= @kontakty[:kontakty_person_outgoing_number].content.html_safe %>
+          </span>
+	      </div>
+			</div>
+		</div>
+	</div>
+	<h4 class="ui horizontal divider header">
+	  <i class="info circle icon"></i>
+	  Môžeš sa ma opýtať na:
+	</h4>
+	<div class="ui left aligned container">
+	  <span data-mercury="full" id="person_outgoing_description2">
+	    <%= @kontakty[:kontakty_person_outgoing_description2].content.html_safe %>
+	  </span>
+	</div>
+</div>
+<div id="evs" class="ui row contact-tab">
+	<div class="ui items">
+		<div class="item">
+			<a class="ui tiny image">
+				<%= image_tag "stevie.jpg" %>
+			</a>
+			<div class="content">
+			  <a class="header" data-mercury="full" id="person_eds_name">
+			    <%= @kontakty[:kontakty_person_eds_name].content.html_safe %>
+			  </a>
+			  <div class="description">
+			    <span class="date" data-mercury="full" id="person_eds_description">
+	        	<%= @kontakty[:kontakty_person_eds_description].content.html_safe %>
+	      	</span>	
+			  </div>
+			  <div class="description">
+          <i class="mail icon"></i>
+          <a href="mailto:<%= @kontakty[:kontakty_person_eds_mail].content.html_safe %>" data-mercury="full" id="person_eds_mail">
+            <%= @kontakty[:kontakty_person_eds_mail].content.html_safe %>
+          </a>
+          <i class="phone icon"></i>
+          <span data-mercury="full" id="person_eds_number">
+            <%= @kontakty[:kontakty_person_eds_number].content.html_safe %>
+          </span>
+	      </div>
+			</div>
+		</div>
+	</div>
+	<h4 class="ui horizontal divider header">
+	  <i class="info circle icon"></i>
+	  Môžeš sa ma opýtať na:
+	</h4>
+	<div class="ui left aligned container">
+	  <span data-mercury="full" id="person_eds_description2">
+	    <%= @kontakty[:kontakty_person_eds_description2].content.html_safe %>
+	  </span>
+	</div>
 </div>
 
 <div class="ui two column row">

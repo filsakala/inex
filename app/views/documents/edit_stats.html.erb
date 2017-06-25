@@ -1,13 +1,4 @@
-<h1 class="ui header">
-  <i class="table icon"></i>
-  <div class="content">
-    <%= t(:file) %> <%= @file.name %> - <%= t :add_statistics_on %> <%= t(:row).downcase %> <%= @row %>,
-    <%= t(:column).downcase %> <%= @col %>
-    <div class="sub header">
-      <%= t :document_statistics_header %>
-    </div>
-  </div>
-</h1>
+<%= header :h1, "table", "#{t(:file)} #{@file.name} - #{t(:add_statistics_on)} #{t(:row).downcase} #{@row} #{t(:column).downcase} #{@col}", t(:document_statistics_header) %>
 
 <div class="ui accordion">
   <div class="title">

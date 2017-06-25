@@ -3,12 +3,9 @@ class ApplicationController < ActionController::Base
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception
   add_flash_types :error, :warning, :success
-  before_action :is_active
-  before_action :set_articles
-  before_action :set_locale
-  before_action :log_activity
-  before_action :permission_control
+  before_action :is_active, :set_variables, :set_locale, :log_activity, :permission_control
 
+  # automatically set context (:lang)
   def default_url_options
     { lang: I18n.locale }
   end
@@ -30,40 +27,29 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def set_articles
-    @partners = HomepagePartner.order(:text)
-    @articles ||= {
-      o_nas: HtmlArticle.where(category: 'o_nas'),
-      aktivity: HtmlArticle.where(category: 'aktivity'),
-      pomoz: HtmlArticle.where(category: 'pomoz'),
-      pomoz_financne: HtmlArticle.where(category: 'pomoz_financne'),
-      media: HtmlArticle.where(category: 'media'),
-      tabory_panel: HomepageCard.where(is_visible: true),
-      podpora: HtmlArticle.where(category: 'podpora'),
-      footer: HtmlArticle.where(category: 'footer'),
-    }
-    @faq = HtmlArticle.where(category: 'faq').take
-    @membership = HtmlArticle.where(category: 'membership').take
-    @terms_and_conditions = HtmlArticle.where(category: 'terms_and_conditions').take
+  def set_variables
+    @partners     = HomepagePartner.order(:text)
+    articles_cats = %w(o_nas aktivity pomoz pomoz_financne media podpora footer faq membership terms_and_conditions)
+    @articles     = {}
+    HtmlArticle.where(category: articles_cats).each { |a| (@articles[a.category.to_sym] ||= []).push(a) }
+    @articles[:tabory_panel] = HomepageCard.where(is_visible: true)
+
     if current_user
-      @my_bag = current_user.user_event_list(false)
-      @events_in_bag_count = @my_bag ? @my_bag.events.count : 0
-      # Employee menu
-      @undone_tasks = 0
-      if current_user.employee
-        @undone_tasks = current_user.employee.tasks.joins(:task_lists).where(task_lists: { state: "nedokončená" }).pluck("tasks.id").uniq.count
-      end
+      @my_bag              = current_user.user_event_list(false)
+      @events_in_bag_count = @my_bag.try(:events).try(:count).to_i
+      @undone_tasks        = if current_user.employee # Employee menu
+                               current_user.employee.tasks.joins(:task_lists)
+                                 .where(task_lists: { state: "nedokončená" })
+                                 .pluck("tasks.id").uniq.count
+                             else
+                               0
+                             end
     else
       @events_in_bag_count = 0
-      @undone_tasks = 0
+      @undone_tasks        = 0
     end
-    @kontakty = {}
-    @kontakty[:person_incoming_name] = HtmlArticle.where(category: 'kontakty_person_incoming_name').take
-    @kontakty[:person_incoming_mail] = HtmlArticle.where(category: 'kontakty_person_incoming_mail').take
-    @kontakty[:person_outgoing_name] = HtmlArticle.where(category: 'kontakty_person_outgoing_name').take
-    @kontakty[:person_outgoing_mail] = HtmlArticle.where(category: 'kontakty_person_outgoing_mail').take
-    @kontakty[:person_eds_name] = HtmlArticle.where(category: 'kontakty_person_eds_name').take
-    @kontakty[:person_eds_mail] = HtmlArticle.where(category: 'kontakty_person_eds_mail').take
+    kontakty_cats = %w(kontakty_person_incoming_name kontakty_person_incoming_mail kontakty_person_outgoing_name kontakty_person_outgoing_mail kontakty_person_eds_name kontakty_person_eds_mail)
+    @kontakty     ||= Hash[HtmlArticle.where(category: kontakty_cats).collect { |a| [a.category.to_sym, a] }]
   end
 
 =begin
@@ -72,58 +58,50 @@ class ApplicationController < ActionController::Base
     @param metoda create/update/destroy
     @return notice Notice hláška
 =end
-
-  def define_notice_en(rod = "m", metoda = nil, plural = false)
+  def define_notice_en(metoda = nil, plural = false)
     notice = ""
-    if plural
-      notice << "were"
-    else
-      notice << "was"
-    end
-    notice << " successfully "
-
-    if metoda == :create
-      notice << "created"
-    elsif metoda == :update
-      notice << "updated"
-    elsif metoda == :destroy
-      notice << "destroyed"
-    else
-      notice << metoda.to_s
-    end
-
-    notice << "."
-    return notice
+    notice << plural ? "were successfully" : "was successfully "
+    notice << case metoda
+                when :create
+                  "created."
+                when :update
+                  "updated."
+                when :destroy
+                  "destroyed."
+                else
+                  metoda.to_s + "."
+              end
+    notice
   end
 
   def define_notice(rod = "m", metoda = nil, plural = false)
-    return define_notice_en(rod, metoda, plural) if params[:lang] == "en"
-    notice = ""
-    pripona_bol = ""
+    return define_notice_en(metoda, plural) if I18n.locale == :en
+    notice         = ""
+    pripona_bol    = ""
     pripona_metoda = ""
 
     if !plural
       case rod
         when "m"
-          pripona_metoda="ý"
+          pripona_metoda = "ý"
         when "ž"
-          pripona_bol="a"
-          pripona_metoda="á"
+          pripona_bol    = "a"
+          pripona_metoda = "á"
         when "s"
-          pripona_bol="o"
-          pripona_metoda="é"
+          pripona_bol    = "o"
+          pripona_metoda = "é"
       end
     else
       case rod
         when "m"
-          pripona_bol="i"
-          pripona_metoda="í"
+          pripona_bol    = "i"
+          pripona_metoda = "í"
         when "ž"
-          pripona_bol="i"
-          pripona_metoda="é"
+          pripona_bol    = "i"
+          pripona_metoda = "é"
         when "s"
-          pripona_bol="i"
-          pripona_metoda="é"
+          pripona_bol    = "i"
+          pripona_metoda = "é"
       end
     end
 
@@ -144,19 +122,19 @@ class ApplicationController < ActionController::Base
   end
 
   def set_locale
-    if !session[:lang].blank?
-      I18n.locale = session[:lang]
-    else
-      if params[:lang] == "en" || params[:lang] == "sk"
-        I18n.locale = params[:lang]
-      else
-        I18n.locale = I18n.default_locale
-      end
-    end
+    I18n.locale = if !session[:lang].blank?
+                    session[:lang]
+                  else
+                    if %w(en sk).include? params[:lang]
+                      params[:lang]
+                    else
+                      I18n.default_locale
+                    end
+                  end
   end
 
   def log_activity
-    if current_user && current_user.is_inex_member?
+    if current_user.try(:is_inex_office?)
       aname = action_name
       case action_name
         when "index"
@@ -179,9 +157,7 @@ class ApplicationController < ActionController::Base
   end
 
   def permission_control
-    action = action_name
-    controller = controller_name
-    if !Permission.can?(controller, action, current_user)
+    if !Permission.can?(controller_name, action_name, current_user)
       redirect_to root_path, error: t(:you_dont_have_permissions_to_perform_this_action)
     end
   end

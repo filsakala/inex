@@ -1,2 +1,0 @@
-module EventTableColumnsHelper
-end

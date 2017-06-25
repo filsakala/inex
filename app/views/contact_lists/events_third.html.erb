@@ -1,55 +1,39 @@
-<%= render 'header' %>
+<%= header :h2, "book", "Events", t(:contacts_event_header) %>
 
-<div class="ui padded stackable grid">
-  <div class="ui two column row">
-    <div class="four wide column">
-      <%= render 'panel' %>
-    </div>
-    <div class="twelve wide column">
-      <h2 class="ui header">
-        <i class="book icon"></i>
-        <div class="content">
-          <%= t :events %>
-          <div class="sub header">
-            <%= t :contacts_event_header_result %>
-          </div>
-        </div>
-      </h2>
-      <div>
-        <span class="ui header"><%= t :contacts_event_chosen_years %>: </span>
-        <%= @description[:years] %>
-      </div>
-      <div>
-        <span class="ui header"><%= t :contacts_event_chosen_events %>: </span>
-        <%=  @description[:events] %>
-      </div>
+<%= render 'panel' %>
 
-      <div class="ui top attached tabular menu">
-        <a class="item active" data-tab="first"><%= t :all %> (<%= @description[:all_count] %>)</a>
-        <a class="item" data-tab="second"><%= t :by_events %></a>
-        <a class="item" data-tab="third"><%= t :by_role %></a>
-      </div>
-      <div class="ui bottom attached tab segment active" data-tab="first">
-        <%= render 'events_contacts', users: @all %>
-      </div>
-      <div class="ui bottom attached tab segment" data-tab="second">
-        <% @events.each do |event| %>
-            <h3>Event <%= event.translated_title %> <%= event.from_to %></h3>
-            <%= render 'events_contacts', users: event.participants %>
-        <% end %>
-      </div>
-      <div class="ui bottom attached tab segment" data-tab="third">
-        <h3><%= t :volunteers %></h3>
-        <%= render 'events_contacts', users: @volunteers %>
-        <h3><%= t :leaders %></h3>
-        <%= render 'events_contacts', users: @leaders %>
+<div>
+  <span class="ui header"><%= t :contacts_event_chosen_years %>: </span>
+  <%= @description[:years] %>
+</div>
+<div>
+  <span class="ui header"><%= t :contacts_event_chosen_events %>: </span>
+  <%=  @description[:event_titles] %>
+</div>
 
-        <h3><%= t :trainers %></h3>
-        <%= render 'events_contacts', users: @trainers %>
+<div class="ui top attached tabular menu">
+  <a class="item active" data-tab="first"><%= t :all %> (<%= @description[:all_count] %>)</a>
+  <a class="item" data-tab="second"><%= t :by_events %></a>
+  <a class="item" data-tab="third"><%= t :by_role %></a>
+</div>
+<div class="ui bottom attached tab segment active" data-tab="first">
+  <%= render 'events_contacts', users: @all %>
+</div>
+<div class="ui bottom attached tab segment" data-tab="second">
+  <% @events.each do |event| %>
+      <h3>Event <%= event.translated_title %> <%= event.from_to %></h3>
+      <%= render 'events_contacts', users: event.participants %>
+  <% end %>
+</div>
+<div class="ui bottom attached tab segment" data-tab="third">
+  <h3><%= t :volunteers %></h3>
+  <%= render 'events_contacts', users: @volunteers %>
+  <h3><%= t :leaders %></h3>
+  <%= render 'events_contacts', users: @leaders %>
 
-        <h3><%= t :local_partners %></h3>
-        <%= render 'events_contacts', users: @local_partners %>
-      </div>
-    </div>
-  </div>
+  <h3><%= t :trainers %></h3>
+  <%= render 'events_contacts', users: @trainers %>
+
+  <h3><%= t :local_partners %></h3>
+  <%= render 'events_contacts', users: @local_partners %>
 </div>
